@@ -129,7 +129,7 @@ class Penjualan extends MY_Controller {
 		}
 		
 		$data = [
-			"fdt_date"=>dBDateFormat($this->input->post("fdt_date"),DATEPICKER_FORMAT_ALIAS),
+			"fdt_date"=>dBDateFormat($this->input->post("fdt_date")),
 			"fst_customer_name"=> $this->input->post("fst_customer_name"),
 			"fdc_disc"=> $this->input->post("fdc_disc"),
 			"fst_active"=>'ACTIVE',	
@@ -212,7 +212,7 @@ class Penjualan extends MY_Controller {
 		
 		$data = [
 			"fin_id"=>$fin_id,
-			"fdt_date"=>dBDateFormat($this->input->post("fdt_date"),DATEPICKER_FORMAT_ALIAS),
+			"fdt_date"=>dBDateFormat($this->input->post("fdt_date")),
 			"fst_customer_name"=> $this->input->post("fst_customer_name"),
 			"fdc_disc"=>$this->input->post("fdc_disc")	
 		];
