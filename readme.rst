@@ -69,7 +69,10 @@ Acknowledgement
 The CodeIgniter team would like to thank EllisLab, all the
 contributors to the CodeIgniter project and you, the CodeIgniter user.
 
+***************
 Set File to unchange
+***************
+
 $ git update-index --assume-unchanged index.php
 $ git update-index --assume-unchanged application/config/database.php
 
