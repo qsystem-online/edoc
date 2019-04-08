@@ -85,13 +85,18 @@ defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automat
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 
+<<<<<<< HEAD
 defined('BASE_URL') OR define ('BASE_URL','http://localhost/edoc');
+=======
+defined('BASE_URL') OR define ('BASE_URL','http://localhost/template');
+>>>>>>> 91ae492a025619bd1e6f1406ee6e1be8d0c4613e
 
 
 defined('AJAX_STATUS_OK') OR define ('AJAX_STATUS_OK','OK');
 defined('AJAX_STATUS_SESSION_EXPIRED') OR define ('AJAX_STATUS_SESSION_EXPIRED','SESSION_EXPIRED');
 defined('DATEPICKER_FORMAT_ALIAS') OR define ('DATEPICKER_FORMAT_ALIAS','d-m-Y');
 defined('DATE_DATATABLES_FORMAT') OR define ('DATE_DATATABLES_FORMAT','DD-MM-YYYY');
+defined('DECIMAL_SIGN') OR define ('DECIMAL_SIGN','.');
 
 
 
