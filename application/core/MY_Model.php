@@ -39,7 +39,7 @@ class MY_Model extends CI_Model {
 	public function delete($key,$softdelete = TRUE){
 		if ($softdelete){
 			$this->db->where($this->pkey,$key);
-			$this->db->update($this->tableName,["fst_active" => "DELETED"]);		
+			$this->db->update($this->tableName,["fst_active" => "D"]);		
 		}else{
 			$this->db->where($this->pkey,$key);
 			$this->db->delete($this->tableName);
