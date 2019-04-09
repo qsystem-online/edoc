@@ -53,14 +53,6 @@ class Users_model extends MY_Model {
 				'required',
 				'is_unique[users.fst_username.fin_id.'. $id .']'
 			),
-				//array('custom_unique',array("table"=>"users","column"=>"fst_username","key"=>"fin_id","id"=>$id))
-			//'rules' => 'required|is_unique[users.fst_username]',			
-			/*
-			'rules' => array(
-				'required',
-				array('is_unique',array("table"=>"users","column"=>"fst_username","key"=>"fin_id","id"=>$id))
-			),
-			*/
 			'errors' => array(
 				'required' => '%s tidak boleh kosong',
 				'is_unique' => '%s harus unik',
