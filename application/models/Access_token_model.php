@@ -1,8 +1,8 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Cm_header_sales_model extends MY_Model {
+class Access_token_model extends MY_Model {
     public $tableName = "access_token";
-    public $pkey = "fin_user_id";
+    public $pkey = "fin_id";
     
     public function __construct(){
         parent:: __construct();
