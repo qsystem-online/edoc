@@ -1,0 +1,26 @@
+Process Revisi Document 
+	Document Biasa (Not Flow Control)
+	*Bila Document telah melewati batas tgl publishnya maka perubahan harus di catat dalam history
+
+
+	Document Flow Control
+	*Document yang telah memiliki status approved tidak dapat dirubah lagi terkecuali ada status NEED_REVERSION dan status ini belum dilakukan perubahan
+	Note: ambil query dengan grouping max per user, sehingga mendapatkan status terakhir masing2 user
+	*Setelah document direvisi akan di create 1 row record untuk setiuan user yang melakukan request revisi (NEED_REVERSION) dengan status READY_TO_APPROVE
+	*semua record yang memiliki status selain APPROVED akan di update colom last versionnya sesuai dengan no revisi saat ini
+	*untuk user yang telah melakukan approval akan ditampilkan informasi di dashboardnya, dan colom last version akan di rubah menjadi versi saat ini apabila 
+	user telah mengklik informasi pada dashboard tersebut
+	
+
+
+Permission:
+	*private => document dapat dilihat dalam satu department yg sama 
+	*global => Semua Department Dapat melihat document tersebut
+	*Custom => hanya departement / orang tertentu yang dapat melihat dokumen
+	*fin_confidential_lvl, bila permission yg di pilih berupa (private,global ataupun custom department) akan ditentukan lagi berdasarkan confidential level
+	hanya apabila level orang tersebut lebih kecil atau sama dengan fin_confidential_lvl yang mendapat permission, untuk permission type custom dan di isi user_id
+	maka tidak akan mengacu pada fin_confidential_lvl lagi.	
+	(0=Top management, 1=Upper management, 2=Middle management, 3=Supervisors, 4=Line workers, 5=public)
+	??? apakah pada master_group perlu di tambahkan department / pada departement di pindahkan dari tabel user ke user_group
+	
+	
