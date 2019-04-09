@@ -24,3 +24,7 @@ Permission:
 	??? apakah pada master_group perlu di tambahkan department / pada departement di pindahkan dari tabel user ke user_group
 	
 	
+DASHBOARD:
+* Info document need approve
+* Info document revisi is exist
+
