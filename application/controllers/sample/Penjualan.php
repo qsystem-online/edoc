@@ -132,7 +132,7 @@ class Penjualan extends MY_Controller {
 			"fdt_date"=>dBDateFormat($this->input->post("fdt_date")),
 			"fst_customer_name"=> $this->input->post("fst_customer_name"),
 			"fdc_disc"=> $this->input->post("fdc_disc"),
-			"fst_active"=>'ACTIVE',	
+			"fst_active"=>'A',	
 		];
 
 		$this->db->trans_start();

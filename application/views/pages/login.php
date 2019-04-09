@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -31,7 +32,6 @@
 		<!-- jQuery 3 -->
 		<script src="<?=base_url()?>bower_components/jquery/dist/jquery.min.js"></script>		
 	</head>
-
 	<body>
 		<table style="width:100%;height: 100%"><tr><td style='vertical-align: middle;'>
 		<div class="container-fluid" style="">
