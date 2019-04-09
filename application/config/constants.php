@@ -87,6 +87,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 defined('BASE_URL') OR define ('BASE_URL','http://localhost/edoc');
 
 
+
 defined('AJAX_STATUS_OK') OR define ('AJAX_STATUS_OK','OK');
 defined('AJAX_STATUS_SESSION_EXPIRED') OR define ('AJAX_STATUS_SESSION_EXPIRED','SESSION_EXPIRED');
 defined('DATEPICKER_FORMAT_ALIAS') OR define ('DATEPICKER_FORMAT_ALIAS','d-m-Y');
