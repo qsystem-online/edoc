@@ -1,0 +1,33 @@
+master departement
++user
+
+private untuk satu department yg sama 
+global=> All department
+
+
+flow_control_schema_header
++fin_user_id
+
+
+users
++fbl_admin
+
+
+flow control
++NEED_REVERSION
+add history doc biasa ketika doc lewat publish date
+add history doc flow ketika di doc ada status NEED_REVERSION
+add col last version doc per user
+
+
+ref doc lis
++reff_source_code
+
+
+doc_files
++fst_title
+
+
+token
++session id
+create func clear token by user
