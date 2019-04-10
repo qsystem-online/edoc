@@ -8,6 +8,17 @@ class Departments_model extends MY_Model {
         parent:: __construct();
     }
 
+    public function getDataById($fin_department_id){
+		$ssql = "select * from " . $this->tableName ." where fin_department_id = ?";
+		$qr = $this->db->query($ssql,[$fin_department_id]);		
+		$rwSales = $qr->row();
+		if($rwSales){}
+		$data = [
+			"sales" => $rwSales
+		];
+		return $data;
+	}
+
     public function getRules($mode="ADD",$id=0){
 
         $rules = [];
