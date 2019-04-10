@@ -11,6 +11,7 @@ class Test extends CI_Controller {
 		echo "<br>";
 		echo "site_url (uri_string) : ". site_url(uri_string());
 		echo "<br>";
+		
 	}
 
 
