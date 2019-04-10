@@ -5,9 +5,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <section class="content-header">
 	<h1><?=$page_name?><small>List</small></h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-		<li><a href="#">System</a></li>
-		<li class="active">Sales Order</li>
+		<?php 
+			foreach($breadcrumbs as $breadcrumb){
+				if ($breadcrumb["link"] == NULL){
+					echo "<li class='active'>".$breadcrumb["title"]."</li>";
+				}else{
+					echo "<li><a href='".$breadcrumb["link"]."'>".$breadcrumb["icon"].$breadcrumb["title"]."</a></li>";
+				}
+				
+			} 
+		?>
 	</ol>
 </section>
 
