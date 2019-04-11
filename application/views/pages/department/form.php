@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<h1>Department<small>Form</small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-		<li><a href="#">Departments</a></li>
+		<li><a href="#">System Admin</a></li>
 		<li><a href="<?=site_url()?>pages/department">Department</a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
