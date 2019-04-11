@@ -100,8 +100,7 @@ class Department extends MY_Controller {
 		}
 
 		$data = [
-			"fin_department_id"=>$fin_department_id,
-			"fst_department_name"=>$this->input->post("fst_fullname"),
+			"fst_department_name"=>$this->input->post("fst_department_name"),
 			"fst_active"=>'A'
 		];
 
@@ -129,8 +128,8 @@ class Department extends MY_Controller {
 		$this->load->model('departments_model');		
 		$fin_department_id = $this->input->post("fin_department_id");
 		$data = $this->departments_model->getDataById($fin_department_id);
-		$departmen = $data["department"];
-		if (!$department){
+		$departments = $data["departments"];
+		if (!$departments){
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $fin_department_id Not Found ";
 			$this->ajxResp["data"] = [];
@@ -172,7 +171,7 @@ class Department extends MY_Controller {
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $fin_department_id;
+		$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
 
@@ -180,7 +179,7 @@ class Department extends MY_Controller {
 		$this->load->model('departments_model');
 
 		$data=[
-			'fst_fullname'=>$this->input->get("fst_department_name"),
+			'fst_department_name'=>$this->input->get("fst_department_name"),
 			'fdt_insert_datetime'=>'sekarang'
 		];
 		if ($this->db->insert('departments', $data)) {

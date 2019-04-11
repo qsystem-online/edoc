@@ -9,12 +9,12 @@ class Departments_model extends MY_Model {
     }
 
     public function getDataById($fin_department_id){
-		$ssql = "select * from " . $this->tableName ." where fin_department_id = ?";
+		$ssql = "select * from departments where fin_department_id = ?";
 		$qr = $this->db->query($ssql,[$fin_department_id]);		
-		$rwDepartment = $qr->row();
-		if($rwDepartment){}
+		$rwDepartments = $qr->row();
+		//if($rwDepartments){}
 		$data = [
-			"departments" => $rwDepartment
+			"departments" => $rwDepartments
 		];
 		return $data;
 	}

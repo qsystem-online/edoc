@@ -9,28 +9,18 @@ class Master_groups_model extends MY_Model {
     }
 
     public function getDataById($fin_group_id){
-		$ssql = "select * from " . $this->tableName ." where fin_group_id = ?";
+		$ssql = "select * from master_groups where fin_group_id = ?";
 		$qr = $this->db->query($ssql,[$fin_group_id]);		
-		$rwGroups = $qr->row();
-		if($rwGroups){}
+		$rwMasterGroups = $qr->row();
+		if($rwMasterGroups){}
 		$data = [
-			"master_groups" => $rwGroups
+			"master_groups" => $rwMasterGroups
 		];
 		return $data;
 	}
 
     public function getRules($mode="ADD",$id=0){
-
         $rules = [];
-
-        $rules[] = [
-            'field' => 'fin_group_id',
-            'label' => 'Group ID',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
 
         $rules[] = [
             'field' => 'fst_group_name',
@@ -48,7 +38,7 @@ class Master_groups_model extends MY_Model {
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
             )
-        ]
+        ];
 
         return $rules;
     }

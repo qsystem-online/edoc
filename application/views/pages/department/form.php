@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- form start -->
             <form id="frmDepartment" class="form-horizontal" action="<?=site_url()?>department/add" method="POST" enctype="multipart/form-data">				
 				<div class="box-body">
-					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">					
+					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
@@ -58,6 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- end box body -->
 
                 <div class="box-footer">
+					<button name="submit" value="submit" type="submit" class="btn btn-primary">Submit</button>
                     <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
                 </div>
                 <!-- end box-footer -->
@@ -119,7 +120,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-
 						$('#fst_department_name').prop('readonly', true);
 						$("#tabs-department-detail").show();
 						console.log(data.data_image);

@@ -35,8 +35,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- form start -->
             <form id="frmMasterGroups" class="form-horizontal" action="<?=site_url()?>master_groups/add" method="POST" enctype="multipart/form-data">				
 				<div class="box-body">
-					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">					
-					<input type="hidden" id="frm-mode" value="<?=$mode?>">
+					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
+                    <input type="hidden" id="frm-mode" value="<?=$mode?>">
 
                     <div class='form-group'>
                     <label for="fin_group_id" class="col-sm-2 control-label"><?=lang("Group ID")?></label>
@@ -71,6 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- end box body -->
 
                 <div class="box-footer">
+                    <button name="submit" value="submit" type="submit" class="btn btn-primary">Submit</button>
                     <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
                 </div>
                 <!-- end box-footer -->
@@ -135,7 +136,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						$('#fst_group_name').prop('readonly', true);
 						$("#tabs-master_group-detail").show();
-						console.log(data.data_image);
+						//console.log(data.data_image);
 					}
 				},
 				error: function (e) {
