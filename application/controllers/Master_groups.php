@@ -103,7 +103,7 @@ class Master_groups extends MY_Controller {
 
 		$data = [
             "fst_group_name"=>$this->input->post("fst_group_name"),
-            //"fin_level"=>$fin_level,
+            "fin_level"=>$fin_level,
 			"fst_active"=>'A'
 		];
 

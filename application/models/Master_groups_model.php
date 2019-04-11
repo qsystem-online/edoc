@@ -12,7 +12,7 @@ class Master_groups_model extends MY_Model {
 		$ssql = "select * from master_groups where fin_group_id = ?";
 		$qr = $this->db->query($ssql,[$fin_group_id]);		
 		$rwMasterGroups = $qr->row();
-		if($rwMasterGroups){}
+		//if($rwMasterGroups){}
 		$data = [
 			"master_groups" => $rwMasterGroups
 		];
