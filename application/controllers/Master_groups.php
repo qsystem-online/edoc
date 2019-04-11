@@ -89,7 +89,7 @@ class Master_groups extends MY_Controller {
 
 	public function ajx_add_save(){
 		$this->load->model('master_groups_model');
-		$this->form_validation->set_rules($this->departments_model->getRules("ADD",0));
+		$this->form_validation->set_rules($this->master_groups_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE){
@@ -253,7 +253,7 @@ class Master_groups extends MY_Controller {
 		
 		$this->load->model("master_groups_model");
 		
-		$this->departments_model->delete($id);
+		$this->master_groups_model->delete($id);
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "";
 		$this->json_output();
