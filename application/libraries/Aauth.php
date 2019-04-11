@@ -15,7 +15,7 @@ class Aauth {
 
 	public function get_user_id(){
 		if ($this->user){
-			return $this->user->fin_id;
+			return $this->user->fin_user_id;
 		}else{
 			return 0;
 		}

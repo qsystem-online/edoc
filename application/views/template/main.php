@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<htlm>
+<html>
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,8 +53,8 @@
 	<?php
 		$sidebarCollapse = ($this->session->userdata('sidebar_collapse') == 1) ? "sidebar-collapse" : "";
 	?>
-	<body class="hold-transition skin-blue sidebar-mini <?= $sidebarCollapse?>">
-		<div class="wrapper">
+	<body class="hold-transition skin-blue sidebar-mini <?= $sidebarCollapse?>" style="overflow-x:auto">
+		<div class="wrapper" style="overflow-x:auto;min-width:800px">
 			<header class="main-header">
 				{MAIN_HEADER}
 			</header>
