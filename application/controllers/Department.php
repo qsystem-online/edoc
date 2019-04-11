@@ -22,7 +22,7 @@ class Department extends MY_Controller {
         $this->list['delete_ajax_url']=site_url().'department/delete/';
         $this->list['edit_ajax_url']=site_url().'department/edit/';
         $this->list['arrSearch']=[
-            'a.fin_department_id' => 'ID Department',
+            'a.fin_department_id' => 'Department ID',
             'a.fst_department_name' => 'Department Name'
 		];
 		
@@ -32,7 +32,7 @@ class Department extends MY_Controller {
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
-			['title' => 'ID Department', 'width'=>'10%', 'data'=>'fin_department_id'],
+			['title' => 'Department ID', 'width'=>'10%', 'data'=>'fin_department_id'],
 			['title' => 'Department Name', 'width'=>'25%', 'data'=>'fst_department_name'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
@@ -100,6 +100,7 @@ class Department extends MY_Controller {
 		}
 
 		$data = [
+			"fin_department_id"=>$fin_department_id,
 			"fst_department_name"=>$this->input->post("fst_fullname"),
 			"fst_active"=>'A'
 		];
@@ -114,32 +115,6 @@ class Department extends MY_Controller {
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
-		}
-
-		//Save File
-		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
-			$config['upload_path']          = './assets/app/users/avatar';
-			$config['file_name']			= 'avatar_'. $insertId . '.jpg' ;
-			$config['overwrite']			= TRUE;
-			$config['file_ext_tolower']		= TRUE;
-			$config['allowed_types']        = 'gif|jpg|png';
-			$config['max_size']             = 0; //kilobyte
-			$config['max_width']            = 0; //1024; //pixel
-			$config['max_height']           = 0; //768; //pixel
-
-			$this->load->library('upload', $config);
-
-			if ( ! $this->upload->do_upload('fst_avatar')){			
-				$this->ajxResp["status"] = "IMAGES_FAILED";
-				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
-				$this->ajxResp["data"] = $this->upload->display_errors();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}else{
-				//$data = array('upload_data' => $this->upload->data());			
-			}
-			$this->ajxResp["data"]["data_image"] = $this->upload->data();
 		}
 
 		$this->db->trans_complete();
@@ -264,7 +239,7 @@ class Department extends MY_Controller {
 		$this->json_output($data);
 	}
 
-	/*public function delete($id){
+	public function delete($id){
 		if(!$this->aauth->is_permit("")){
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";
@@ -278,5 +253,5 @@ class Department extends MY_Controller {
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "";
 		$this->json_output();
-	}*/
+	}
 }
