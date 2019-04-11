@@ -11,10 +11,10 @@ class Departments_model extends MY_Model {
     public function getDataById($fin_department_id){
 		$ssql = "select * from " . $this->tableName ." where fin_department_id = ?";
 		$qr = $this->db->query($ssql,[$fin_department_id]);		
-		$rwSales = $qr->row();
-		if($rwSales){}
+		$rwDepartment = $qr->row();
+		if($rwDepartment){}
 		$data = [
-			"sales" => $rwSales
+			"departments" => $rwDepartment
 		];
 		return $data;
 	}
