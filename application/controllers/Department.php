@@ -28,8 +28,8 @@ class Department extends MY_Controller {
 		
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-			['title'=>'sample','link'=>'#','icon'=>''],
-			['title'=>'Department','link'=> NULL ,'icon'=>''],
+			['title'=>'Department','link'=>'#','icon'=>''],
+			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
 			['title' => 'ID Department', 'width'=>'10%', 'data'=>'fin_department_id'],
@@ -49,7 +49,7 @@ class Department extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
 	}
 
-	private function openForm($mode = "ADD",$fin_id = 0){
+	private function openForm($mode = "ADD",$fin_department_id = 0){
 		$this->load->library("menus");
 		//$this->load->model("groups_model");
 
@@ -63,7 +63,7 @@ class Department extends MY_Controller {
 		//$data["groups"] = $this->groups_model->get_list_group();	
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Department" : "Update Department";
-		$data["fin_id"] = $fin_id;
+		$data["fin_department_id"] = $fin_department_id;
 
 		$page_content = $this->parser->parse('pages/department/form',$data,true);
 		$main_footer = $this->parser->parse('inc/main_footer',[],true);
@@ -114,6 +114,32 @@ class Department extends MY_Controller {
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
+		}
+
+		//Save File
+		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
+			$config['upload_path']          = './assets/app/users/avatar';
+			$config['file_name']			= 'avatar_'. $insertId . '.jpg' ;
+			$config['overwrite']			= TRUE;
+			$config['file_ext_tolower']		= TRUE;
+			$config['allowed_types']        = 'gif|jpg|png';
+			$config['max_size']             = 0; //kilobyte
+			$config['max_width']            = 0; //1024; //pixel
+			$config['max_height']           = 0; //768; //pixel
+
+			$this->load->library('upload', $config);
+
+			if ( ! $this->upload->do_upload('fst_avatar')){			
+				$this->ajxResp["status"] = "IMAGES_FAILED";
+				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
+				$this->ajxResp["data"] = $this->upload->display_errors();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}else{
+				//$data = array('upload_data' => $this->upload->data());			
+			}
+			$this->ajxResp["data"]["data_image"] = $this->upload->data();
 		}
 
 		$this->db->trans_complete();
