@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 <style type="text/css">
 	.border-0{
 		border: 0px;
@@ -155,47 +156,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
-							<li class="active"><a href="#address" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
-							<li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("File List")?></a></li>
+							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
+							<li id="" class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("File List")?></a></li>
                             <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
 							<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
 						</ul>
 						<div class="tab-content">							
-							<div class="tab-pane active" id="address">
-								<div id="data-address" style="display:none">
-
-								</div>
-
-								<table id="tblAddress" class="table table-bordered table-condensed">
-									<thead>
-										<tr>
-											<form class="form-inline" action="/action_page.php">
-												<th style="width:20%;vertical-align: top;">
-													<input type="text" class="form-control-sm" id="address_name" autocomplete="name" style="width:100%">
-												</th>
-												<th style="width:50%">
-													<textarea type="text" class="form-control-sm" id="address_address" autocomplete="street-address" style="width:100%"></textarea> 
-												</th>
-												<th style="width:10%;vertical-align: top;">
-													 <label><input type="checkbox"  id="address_primary" > Primary</label>
-												</th>
-												<th style="width:20%;vertical-align: top;">
-													<button id="btnAddAddress" class="btn btn-primary">Add Address</button>
-												</th>
-											</form>
-											
-										</tr>
-										<tr class="active">
-											<th>Name</th>
-											<th>Address</th>
-											<th>Is Primary</th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-									</tbody>
-								</table>
-
+							<div class="tab-pane active" id="doc_list">
+								<btn class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>        <?= lang("Add Document")?></btn>
+								<table id="tbl_doc_list"></table>
 							</div>
 							<!-- /.tab-pane -->
 							<div class="tab-pane" id="tab_2">
@@ -230,6 +199,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</form>
 		</div>
 	</div>
+</div>
+
+<div id="mdlDocList" class="modala fadea" role="dialog" style="display: unset">
+	<div class="modal-dialog" style="display:table;width:80%;min-width:700px;max-width:100%">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
+				<h4 class="modal-title"><?=lang("Add Document")?></h4>
+			</div>
+
+			<div class="modal-body">
+				<form class="form-horizontal">	
+					<input type="hidden" id="fin-detail-id" value="0">
+					<div class="form-group">
+						<label for="select-product" class="col-md-2 control-label">Search By</label>
+						<div class="col-md-3">
+							<select class="select2 col-md-12" >
+								<option>Search mark</option>
+								<option>Notes</option>
+							</select>														
+						</div>						
+					</div>					
+				</form>
+
+				<div class="col-md-12">
+					<div class="row">
+						<table id="tbl_search_doc_list"  class="display compact"></table>
+					</div>					
+				</div>				
+			</div>
+			<div class="modal-footer">
+				<button id="btn-add-product-detail" type="button" class="btn btn-primary">Add</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(function(){
+			$("#tbl_search_doc_list").DataTable({
+				columns:[
+					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
+					{"title" : "<?= lang("Document Name") ?>","width": "30%",data:"id_product",visible:true},
+					{"title" : "<?= lang("Notes") ?>","width": "35%",data:"product_name"},
+					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_qty"},
+					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fin_qty"}					  
+				],
+			});
+		});
+	</script>
 </div>
 
 <script type="text/javascript">
@@ -498,6 +518,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
 <script type="text/javascript">
     $(function(){
         $(".select2-container").addClass("form-control"); 
