@@ -14,14 +14,13 @@ class Department extends MY_Controller {
 
     public function lizt(){
         $this->load->library('menus');
-		
         $this->list['page_name']="Department";
         $this->list['list_name']="Department List";
         $this->list['addnew_ajax_url']=site_url().'Department/add';
         $this->list['pKey']="id";
-		$this->list['fetch_list_data_ajax_url']=site_url().'pages/department/fetch_list_data';
-        $this->list['delete_ajax_url']=site_url().'pages/department/delete/';
-        $this->list['edit_ajax_url']=site_url().'pages/department/edit/';
+		$this->list['fetch_list_data_ajax_url']=site_url().'department/fetch_list_data';
+        $this->list['delete_ajax_url']=site_url().'department/delete/';
+        $this->list['edit_ajax_url']=site_url().'department/edit/';
         $this->list['arrSearch']=[
             'a.fin_department_id' => 'ID Department',
             'a.fst_department_name' => 'Department Name'
@@ -30,7 +29,7 @@ class Department extends MY_Controller {
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
 			['title'=>'sample','link'=>'#','icon'=>''],
-			['title'=>'Penjualan','link'=> NULL ,'icon'=>''],
+			['title'=>'Department','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
 			['title' => 'ID Department', 'width'=>'10%', 'data'=>'fin_department_id'],
@@ -50,8 +49,7 @@ class Department extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
 	}
 
-
-    private function openForm($mode = "ADD",$fin_department_id = 0){
+	private function openForm($mode = "ADD",$fin_id = 0){
 		$this->load->library("menus");
 		//$this->load->model("groups_model");
 
@@ -61,10 +59,11 @@ class Department extends MY_Controller {
 
 		$main_header = $this->parser->parse('inc/main_header',[],true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
-	
+
+		//$data["groups"] = $this->groups_model->get_list_group();	
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "ADD Department" : "Update Department";
-		$data["fin_department_id"] = $fin_department_id;
+		$data["title"] = $mode == "ADD" ? "Add Department" : "Update Department";
+		$data["fin_id"] = $fin_id;
 
 		$page_content = $this->parser->parse('pages/department/form',$data,true);
 		$main_footer = $this->parser->parse('inc/main_footer',[],true);
@@ -86,10 +85,9 @@ class Department extends MY_Controller {
 		$this->openForm("EDIT",$fin_department_id);
 	}
 
-
 	public function ajx_add_save(){
 		$this->load->model('departments_model');
-		$this->form_validation->set_rules($this->cm_header_penjualan_model->getRules("ADD",0));
+		$this->form_validation->set_rules($this->departments_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE){
@@ -100,9 +98,9 @@ class Department extends MY_Controller {
 			$this->json_output();
 			return;
 		}
-		
+
 		$data = [
-			"fst_department_name"=> $this->input->post("fst_department_name"),
+			"fst_department_name"=>$this->input->post("fst_fullname"),
 			"fst_active"=>'A'
 		];
 
@@ -117,8 +115,9 @@ class Department extends MY_Controller {
 			$this->db->trans_rollback();
 			return;
 		}
-		
+
 		$this->db->trans_complete();
+
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $insertId;
@@ -126,35 +125,37 @@ class Department extends MY_Controller {
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('departments_model');
-
+		$this->load->model('departments_model');		
 		$fin_department_id = $this->input->post("fin_department_id");
-		$data = $this->departments_model->getDataById($fin_department_id);		
-		if (!$data){
+		$data = $this->departments_model->getDataById($fin_department_id);
+		$departmen = $data["department"];
+		if (!$department){
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $fin_id Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_department_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 		
-		$data = [
-			"fin_department_id"=>$fin_department_id,
-			"fst_department_name"=> $this->input->post("fst_department_name"),
-		];
-
-		$this->form_validation->set_rules($this->departments_model->getRules());
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-		$this->form_validation->set_data($data);
+		$this->form_validation->set_rules($this->departments_model->getRules("EDIT",$fin_department_id));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE){
+			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 			$this->ajxResp["message"] = "Error Validation Forms";
 			$this->ajxResp["data"] = $this->form_validation->error_array();
 			$this->json_output();
 			return;
 		}
-	
+
+		$data = [
+			"fin_department_id"=>$fin_department_id,
+			"fst_department_name"=>$this->input->post("fst_department_name"),
+			"fst_active"=>'A'
+		];
+
 		$this->db->trans_start();
+
 		$this->departments_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){			
@@ -167,24 +168,49 @@ class Department extends MY_Controller {
 		}
 
 		$this->db->trans_complete();
+
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $fin_department_id;
 		$this->json_output();
+	}
+
+	public function add_save(){
+		$this->load->model('departments_model');
+
+		$data=[
+			'fst_fullname'=>$this->input->get("fst_department_name"),
+			'fdt_insert_datetime'=>'sekarang'
+		];
+		if ($this->db->insert('departments', $data)) {
+			echo "insert success";
+		}else{
+			$error = $this->db->error();
+			print_r($error);
+		}
+		die();
+
+		echo "Table Name :" . $this->departments_model->getTableName();
+		print_r($this->users_model->getRules());
 		
+		$this->form_validation->set_rules($this->departments_model->rules);
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		if ($this->form_validation->run() == FALSE){
+			echo form_error();
+		}else{
+			echo "Success";
+		}
 	}
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("departments_model");
-		$this->datatables->activeCondition = "a.fst_active != 'DELETED'";
+		$this->datatables->setTableName("departments");
 		
-		$selectFields = "a.fin_departmen_id,fst_department_name, 'action' as action";
+		$selectFields = "fin_department_id,fst_department_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
-		
-		$selectSearch=$this->input->get('optionSearch');
-		//$searchFields = ["fst_customer_name"];
-		$searchFields = [$selectSearch];
+
+		$searchFields = ["fst_department_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -194,8 +220,8 @@ class Department extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='".$data["fin_department_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_department_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='".$data["fin_id"]."'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fin_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -206,14 +232,13 @@ class Department extends MY_Controller {
 	
 	public function fetch_data($fin_department_id){
 		$this->load->model("departments_model");
-
 		$data = $this->departments_model->getDataById($fin_department_id);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
 	}
 
-	public function delete($id){
+	/*public function delete($id){
 		if(!$this->aauth->is_permit("")){
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";
@@ -227,5 +252,5 @@ class Department extends MY_Controller {
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "";
 		$this->json_output();
-	}
+	}*/
 }

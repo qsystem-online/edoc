@@ -33,24 +33,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmOrder" class="form-horizontal">				
+            <form id="frmDepartment" class="form-horizontal" action="<?=site_url()?>department/add" method="POST" enctype="multipart/form-data">				
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">					
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-						<label for="fin_department_id" class="col-md-2 control-label"><?=lang("Department ID #")?></label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fin_department_id" placeholder="Department ID" name="fin_department_id" value="<?=$fin_departmen_id?>">
-							<div id="fin_department_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-                    <label for="fst_department_name" class="col-sm-2 control-label"><?=lang("Department Name *")?></label>
+                    <label for="fst_department_name" class="col-sm-2 control-label">Department Name *</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fst_department_name" placeholder="Department Name" name="fst_department_name">
 							<div id="fst_department_name_err" class="text-danger"></div>
+							<?php echo form_error('fst_department_name'); ?>
 						</div>
 					</div>
                 </div>
@@ -66,12 +59,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <script type="text/javascript">
-    $(function(){
-        <?php if($mode == "EDIT"){?>
+	$(function(){
+
+		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_department_id").val());
 		<?php } ?>
 
-        $("#btnSubmitAjax").click(function(event){
+		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = new FormData($("#frmDepartment")[0]);
 
@@ -82,6 +76,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>department/ajx_edit_save";
 			}
 
+			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',
@@ -97,7 +92,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							title: 'Message',
 							content: resp.message,
 							confirm: function(){
-								//alert('the department clicked yes');
 							}
 						});
 					}
@@ -129,22 +123,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
+
 		});
 
 		$(".datepicker").datepicker({
 			format:"yyyy-mm-dd"
 		});
-    })
+	});
 
 	function init_form(fin_department_id){
 		//alert("Init Form");
-		var url = "<?= site_url() ?>department/fetch_data/" + <?= $fin_department_id ?>;
+		var url = "<?=site_url()?>/department/fetch_data/" + fin_department_id;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
 				console.log(resp.department);
-				
+
 				$.each(resp.department, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
