@@ -131,7 +131,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
-
 		});
 
 		$(".datepicker").datepicker({
