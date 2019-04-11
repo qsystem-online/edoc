@@ -192,7 +192,7 @@ class Department extends MY_Controller {
 		die();
 
 		echo "Table Name :" . $this->departments_model->getTableName();
-		print_r($this->users_model->getRules());
+		print_r($this->departments_model->getRules());
 		
 		$this->form_validation->set_rules($this->departments_model->rules);
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
