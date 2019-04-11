@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Department extends MY_Controller {
+class Master_groups extends MY_Controller {
 
     public function __construct(){
         parent:: __construct();
@@ -14,26 +14,28 @@ class Department extends MY_Controller {
 
     public function lizt(){
         $this->load->library('menus');
-        $this->list['page_name']="Department";
-        $this->list['list_name']="Department List";
-        $this->list['addnew_ajax_url']=site_url().'department/add';
+        $this->list['page_name']="Master Groups";
+        $this->list['list_name']="Group List";
+        $this->list['addnew_ajax_url']=site_url().'master_groups/add';
         $this->list['pKey']="id";
-		$this->list['fetch_list_data_ajax_url']=site_url().'department/fetch_list_data';
-        $this->list['delete_ajax_url']=site_url().'department/delete/';
-        $this->list['edit_ajax_url']=site_url().'department/edit/';
+		$this->list['fetch_list_data_ajax_url']=site_url().'master_groups/fetch_list_data';
+        $this->list['delete_ajax_url']=site_url().'master_groups/delete/';
+        $this->list['edit_ajax_url']=site_url().'master_groups/edit/';
         $this->list['arrSearch']=[
-            'a.fin_department_id' => 'Department ID',
-            'a.fst_department_name' => 'Department Name'
+            'a.fin_group_id' => 'Group ID',
+            'a.fst_group_name' => 'Group Name',
+            'a.fin_level' => 'Level'
 		];
 		
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-			['title'=>'Department','link'=>'#','icon'=>''],
+			['title'=>'Master Groups','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
-			['title' => 'Department ID', 'width'=>'10%', 'data'=>'fin_department_id'],
-			['title' => 'Department Name', 'width'=>'25%', 'data'=>'fst_department_name'],
+			['title' => 'Group ID', 'width'=>'10%', 'data'=>'fin_group_id'],
+            ['title' => 'Group Name', 'width'=>'25%', 'data'=>'fst_group_name'],
+            ['title' => 'Level', 'width' =>'15%', 'data'=>'fin_level'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -49,7 +51,7 @@ class Department extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
 	}
 
-	private function openForm($mode = "ADD",$fin_department_id = 0){
+	private function openForm($mode = "ADD",$fin_group_id = 0){
 		$this->load->library("menus");
 		//$this->load->model("groups_model");
 
@@ -62,10 +64,10 @@ class Department extends MY_Controller {
 
 		//$data["groups"] = $this->groups_model->get_list_group();	
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Department" : "Update Department";
-		$data["fin_department_id"] = $fin_department_id;
+		$data["title"] = $mode == "ADD" ? "Add Group" : "Update Group";
+		$data["fin_group_id"] = $fin_group_id;
 
-		$page_content = $this->parser->parse('pages/department/form',$data,true);
+		$page_content = $this->parser->parse('pages/master_groups/form',$data,true);
 		$main_footer = $this->parser->parse('inc/main_footer',[],true);
 		
 		$control_sidebar = NULL;
@@ -81,12 +83,12 @@ class Department extends MY_Controller {
 		$this->openForm("ADD",0);
 	}
 
-	public function Edit($fin_department_id){
-		$this->openForm("EDIT",$fin_department_id);
+	public function Edit($fin_group_id){
+		$this->openForm("EDIT",$fin_group_id);
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('departments_model');
+		$this->load->model('master_groups_model');
 		$this->form_validation->set_rules($this->departments_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
@@ -100,13 +102,14 @@ class Department extends MY_Controller {
 		}
 
 		$data = [
-			"fin_department_id"=>$fin_department_id,
-			"fst_department_name"=>$this->input->post("fst_fullname"),
+			"fin_group_id"=>$fin_group_id,
+            "fst_group_name"=>$this->input->post("fst_group_name"),
+            "fin_level"=>$fin_level,
 			"fst_active"=>'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->departments_model->insert($data);
+		$insertId = $this->master_groups_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){			
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -126,19 +129,19 @@ class Department extends MY_Controller {
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('departments_model');		
-		$fin_department_id = $this->input->post("fin_department_id");
-		$data = $this->departments_model->getDataById($fin_department_id);
-		$departmen = $data["department"];
-		if (!$department){
+		$this->load->model('master_groups_model');		
+		$fin_group_id = $this->input->post("fin_group_id");
+		$data = $this->master_groups_model->getDataById($fin_group_id);
+		$master_groups = $data["master_groups"];
+		if (!$master_groups){
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $fin_department_id Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_group_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 		
-		$this->form_validation->set_rules($this->departments_model->getRules("EDIT",$fin_department_id));
+		$this->form_validation->set_rules($this->master_groups_model->getRules("EDIT",$fin_group_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE){
 			//print_r($this->form_validation->error_array());
@@ -150,14 +153,15 @@ class Department extends MY_Controller {
 		}
 
 		$data = [
-			"fin_department_id"=>$fin_department_id,
-			"fst_department_name"=>$this->input->post("fst_department_name"),
+			"fin_group_id"=>$fin_group_id,
+            "fst_group_name"=>$this->input->post("fst_group_name"),
+            "fin_level"=>$fin_level,
 			"fst_active"=>'A'
 		];
 
 		$this->db->trans_start();
 
-		$this->departments_model->update($data);
+		$this->master_groups_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){			
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -172,18 +176,18 @@ class Department extends MY_Controller {
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $fin_department_id;
+		$this->ajxResp["data"]["insert_id"] = $fin_group_id;
 		$this->json_output();
 	}
 
 	public function add_save(){
-		$this->load->model('departments_model');
+		$this->load->model('master_groups_model');
 
 		$data=[
-			'fst_fullname'=>$this->input->get("fst_department_name"),
+			'fst_group_name'=>$this->input->get("fst_group_name"),
 			'fdt_insert_datetime'=>'sekarang'
 		];
-		if ($this->db->insert('departments', $data)) {
+		if ($this->db->insert('master_groups', $data)) {
 			echo "insert success";
 		}else{
 			$error = $this->db->error();
@@ -191,10 +195,10 @@ class Department extends MY_Controller {
 		}
 		die();
 
-		echo "Table Name :" . $this->departments_model->getTableName();
-		print_r($this->users_model->getRules());
+		echo "Table Name :" . $this->master_groups_model->getTableName();
+		print_r($this->master_groups_model->getRules());
 		
-		$this->form_validation->set_rules($this->departments_model->rules);
+		$this->form_validation->set_rules($this->master_groups_model->rules);
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE){
@@ -206,12 +210,12 @@ class Department extends MY_Controller {
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("departments");
+		$this->datatables->setTableName("master_groups");
 		
-		$selectFields = "fin_department_id,fst_department_name,'action' as action";
+		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_department_name"];
+		$searchFields = ["fst_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -221,8 +225,8 @@ class Department extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='".$data["fin_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='".$data["fin_group_id"]."'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fin_group_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -231,9 +235,9 @@ class Department extends MY_Controller {
 		$this->json_output($datasources);
 	}
 	
-	public function fetch_data($fin_department_id){
-		$this->load->model("departments_model");
-		$data = $this->departments_model->getDataById($fin_department_id);
+	public function fetch_data($fin_group_id){
+		$this->load->model("master_groups_model");
+		$data = $this->master_groups_model->getDataById($fin_group_id);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
@@ -247,7 +251,7 @@ class Department extends MY_Controller {
 			return;
 		}
 		
-		$this->load->model("departments_model");
+		$this->load->model("master_groups_model");
 		
 		$this->departments_model->delete($id);
 		$this->ajxResp["status"] = "SUCCESS";
