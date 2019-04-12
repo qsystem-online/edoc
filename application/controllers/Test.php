@@ -44,4 +44,29 @@ class Test extends CI_Controller {
 		$this->json_output(403);
 	}
 
+	public function get_file(){
+		$this->load->helper('download');
+		$this->load->helper('file');
+		
+		$ssql = "select * from permission_token where fst_token = '123456' and fbl_active = true";
+		$qr = $this->db->query($ssql,[]);
+		$rw = $qr->row();
+		if ($rw){
+			$data = ["fbl_active"=>false];
+			$this->db->where("fst_token","123456");
+			//$this->db->update("permission_token",$data);
+
+			$fileLoc ='d:\\test.pdf';
+			$string = read_file($fileLoc);
+			header("Content-type:application/pdf");
+			header("Content-Disposition:inline;filename=download.pdf");
+			echo $string;
+		}else{
+			die();
+		}
+		//die();		
+		//force_download($fileLoc, NULL,true);
+		//echo file_get_contents('http://some.secret.location.com/secretfolder/the_file.tar.gz');
+	}
+
 }

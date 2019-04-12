@@ -21,6 +21,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
+	@media print {
+		body {
+			display: none;
+		}
+	}
    
 </style>
 
@@ -136,19 +141,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					
+					<div class="form-group">
+						<label for="fst_file_name" class="col-sm-2 control-label"><?= lang("File Document")?></label>
+						<div class="col-sm-10">
+							<input type="file" class="form-control" id="fst_file_name"  name="fst_file_name" accept="application/pdf">
+						</div>
+					</div>
 					<div class="form-group">
 						<label for="fst_birthplace" class="col-sm-2 control-label"></label>
 						<div class="col-sm-10">
-							<img id="imgAvatar" style="border:1px solid #999;width:128px;" src="<?=site_url()?>assets/app/users/avatar/default.jpg"/>
+							
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="fst_birthplace" class="col-sm-2 control-label">Avatar</label>
-						<div class="col-sm-10">
-							<input type="file" class="form-control" id="fst_avatar"  name="fst_avatar">
-						</div>
-					</div>
+					
 
 
 					<hr>
@@ -157,13 +162,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
-							<li id="" class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("File List")?></a></li>
                             <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
 							<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
+							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
 							<div class="tab-pane active" id="doc_list">
-								<btn class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>        <?= lang("Add Document")?></btn>
+								<btn class="btn btn-primary btn-sm"><i class="fa fa-plus"></i><?= lang("Add Document")?></btn>
 								<table id="tbl_doc_list"></table>
 							</div>
 							<!-- /.tab-pane -->
@@ -185,6 +190,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
 								sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
 								like Aldus PageMaker including versions of Lorem Ipsum.
+							</div>
+							<div class="tab-pane" id="doc-viwer" style="text-align:center">
+								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
+								<object id="obj-plugin" data="" type="application/pdf"></object>
+								<embed id="plugin" src="" type="application/pdf" width="100%" height="500px" internalinstanceid="5" />
 							</div>
 						</div>
 						<!-- /.tab-pane -->
@@ -251,9 +261,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	</script>
 </div>
+<script src="<?=base_url()?>bower_components/pdfjs/build/pdf.js"></script>
+
+
 
 <script type="text/javascript">
 	$(function(){
+	
 
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_id").val());
@@ -325,49 +339,60 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 		});
-		$("#btnTestResult").click(function(event){
-			event.preventDefault();
-			$.ajax({
-  				url:"<?= site_url() ?>system/user/get_progress_test",
-  				success:function(resp){
-					console.log(resp);	
-				}
-  			})				
-		});
 
-		$("#btnTest").click(function(event){
+		$('#plugin').click(function(event) {
+			alert("TEST MOUSE");
 			event.preventDefault();
-			$.ajax({
-				url:"<?=site_url()?>system/user/test",
-				success:function(){
-					alert("success");
-					clearInterval(myProcess);
-				}
+		})
+		
+		$("#fst_file_name").change(function(event){
+			event.preventDefault();
+			//$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
+			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
+			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			
+			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
+			var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);		
+			console.log(url);
+			var pdfjsLib = window['pdfjs-dist/build/pdf'];
+			pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
+			var loadingTask = pdfjsLib.getDocument(url);
+			loadingTask.promise.then(function(pdf) {
+				// Fetch the first page
+				var pageNumber = 1;
+				pdf.getPage(pageNumber).then(function(page) {
+					// Prepare canvas using PDF page dimensions
+					var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
+					var context = canvas.getContext('2d');
+
+					// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
+					//var scale_required = canvas.width / page.getViewport(1).width;
+					var scale_required =1.5;
+					var viewport = page.getViewport(scale_required);
+
+					canvas.width = viewport.width;
+					canvas.height = viewport.height;
+					
+
+					// Render PDF page into canvas context
+					var renderContext = {
+						canvasContext: context,
+						viewport: viewport
+					};
+					var renderTask = page.render(renderContext);
+					renderTask.promise.then(function () {
+						console.log('Page rendered');
+						//$("#the-canvas").show();
+					});
+				});
+			}, function (reason) {
+				// PDF loading error
+				console.error(reason);
 			});
 
+
 			
-			myProcess = setInterval(function(){
-				var d = new Date();
-  				var n = d.getTime();
-  				$.ajax({
-  					url:"<?= site_url() ?>system/user/get_progress_test",
-  					success:function(resp){
-						console.log(resp);	
-					}
-  				})				
-			}, 1000);
-			
-
-
-		});
-
-		$("#fst_avatar").change(function(event){
-			event.preventDefault();
-			var reader = new FileReader();
-			reader.onload = function (e) {
-               $("#imgAvatar").attr('src', e.target.result);
-            }
-            reader.readAsDataURL(this.files[0]);
 		});
 
 
