@@ -12,15 +12,13 @@ class Departments_model extends MY_Model {
 		$ssql = "select * from departments where fin_department_id = ?";
 		$qr = $this->db->query($ssql,[$fin_department_id]);		
 		$rwDepartments = $qr->row();
-		//if($rwDepartments){}
-		$data = [
-			"departments" => $rwDepartments
-		];
-		return $data;
-	}
-
+        $data = [
+            "departments" => $rwDepartments
+        ];
+        return $data;
+    }
+    
     public function getRules($mode="ADD",$id=0){
-
         $rules = [];
 
         $rules[] = [
@@ -34,4 +32,9 @@ class Departments_model extends MY_Model {
 
         return $rules;
     }
+
+    // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
+    public function delete($key, $softdelete = false){
+		parent::delete($key,$softdelete);
+	}
 }

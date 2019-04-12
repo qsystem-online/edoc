@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
-
 <style type="text/css">
 	.border-0{
 		border: 0px;
@@ -11,14 +10,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
+
+    .nav-tabs-custom>.nav-tabs>li.active>a{
+        font-weight:bold;
+        border-left-color: #3c8dbc;
+        border-right-color: #3c8dbc;
+        border-style:fixed;
+    }
+    .nav-tabs-custom>.nav-tabs{
+        border-bottom-color: #3c8dbc;        
+        border-bottom-style:fixed;
+    }
+   
 </style>
 
 <section class="content-header">
-	<h1>Master Group<small>Form</small></h1>
+	<h1><?=lang("Master Groups")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-		<li><a href="#">System Admin</a></li>
-		<li><a href="<?=site_url()?>pages/master_groups">Master Groups</a></li>
+		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
+		<li><a href="#"><?= lang("Master Groups") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -41,8 +51,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class='form-group'>
                     <label for="fin_group_id" class="col-sm-2 control-label"><?=lang("Group ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_group_id" value="">
+							<input type="text" class="form-control" id="fin_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_group_id" value="<?=$fin_group_id?>" readonly>
 							<div id="fin_group_id_err" class="text-danger"></div>
+
 						</div>
 					</div>
 
@@ -51,14 +62,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fst_group_name" placeholder="<?=lang("Group Name")?>" name="fst_group_name">
 							<div id="fst_group_name_err" class="text-danger"></div>
-							<?php echo form_error('fst_group_name'); ?>
 						</div>
 					</div>
 
                     <div class="form-group">
                     <label for="fin_level" class="col-sm-2 control-label"><?=lang("Level")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fin_level" name="fin_level">
+							<select class="form-control" id="fin_level" name="fin_level">
 								<option value='0'><?= lang("Top Management")?></option>
 								<option value='1'><?= lang("Upper Management")?></option>
                                 <option value='2'><?= lang("Middle Management")?></option>
@@ -67,11 +77,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <option value='5'><?= lang("Public")?></option>
 							</select>
 						</div>
+					</div>
                 </div>
 				<!-- end box body -->
 
                 <div class="box-footer">
-                    <button name="submit" value="submit" type="submit" class="btn btn-primary">Submit</button>
                     <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
                 </div>
                 <!-- end box-footer -->
@@ -135,7 +145,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
 						$('#fst_group_name').prop('readonly', true);
-						$("#tabs-master_group-detail").show();
+						//$("#tabs-master_group-detail").show();
 						//console.log(data.data_image);
 					}
 				},
@@ -175,6 +185,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							break;
 						default:
 							$el.val(val);
+                            console.log(val);
 					}
 				});
 			},
@@ -189,6 +200,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">
     $(function(){
         $(".select2-container").addClass("form-control"); 

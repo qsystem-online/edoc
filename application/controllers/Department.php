@@ -51,7 +51,6 @@ class Department extends MY_Controller {
 
 	private function openForm($mode = "ADD",$fin_department_id = 0){
 		$this->load->library("menus");
-		//$this->load->model("groups_model");
 
 		if($this->input->post("submit") != "" ){
 			$this->add_save();
@@ -60,7 +59,6 @@ class Department extends MY_Controller {
 		$main_header = $this->parser->parse('inc/main_header',[],true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
-		//$data["groups"] = $this->groups_model->get_list_group();	
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Department" : "Update Department";
 		$data["fin_department_id"] = $fin_department_id;
@@ -125,7 +123,7 @@ class Department extends MY_Controller {
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('departments_model');		
+		$this->load->model('departments_model');
 		$fin_department_id = $this->input->post("fin_department_id");
 		$data = $this->departments_model->getDataById($fin_department_id);
 		$departments = $data["departments"];
@@ -171,7 +169,7 @@ class Department extends MY_Controller {
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->ajxResp["data"]["insert_id"] = $fin_department_id;
 		$this->json_output();
 	}
 
@@ -179,8 +177,7 @@ class Department extends MY_Controller {
 		$this->load->model('departments_model');
 
 		$data=[
-			'fst_department_name'=>$this->input->get("fst_department_name"),
-			'fdt_insert_datetime'=>'sekarang'
+			'fst_department_name'=>$this->input->get("fst_department_name")
 		];
 		if ($this->db->insert('departments', $data)) {
 			echo "insert success";
@@ -201,6 +198,10 @@ class Department extends MY_Controller {
 		}else{
 			echo "Success";
 		}
+
+		print_r($upload_data);
+
+		print_r($_FILES);
 	}
 
 	public function fetch_list_data(){
@@ -210,7 +211,7 @@ class Department extends MY_Controller {
 		$selectFields = "fin_department_id,fst_department_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_department_name"];
+		$searchFields = ["fin_department_id","fst_department_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -220,8 +221,8 @@ class Department extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='".$data["fin_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='".$data["fin_department_id"]."'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fin_department_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -245,12 +246,13 @@ class Department extends MY_Controller {
 			$this->json_output();
 			return;
 		}
-		
+		//echo $id;
+		//die ();
 		$this->load->model("departments_model");
-		
+		//echo $id;
 		$this->departments_model->delete($id);
 		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
+		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
 }

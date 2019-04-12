@@ -9,14 +9,22 @@ class Master_groups_model extends MY_Model {
     }
 
     public function getDataById($fin_group_id){
-		$ssql = "select * from master_groups where fin_group_id = ?";
+		$ssql = "select * from " . $this->tableName ." where fin_group_id = ?";
 		$qr = $this->db->query($ssql,[$fin_group_id]);		
 		$rwMasterGroups = $qr->row();
 		//if($rwMasterGroups){}
 		$data = [
 			"master_groups" => $rwMasterGroups
 		];
-		return $data;
+        return $data;
+        
+        $fin_level = 'Top Management';
+        switch ($fin_level){
+            case "Top Management":
+                echo "Top Management";
+                break;
+            case "Upper Management";
+        }
 	}
 
     public function getRules($mode="ADD",$id=0){
@@ -31,15 +39,11 @@ class Master_groups_model extends MY_Model {
             )
         ];
 
-        $rules[] = [
-            'field' => 'fin_level',
-            'label' => 'Level',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
         return $rules;
     }
+
+    // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
+    public function delete($key, $softdelete = false){
+		parent::delete($key,$softdelete);
+	}
 }
