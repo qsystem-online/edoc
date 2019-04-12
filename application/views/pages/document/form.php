@@ -21,6 +21,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
+	@media print {
+		body {
+			display: none;
+		}
+	}
    
 </style>
 
@@ -188,7 +193,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div class="tab-pane" id="doc-viwer" style="text-align:center">
 								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
-								<embed width="100%" height="500px" name="plugin" id="plugin" src="" type="application/pdf" internalinstanceid="5">								
+								<object id="obj-plugin" data="" type="application/pdf"></object>
+								<embed id="plugin" src="" type="application/pdf" width="100%" height="500px" internalinstanceid="5" />
 							</div>
 						</div>
 						<!-- /.tab-pane -->
@@ -257,8 +263,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </div>
 <script src="<?=base_url()?>bower_components/pdfjs/build/pdf.js"></script>
 
+
+
 <script type="text/javascript">
 	$(function(){
+	
 
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_id").val());
@@ -330,10 +339,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 		});
+
+		$('#plugin').click(function(event) {
+			alert("TEST MOUSE");
+			event.preventDefault();
+		})
 		
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
-			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]));
+			//$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
+			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
+			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			
 			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
 			var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);		
 			console.log(url);
