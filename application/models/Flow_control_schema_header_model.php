@@ -20,7 +20,12 @@ class Flow_control_schema_header_model extends MY_Model {
                 'required' => '%s tidak boleh kosong'
             )
         ];
-
         return $rules;
+    }
+    public function getFlow($fin_user_id){
+        $ssql = "select fin_flow_control_schema_id,fst_name from " . $this->tableName ." where fin_user_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_user_id]);
+        $rs = $qr->result();
+        return $rs;
     }
 }

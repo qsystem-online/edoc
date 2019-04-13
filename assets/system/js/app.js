@@ -3,6 +3,8 @@ $(function(){
     $(".datepicker").datepicker({
         format: DATEPICKER_FORMAT
     });
+    
+    $(".select2").select2();
 
 });
 

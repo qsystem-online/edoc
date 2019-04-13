@@ -48,6 +48,9 @@
 		<!-- AdminLTE Skins. Choose a skin from the css/skins
 		   folder instead of downloading all of them to reduce the load. -->
 		<link rel="stylesheet" href="<?=base_url()?>dist/css/skins/_all-skins.min.css">
+
+		<!-- iCheck for checkboxes and radio inputs -->
+		<link rel="stylesheet" href="<?=base_url()?>plugins/iCheck/all.css">
 		
 	</head>
 	<?php
@@ -154,6 +157,8 @@
 		<script src="<?=base_url()?>dist/js/adminlte.min.js"></script>	
 		<!-- Numeral -->
 		<script src="<?=base_url()?>bower_components/numeral/numeral.min.js"></script>
+		<!-- iCheck 1.0.1 -->
+		<script src="<?=base_url()?>plugins/iCheck/icheck.min.js"></script>
 		<!-- Deafult App -->
 		<script src="<?=base_url()?>dist/js/app.js"></script>	
 	</body>
