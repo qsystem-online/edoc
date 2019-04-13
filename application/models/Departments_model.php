@@ -34,7 +34,7 @@ class Departments_model extends MY_Model {
     }
 
     // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
-    public function delete($key, $softdelete = false){
+    /*public function delete($key, $softdelete = false){
 		parent::delete($key,$softdelete);
-	}
+	}*/
 }

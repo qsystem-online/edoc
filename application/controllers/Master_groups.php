@@ -215,6 +215,28 @@ class Master_groups extends MY_Controller {
 		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
+		/*$fin_level = '0';
+        switch ($fin_level){
+            case "0":
+                echo "Top Management";
+                break;
+            case "1":
+                echo "Upper Management";
+                break;
+            case "2":
+                echo "Middle Management";
+                break;
+            case "3":
+                echo "Supervisors";
+                break;
+            case "4":
+                echo "Line Workers";
+                break;
+            case "5":
+                echo "Public";
+                break;
+        }*/
+
 		$searchFields = ["fin_group_id","fst_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 

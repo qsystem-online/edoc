@@ -246,12 +246,11 @@ class Department extends MY_Controller {
 			$this->json_output();
 			return;
 		}
-		//echo $id;
-		//die ();
+		
 		$this->load->model("departments_model");
-		//echo $id;
+		
 		$this->departments_model->delete($id);
-		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}

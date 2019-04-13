@@ -18,13 +18,27 @@ class Master_groups_model extends MY_Model {
 		];
         return $data;
         
-        $fin_level = 'Top Management';
+        /*$fin_level = '0','1','2','3','4','5';
         switch ($fin_level){
-            case "Top Management":
+            case "0":
                 echo "Top Management";
                 break;
-            case "Upper Management";
-        }
+            case "1":
+                echo "Upper Management";
+                break;
+            case "2":
+                echo "Middle Management";
+                break;
+            case "3":
+                echo "Supervisors";
+                break;
+            case "4":
+                echo "Line Workers";
+                break;
+            case "5":
+                echo "Public";
+                break;
+        }*/
 	}
 
     public function getRules($mode="ADD",$id=0){
@@ -43,7 +57,7 @@ class Master_groups_model extends MY_Model {
     }
 
     // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
-    public function delete($key, $softdelete = false){
+    /*public function delete($key, $softdelete = false){
 		parent::delete($key,$softdelete);
-	}
+	}*/
 }
