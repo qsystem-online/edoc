@@ -43,6 +43,8 @@ class Document extends MY_Controller {
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? lang("Document Add") : lang("Document Update");
 		$data["fin_id"] = $fin_id;
+		$data["base_url"] = base_url();
+		$data["active_user_id"] = $this->aauth->get_user_id();
 
 		$page_content =$this->parser->parse('pages/document/form',$data,true);
 		$main_footer = $this->parser->parse('inc/main_footer',[],true);

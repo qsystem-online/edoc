@@ -36,5 +36,13 @@ class Departments_model extends MY_Model {
     // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
     /*public function delete($key, $softdelete = false){
 		parent::delete($key,$softdelete);
-	}*/
+    }*/
+    
+    public function getAllList(){
+        $ssql = "select fin_department_id,fst_department_name from " . $this->tableName ." where fst_active = 'A' order by fst_department_name";
+        $qr = $this->db->query($ssql,[]);		
+        $rs = $qr->result();		
+		return $rs;
+
+    }
 }

@@ -3,6 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+
+
+
+
 <style type="text/css">
 	.border-0{
 		border: 0px;
@@ -21,12 +26,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
-	@media print {
-		body {
-			display: none;
-		}
+
+	.select2-container--default .select2-selection--single {
+		border: unset;
+		padding:0px 0px 0px 0px;
+		border-radius: 0px;
 	}
-   
+	
+	
 </style>
 
 <section class="content-header">
@@ -147,54 +154,71 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="file" class="form-control" id="fst_file_name"  name="fst_file_name" accept="application/pdf">
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="fst_birthplace" class="col-sm-2 control-label"></label>
-						<div class="col-sm-10">
-							
+					<div class="form-group">						
+						<div class="col-sm-10 col-sm-offset-2">
+							<input type="checkbox" class="minimal form-control" id="fbl_flow_control" name="fbl_flow_control"> &nbsp;
+							<label for="fbl_flow_control" class="control-label"> <?= lang("Document Flow Control")?> </label>
 						</div>
 					</div>
-					
-
-
 					<hr>
-
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
-							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
-                            <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
-							<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
+							<li class=""><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
+                            <li class="active" id="list_flow" style="display:unset;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
+							<li class=""><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
 							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
-							<div class="tab-pane active" id="doc_list">
-								<btn class="btn btn-primary btn-sm"><i class="fa fa-plus"></i><?= lang("Add Document")?></btn>
+							<div class="tab-pane " id="doc_list">
+								<button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
 								<table id="tbl_doc_list"></table>
 							</div>
 							<!-- /.tab-pane -->
-							<div class="tab-pane" id="tab_2">
-								The European languages are members of the same family. Their separate existence is a myth.
-								For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-								in their grammar, their pronunciation and their most common words. Everyone realizes why a
-								new common language would be desirable: one could refuse to pay expensive translators. To
-								achieve this, it would be necessary to have uniform grammar, pronunciation and more common
-								words. If several languages coalesce, the grammar of the resulting language is more simple
-								and regular than that of the individual languages.
+							<div class="tab-pane active" id="tab_flow">
+								<form class="form-horizontal ">	
+									<div class="form-group">						
+										<label for="select-product" class="col-md-8 control-label">Flow Control</label>
+										<div class="col-md-3">
+											<select id="select-flow-control" class="select2 form-control" style="width:100%"></select>
+										</div>						
+										<div class="col-md-1">
+											<button id="btn-apply-flow" class="btn btn-sm btn-primary" style="width:100%">Apply</button>
+										</div>															
+									</div>
+								</form>
+								<table id="tbl_flow_control" class="compat hover stripe" style="width:100%" ></table>
+								
 							</div>
 							<!-- /.tab-pane -->
-							<div class="tab-pane" id="tab_3">
-								Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-								Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-								when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-								It has survived not only five centuries, but also the leap into electronic typesetting,
-								remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-								sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-								like Aldus PageMaker including versions of Lorem Ipsum.
+							<div class="tab-pane" id="tab_custom-scope">
+								<form class="form-horizontal ">	
+									<div class="form-group">						
+										<label for="select-product" class="col-md-5 control-label"><?= lang("Permission For :")?></label>
+										<div class="col-md-3">
+											<select id="scope-custom-type" class="select2 form-control" style="width:100%">
+												<option value="DEPARTMENT"><?= lang("Department")?></option>
+												<option value="USER"><?= lang("User")?></option>
+											</select>
+										</div>						
+										<div class="col-md-3">
+											<select id="scope-custom-value" class="select2" style="width:100%">
+											</select>
+										</div>
+										<div class="col-md-1">
+											<button class="btn btn-sm btn-primary" style="width:100%"><?=lang("Add")?></button>
+										</div>						
+									
+									</div>
+								</form>
+								<table id="tbl_flow_control"></table>
 							</div>
 							<div class="tab-pane" id="doc-viwer" style="text-align:center">
+								<!--
 								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
 								<object id="obj-plugin" data="" type="application/pdf"></object>
-								<embed id="plugin" src="" type="application/pdf" width="100%" height="500px" internalinstanceid="5" />
+								-->
+								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5" />
 							</div>
 						</div>
 						<!-- /.tab-pane -->
@@ -221,17 +245,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form class="form-horizontal">	
+				<form class="form-horizontal ">	
 					<input type="hidden" id="fin-detail-id" value="0">
-					<div class="form-group">
-						<label for="select-product" class="col-md-2 control-label">Search By</label>
+					<div class="form-group">						
+						<label for="select-product" class="col-md-9 control-label">Search By</label>
 						<div class="col-md-3">
 							<select class="select2 col-md-12" >
 								<option>Search mark</option>
 								<option>Notes</option>
 							</select>														
 						</div>						
-					</div>					
+					
+					</div>
 				</form>
 
 				<div class="col-md-12">
@@ -265,10 +290,216 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 
-<script type="text/javascript">
-	$(function(){
-	
 
+
+<!-- Select2 -->
+<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+
+<script type="text/javascript">
+	
+	$(function(){
+		// Fill Flow Control
+		$.ajax({
+			url: '{base_url}flow_schema/getFlow/{active_user_id}',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_flow_control_schema_id,
+						"text" : value.fst_name
+					});	
+				});
+				$("#select-flow-control").select2({
+					data: selectData,
+				});
+				$(".select2-container").addClass("form-control"); 
+
+			}
+		});
+
+		//datatables Flow Control init
+		$("#tbl_flow_control").DataTable({
+			searching: false,
+			paging:   false,
+			info: false,
+			columns:[
+				{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
+				{"title" : "<?= lang("User ID") ?>","width": "0%",data:"fin_user_id",visible:false},
+				{"title" : "<?= lang("Name") ?>","width": "25%",data:"fin_username",visible:true},
+				{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
+				{"title" : "<?= lang("Status") ?>","width": "20%",data:"fst_control_status",
+					visible:true,
+					render: function ( data, type, row ) {
+						return data +' ('+ row[3]+')';
+					}
+				},
+				{"title" : "<?= lang("Memo") ?>","width": "40%",data:"fst_memo"}					  
+			],
+		});
+
+		//apply flow
+		$("#btn-apply-flow").click(function(event){
+			event.preventDefault();
+			$.ajax({
+				url: '{base_url}flow_schema/getDetailFlow/' + $("#select-flow-control").val(),
+				dataType : "json",
+				method :"GET",
+				success:function(resp){				
+				}
+			})
+		})
+
+		//iCheck for checkbox and radio inputs
+		$('#fbl_flow_control').iCheck({
+			checkboxClass: 'icheckbox_minimal-blue',
+			radioClass   : 'iradio_minimal-blue'
+		})
+
+		$('#fbl_flow_control').on('ifChanged', function(event){
+			console.log(event);
+			//alert(event.type + $('#fbl_flow_control').val() );
+			if ($("#fbl_flow_control").is(":checked")){
+				$("#list_flow").show();
+			}else{
+				$("#list_flow").hide();
+			};
+		});
+	})
+</script>
+
+<script type="text/javascript">
+	//Custom Scope
+    $(function(){
+		//$(".select2").select2();
+        $(".select2-container").addClass("form-control"); 
+
+		//Fill custom scope department as default
+		fill_scope_department();
+
+		$('#scope-custom-type').on('select2:select', function (e) {
+			console.log(e.params);
+  			if ($('#scope-custom-type').val() == "DEPARTMENT"){
+				fill_scope_department();
+			}else{
+				fill_scope_users();
+			}
+		});	
+    });
+
+	function fill_scope_department(){
+		$.ajax({
+			url: '{base_url}department/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_department_id,
+						"text" : value.fst_department_name
+					});	
+				});
+				//$("#scope-custom-value").select2("destroy");
+				$('#scope-custom-value').empty();
+				$('#scope-custom-value').val(null).trigger('change');
+				$("#scope-custom-value").select2({
+					data: selectData,
+				});
+				console.log(selectData);
+				$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+	function fill_scope_users(){
+		$.ajax({
+			url: '{base_url}users/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_user_id,
+						"text" : value.fst_username
+					});	
+				});
+				$('#scope-custom-value').empty();
+				$('#scope-custom-value').val(null).trigger('change');
+				$("#scope-custom-value").select2({
+					data: selectData,
+				});
+				$("#scope-custom-value").select2();
+				console.log(selectData);
+				$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+
+</script>
+
+<script type="text/javascript">
+	//Document Viewer
+	$(function(){
+		$("#fst_file_name").change(function(event){
+			event.preventDefault();
+			//$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
+			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
+			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			
+			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
+			var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);		
+			console.log(url);
+			var pdfjsLib = window['pdfjs-dist/build/pdf'];
+			pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
+			var loadingTask = pdfjsLib.getDocument(url);
+			loadingTask.promise.then(function(pdf) {
+				// Fetch the first page
+				var pageNumber = 1;
+				pdf.getPage(pageNumber).then(function(page) {
+					// Prepare canvas using PDF page dimensions
+					var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
+					var context = canvas.getContext('2d');
+
+					// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
+					//var scale_required = canvas.width / page.getViewport(1).width;
+					var scale_required =1.5;
+					var viewport = page.getViewport(scale_required);
+
+					canvas.width = viewport.width;
+					canvas.height = viewport.height;
+					
+
+					// Render PDF page into canvas context
+					var renderContext = {
+						canvasContext: context,
+						viewport: viewport
+					};
+					var renderTask = page.render(renderContext);
+					renderTask.promise.then(function () {
+						console.log('Page rendered');
+						//$("#the-canvas").show();
+					});
+				});
+			}, function (reason) {
+				// PDF loading error
+				console.error(reason);
+			});
+		});
+	});
+</script>
+
+<script type="text/javascript">
+	$(function(){				
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_id").val());
 		<?php } ?>
@@ -345,132 +576,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 		})
 		
-		$("#fst_file_name").change(function(event){
-			event.preventDefault();
-			//$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
-			$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
-			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
-			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
-			
-			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
-			var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);		
-			console.log(url);
-			var pdfjsLib = window['pdfjs-dist/build/pdf'];
-			pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
-			var loadingTask = pdfjsLib.getDocument(url);
-			loadingTask.promise.then(function(pdf) {
-				// Fetch the first page
-				var pageNumber = 1;
-				pdf.getPage(pageNumber).then(function(page) {
-					// Prepare canvas using PDF page dimensions
-					var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
-					var context = canvas.getContext('2d');
-
-					// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
-					//var scale_required = canvas.width / page.getViewport(1).width;
-					var scale_required =1.5;
-					var viewport = page.getViewport(scale_required);
-
-					canvas.width = viewport.width;
-					canvas.height = viewport.height;
-					
-
-					// Render PDF page into canvas context
-					var renderContext = {
-						canvasContext: context,
-						viewport: viewport
-					};
-					var renderTask = page.render(renderContext);
-					renderTask.promise.then(function () {
-						console.log('Page rendered');
-						//$("#the-canvas").show();
-					});
-				});
-			}, function (reason) {
-				// PDF loading error
-				console.error(reason);
-			});
-
-
-			
-		});
-
-
-		var iaddress = 0;
-
-		$("#btnAddAddress").click(function(event){
-			//add data to table
-			
-			event.preventDefault();
-			iaddress++;
-			
-			data = {
-				"<?=$this->security->get_csrf_token_name()?>" :  "<?=$this->security->get_csrf_hash()?>",
-				"fin_owner_id" : $("#fin_id").val(),
-				"fst_name" : $("#address_name").val(),
-				"fst_address" : $("#address_address").val(),
-				"fbl_primary" : $("#address_primary").is(':checked'),
-			}
-
-			$.ajax({
-				url:"<?=site_url()?>system/user/ajx_add_address",
-				method:"POST",
-				data: data,				
-				success:function(resp){
-					if (resp.message != "")	{
-						$.alert({
-							title: 'Message',
-							content: resp.message,
-							confirm: function(){
-								//alert('the user clicked yes');
-							}
-						});
-					}
-					if(resp.status == "VALIDATION_FORM_FAILED" ){
-						//Show Error
-						console.log(resp.data);
-					}else if(resp.status == "SUCCESS") {
-						insertId = resp.data.insert_id;
-						add_address(insertId,$("#address_name").val(),$("#address_address").val(),$("#address_primary").is(':checked'));
-						//clear form
-
-					}
-
-				},
-
-				error: function (e) {
-					$("#result").text(e.responseText);
-					console.log("ERROR : ", e);
-				}
-			});
-		});
-
-
-		$('body').on('click', '.del-address', function(event) {
-			event.preventDefault();
-			id= $(this).data("id");
-			url = "<?=site_url()?>system/user/ajx_del_address/" + id;
-			$.ajax({
-				url: url,
-				method: "GET",
-				success:function(resp){
-					
-					$(".data-address-" +id).remove();		
-				},
-				error: function (e) {
-					$("#result").text(e.responseText);
-					console.log("ERROR : ", e);
-				}
-			});
-			
-		});
-
-
+		
 		$(".datepicker").datepicker({
 			format:"yyyy-mm-dd"
 		});
-
-		$(".select2").select2();
+		
 	});
 
 	function init_form(fin_id){
@@ -540,23 +650,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
-</script>
-<!-- Select2 -->
-<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
-<!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-
-<script type="text/javascript">
-    $(function(){
-        $(".select2-container").addClass("form-control"); 
-        $(".select2-selection--single , .select2-selection--multiple").css({
-            "border":"0px solid #000",
-            "padding":"0px 0px 0px 0px"
-        });         
-        $(".select2-selection--multiple").css({
-            "margin-top" : "-5px",
-            "background-color":"unset"
-        });
-    });
 </script>

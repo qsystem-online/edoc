@@ -5,7 +5,8 @@ class Department extends MY_Controller {
 
     public function __construct(){
         parent:: __construct();
-        $this->load->library('form_validation');
+		$this->load->library('form_validation');
+		$this->load->model('departments_model');
     }
 
     public function index(){
@@ -253,5 +254,11 @@ class Department extends MY_Controller {
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
+	}
+
+	public function getAllList(){
+		$result = $this->departments_model->getAllList();
+		$this->ajxResp["data"] = $result;
+        $this->json_output();		
 	}
 }
