@@ -11,14 +11,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
+
+    .nav-tabs-custom>.nav-tabs>li.active>a{
+        font-weight:bold;
+        border-left-color: #3c8dbc;
+        border-right-color: #3c8dbc;
+        border-style:fixed;
+    }
+    .nav-tabs-custom>.nav-tabs{
+        border-bottom-color: #3c8dbc;        
+        border-bottom-style:fixed;
+    }
 </style>
 
 <section class="content-header">
-	<h1>Department<small>Form</small></h1>
+	<h1><?=lang("Department")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-		<li><a href="#">System Admin</a></li>
-		<li><a href="<?=site_url()?>pages/department">Department</a></li>
+		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
+		<li><a href="#"><?= lang("Department") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -33,15 +43,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmDepartment" class="form-horizontal" action="<?=site_url()?>department/add" method="POST" enctype="multipart/form-data">				
+            <form id="frmDepartments" class="form-horizontal" action="<?=site_url()?>department/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
-					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">					
+					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
                     <label for="fin_department_id" class="col-sm-2 control-label"><?=lang("Department ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_department_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_department_id" value="">
+							<input type="text" class="form-control" id="fin_department_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_department_id" value="<?=$fin_department_id?>" readonly>
 							<div id="fin_department_id_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -51,7 +61,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fst_department_name" placeholder="<?=lang("Department Name")?>" name="fst_department_name">
 							<div id="fst_department_name_err" class="text-danger"></div>
-							<?php echo form_error('fst_department_name'); ?>
 						</div>
 					</div>
                 </div>
@@ -68,14 +77,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
 	$(function(){
-
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_department_id").val());
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmDepartment")[0]);
+			data = new FormData($("#frmDepartments")[0]);
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -100,6 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							title: 'Message',
 							content: resp.message,
 							confirm: function(){
+								//alert('yes');
 							}
 						});
 					}
@@ -121,8 +130,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
 						$('#fst_department_name').prop('readonly', true);
-						$("#tabs-department-detail").show();
-						console.log(data.data_image);
+						//$("#tabs-user-detail").show();
+						//console.log(data.data_image);
 					}
 				},
 				error: function (e) {
@@ -131,23 +140,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
-		});
 
-		$(".datepicker").datepicker({
-			format:"yyyy-mm-dd"
 		});
 	});
 
 	function init_form(fin_department_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>/department/fetch_data/" + fin_department_id;
+		var url = "<?=site_url()?>department/fetch_data/" + fin_department_id;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.department);
+				console.log(resp.departments);
 
-				$.each(resp.department, function(name, val){
+				$.each(resp.departments, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -171,6 +177,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </script>
 
-<!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- Select2 -->
+<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>

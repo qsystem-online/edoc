@@ -9,18 +9,16 @@ class Departments_model extends MY_Model {
     }
 
     public function getDataById($fin_department_id){
-		$ssql = "select * from " . $this->tableName ." where fin_department_id = ?";
+		$ssql = "select * from departments where fin_department_id = ?";
 		$qr = $this->db->query($ssql,[$fin_department_id]);		
-		$rwDepartment = $qr->row();
-		if($rwDepartment){}
-		$data = [
-			"departments" => $rwDepartment
-		];
-		return $data;
-	}
-
+		$rwDepartments = $qr->row();
+        $data = [
+            "departments" => $rwDepartments
+        ];
+        return $data;
+    }
+    
     public function getRules($mode="ADD",$id=0){
-
         $rules = [];
 
         $rules[] = [
@@ -35,6 +33,11 @@ class Departments_model extends MY_Model {
         return $rules;
     }
 
+    // Untuk mematikan fungsi otomatis softdelete dari MY_MODEL
+    /*public function delete($key, $softdelete = false){
+		parent::delete($key,$softdelete);
+    }*/
+    
     public function getAllList(){
         $ssql = "select fin_department_id,fst_department_name from " . $this->tableName ." where fst_active = 'A' order by fst_department_name";
         $qr = $this->db->query($ssql,[]);		

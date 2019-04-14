@@ -23,8 +23,7 @@ class Master_groups extends MY_Controller {
         $this->list['edit_ajax_url']=site_url().'master_groups/edit/';
         $this->list['arrSearch']=[
             'a.fin_group_id' => 'Group ID',
-            'a.fst_group_name' => 'Group Name',
-            'a.fin_level' => 'Level'
+            'a.fst_group_name' => 'Group Name'
 		];
 		
 		$this->list['breadcrumbs']=[
@@ -53,7 +52,6 @@ class Master_groups extends MY_Controller {
 
 	private function openForm($mode = "ADD",$fin_group_id = 0){
 		$this->load->library("menus");
-		//$this->load->model("groups_model");
 
 		if($this->input->post("submit") != "" ){
 			$this->add_save();
@@ -62,7 +60,6 @@ class Master_groups extends MY_Controller {
 		$main_header = $this->parser->parse('inc/main_header',[],true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
-		//$data["groups"] = $this->groups_model->get_list_group();	
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Group" : "Update Group";
 		$data["fin_group_id"] = $fin_group_id;
@@ -102,9 +99,8 @@ class Master_groups extends MY_Controller {
 		}
 
 		$data = [
-			"fin_group_id"=>$fin_group_id,
             "fst_group_name"=>$this->input->post("fst_group_name"),
-            "fin_level"=>$fin_level,
+            "fin_level"=>$this->input->post("fin_level"),
 			"fst_active"=>'A'
 		];
 
@@ -155,7 +151,7 @@ class Master_groups extends MY_Controller {
 		$data = [
 			"fin_group_id"=>$fin_group_id,
             "fst_group_name"=>$this->input->post("fst_group_name"),
-            "fin_level"=>$fin_level,
+            "fin_level"=>$this->input->post("fin_level"),
 			"fst_active"=>'A'
 		];
 
@@ -185,7 +181,7 @@ class Master_groups extends MY_Controller {
 
 		$data=[
 			'fst_group_name'=>$this->input->get("fst_group_name"),
-			'fdt_insert_datetime'=>'sekarang'
+			'fin_level'=>$fin_level
 		];
 		if ($this->db->insert('master_groups', $data)) {
 			echo "insert success";
@@ -205,7 +201,11 @@ class Master_groups extends MY_Controller {
 			echo form_error();
 		}else{
 			echo "Success";
-		}
+        }
+        
+        print_r($upload_data);
+
+		print_r($_FILES);
 	}
 
 	public function fetch_list_data(){
@@ -215,7 +215,29 @@ class Master_groups extends MY_Controller {
 		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_group_name"];
+		/*$fin_level = '0';
+        switch ($fin_level){
+            case "0":
+                echo "Top Management";
+                break;
+            case "1":
+                echo "Upper Management";
+                break;
+            case "2":
+                echo "Middle Management";
+                break;
+            case "3":
+                echo "Supervisors";
+                break;
+            case "4":
+                echo "Line Workers";
+                break;
+            case "5":
+                echo "Public";
+                break;
+        }*/
+
+		$searchFields = ["fin_group_id","fst_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -250,12 +272,13 @@ class Master_groups extends MY_Controller {
 			$this->json_output();
 			return;
 		}
-		
+		//echo $id;
+		//die ();
 		$this->load->model("master_groups_model");
 		
 		$this->master_groups_model->delete($id);
 		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
+		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
-	}
+    }
 }
