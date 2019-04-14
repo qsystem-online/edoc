@@ -348,10 +348,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btn-apply-flow").click(function(event){
 			event.preventDefault();
 			$.ajax({
-				url: '{base_url}flow_schema/getDetailFlow/' + $("#select-flow-control").val(),
+				url: '{base_url}flow_schema/getFlowDetail/' + $("#select-flow-control").val(),
 				dataType : "json",
 				method :"GET",
-				success:function(resp){				
+				success:function(resp){	
+					data = resp.data;
+					dataFlow = [];
+					$.each(respData,function(index,value){
+						dataFlow.push({
+							fin_id: 0,
+							fin_user_id: value.fin_user_id,
+							fin_username: value.fst_username,
+							fin_seq_no: value.fin_seq_no,
+							fst_control_status: value.fin_id,
+							fst_memo: value.fin_id
+						});
+					});
+
+					$("#tbl_flow_control").DataTable({
+						data:dataFlow
+					});
+					
 				}
 			})
 		})

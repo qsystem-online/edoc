@@ -32,4 +32,10 @@ class Flow_control_schema_list_model extends MY_Model {
 
         return $rules;
     }
+
+    public function getFlowDetail($fin_flow_control_schema_id){
+        $ssql = "select * from ". $this->tableName . " where fin_flow_control_schema_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
+        return $qr->result();
+    }
 }
