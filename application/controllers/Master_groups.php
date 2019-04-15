@@ -25,7 +25,7 @@ class Master_groups extends MY_Controller {
             'a.fin_group_id' => 'Group ID',
             'a.fst_group_name' => 'Group Name'
 		];
-		
+
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
 			['title'=>'Master Groups','link'=>'#','icon'=>''],
@@ -34,7 +34,7 @@ class Master_groups extends MY_Controller {
 		$this->list['columns']=[
 			['title' => 'Group ID', 'width'=>'10%', 'data'=>'fin_group_id'],
             ['title' => 'Group Name', 'width'=>'25%', 'data'=>'fst_group_name'],
-            ['title' => 'Level', 'width' =>'15%', 'data'=>'fin_level'],
+            ['title' => 'Level', 'width' =>'15%', 'data'=>'fst_level_name'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -201,7 +201,7 @@ class Master_groups extends MY_Controller {
 			echo form_error();
 		}else{
 			echo "Success";
-        }
+		}
         
         print_r($upload_data);
 
@@ -211,40 +211,40 @@ class Master_groups extends MY_Controller {
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("master_groups");
-		
+
 		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
-
-		/*$fin_level = '0';
-        switch ($fin_level){
-            case "0":
-                echo "Top Management";
-                break;
-            case "1":
-                echo "Upper Management";
-                break;
-            case "2":
-                echo "Middle Management";
-                break;
-            case "3":
-                echo "Supervisors";
-                break;
-            case "4":
-                echo "Line Workers";
-                break;
-            case "5":
-                echo "Public";
-                break;
-        }*/
 
 		$searchFields = ["fin_group_id","fst_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
-		$datasources = $this->datatables->getData();		
+		$datasources = $this->datatables->getData();
+
 		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
+			switch($data["fin_level"]){
+				case 0:
+					$level_name = "Top Management";
+					break;
+				case 1:
+					$level_name = "Upper Management";
+					break;
+				case 2:
+					$level_name = "Middle Management";
+					break;
+				case 3:
+					$level_name = "Supervisors";
+					break;
+				case 4:
+					$level_name = "Line Workers";
+					break;
+				case 5:
+					$level_name = "Public";
+					break;
+			}
+			$data["fst_level_name"] = $level_name;
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fin_group_id"]."'><i class='fa fa-pencil'></i></a>
