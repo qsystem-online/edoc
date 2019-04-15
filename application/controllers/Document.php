@@ -264,28 +264,21 @@ class Document extends MY_Controller {
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("users");
+		$this->datatables->setTableName("documents a inner join users b on a.fin_insert_id = b.fin_user_id ");
 		
-		$selectFields = "fin_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
+		$selectFields = "fin_document_id,fst_name,fst_source,fst_memo,a.fin_insert_id,b.fst_username,a.fdt_insert_datetime";
 		$this->datatables->setSelectFields($selectFields);
-
-		$searchFields = ["fst_fullname","fst_birthplace"];
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
-
+		$this->datatables->activeCondition = "a.fst_active !='D'";
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$birthdate = strtotime($data["fdt_birthdate"]);			
-			$data["fdt_birthdate"] = date("d-M-Y",$birthdate);
-
-			//action
-			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='".$data["fin_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
-				</div>";
-
+			$birthdate = strtotime($data["fdt_insert_datetime"]);			
+			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$birthdate);
 			$arrDataFormated[] = $data;
 		}
 		$datasources["data"] = $arrDataFormated;

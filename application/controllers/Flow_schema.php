@@ -10,8 +10,8 @@ class Flow_schema extends MY_Controller {
 
     }
     public function getFlowDetail($fin_flow_control_schema_id){
-        $this->load->model("Flow_control_schema_list_model");
-        $result = $this->Flow_control_schema_list_model->getFlowDetail($fin_flow_control_schema_id);
+        $this->load->model("Flow_control_schema_items_model");
+        $result = $this->Flow_control_schema_items_model->getFlowDetail($fin_flow_control_schema_id);
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }

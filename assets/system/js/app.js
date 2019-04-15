@@ -1,13 +1,14 @@
 $(function(){
     //init datetime picker
-    $(".datepicker").datepicker({
-        format: DATEPICKER_FORMAT
-    });
-    
+    if (typeof $(".datepicker").datepicker === "function") { 
+        $(".datepicker").datepicker({
+            format: DATEPICKER_FORMAT
+        });
+    }
+
     if (typeof $(".select2").select2 === "function") { 
         $(".select2").select2();
-    }
-    ;
+    };
 
 });
 

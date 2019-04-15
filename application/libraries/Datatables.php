@@ -8,7 +8,7 @@ class Datatables {
 
 	public $selectFields = "";
 	public $searchFields = [];
-	public $activeCondition = "fst_active != 'DELETED'";
+	public $activeCondition = "fst_active != 'D'";
 	private $CI;
 	private $db;
 
@@ -97,6 +97,7 @@ class Datatables {
 		//Get Data
 		// Prepare Order String		
 		$strOrder = "";
+		
 		foreach ($orders as $order) {
 			$field = $columns[$order["column"]]["data"]; // data / name
 
