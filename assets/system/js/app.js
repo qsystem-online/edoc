@@ -4,7 +4,10 @@ $(function(){
         format: DATEPICKER_FORMAT
     });
     
-    $(".select2").select2();
+    if (typeof $(".select2").select2() === "function") { 
+        $(".select2").select2();
+    }
+    ;
 
 });
 
