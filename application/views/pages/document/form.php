@@ -161,18 +161,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
-							<li class=""><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
-                            <li class="active" id="list_flow" style="display:unset;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
+							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
+                            <li class="" id="list_flow" style="display:unset;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
 							<li class=""><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
 							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
-							<div class="tab-pane " id="doc_list">
-								<button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
-								<table id="tbl_doc_list"></table>
+							<div class="tab-pane active" id="doc_list">
+								<button class="btn btn-primary btn-sm" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
+
+								<table id="tbl_doc_items" class="compat hover stripe" style="width:100%;"></table>
 							</div>
 							<!-- /.tab-pane -->
-							<div class="tab-pane active" id="tab_flow">
+							<div class="tab-pane" id="tab_flow">
 								<form class="form-horizontal ">	
 									<div class="form-group">						
 										<label for="select-product" class="col-md-8 control-label">Flow Control</label>
@@ -211,8 +212,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<table id="tbl_flow_control"></table>
 							</div>
 							<div class="tab-pane" id="doc-viwer" style="text-align:center">
-								<!--
+								
 								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
+								<!--
 								<object id="obj-plugin" data="" type="application/pdf"></object>
 								-->
 								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5" />
@@ -233,7 +235,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </div>
 
 <div id="mdlDocList" class="modala fadea" role="dialog" style="display: unset">
-	<div class="modal-dialog" style="display:table;width:80%;min-width:700px;max-width:100%">
+	<div class="modal-dialog" style="display:table;width:90%;min-width:700px;max-width:100%">
 		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
@@ -247,9 +249,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">						
 						<label for="select-product" class="col-md-9 control-label">Search By</label>
 						<div class="col-md-3">
-							<select class="select2 col-md-12" >
-								<option>Search mark</option>
-								<option>Notes</option>
+							<select class="select2 col-md-12" id="doc-search-by" name="" >
+								<option value="fst_search_marks">Search mark</option>
+								<option value="fst_memo">Notes</option>
 							</select>														
 						</div>						
 					
@@ -258,7 +260,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<div class="col-md-12">
 					<div class="row">
-						<table id="tbl_search_doc_list"  class="display compact"></table>
+						<table id="tbl_search_doc_list"  class="display compact" style="width:100%"></table>
 					</div>					
 				</div>				
 			</div>
@@ -271,24 +273,81 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<script type="text/javascript">
 		$(function(){
-			$("#tbl_search_doc_list").DataTable({
-				columns:[			
-					{"title" : "","width": "5%",data:"fin_id",
-						visible:true,
-						orderable: false,
-						className: 'select-checkbox',
-					},
+			$("#tbl_doc_items").DataTable({
+				searching: false,
+				paging:   false,
+				info: false,
+				columns:[								
 					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
-					{"title" : "<?= lang("Document Name") ?>","width": "30%",data:"id_product",visible:true},
-					{"title" : "<?= lang("Notes") ?>","width": "35%",data:"product_name"},
-					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_qty"},
-					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fin_qty"}					  
+					{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fin_document_id",visible:true,
+						render:function(data,type,row){
+							//console.log(row);
+							return row.fst_name;
+						}
+					},
+					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
+					{"title" : "<?= lang("Notes") ?>","width": "20%",data:"fst_memo"},
+					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
+						render : function(data,type,row){
+							return row.fst_username;
+						}
+					},
+					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fdt_insert_datetime"},
+					{"title" : "<?= lang("Action") ?>","width": "10%",
+						render:function(data,type,row){	
+							action = "<a class='btn-add-document-items' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+							action += "<a class='btn-add-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>"; 					
+							return action;
+						},
+						"sortable": false,
+						"className":"dt-center"
+					}					  
 				],
-				select: {
-					style:    'os',
-					selector: 'td:first-child'
-				},
 			});
+
+			$("#tbl_search_doc_list").on('preXhr.dt', function ( e, settings, data ) {
+        		data.optionSearch = $('#doc-search-by').val();
+    		} ).DataTable({
+				columns:[								
+					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_document_id",visible:true},
+					{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fst_name",visible:true},
+					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
+					{"title" : "<?= lang("Notes") ?>","width": "20%",data:"fst_memo"},
+					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
+						render : function(data,type,row){
+							return row.fst_username;
+						}
+					},
+					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fdt_insert_datetime"},
+					{"title" : "<?= lang("Action") ?>","width": "10%",
+						render:function(data,type,row){							
+							return "<a class='btn-add-document-items' href='#'><i class='fa fa-plus'></i></a> <a class='btn-add-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>";
+						},
+						"sortable": false,
+						"className":"dt-center"
+					}					  
+				],
+				ajax: {
+					url: '<?= base_url() ?>document/fetch_list_data',
+					dataSrc: 'data'
+				},
+				processing: true,
+				serverSide: true,
+			});
+
+			$(document).on('click','.btn-add-document-items', function(event){
+				event.preventDefault();
+				var t = $('#tbl_search_doc_list').DataTable();
+				var trRow = $(this).parents('tr');
+				selectedData = t.row(trRow).data();
+				selectedData.fin_id = 0;
+				console.log(selectedData);
+
+				var t2 = $("#tbl_doc_items").DataTable();
+				t2.row.add(selectedData).draw();
+				//t.row(trRow).remove().draw();
+			});
+
 		});
 	</script>
 </div>
@@ -482,8 +541,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
-			//$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
-			$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
+			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+			//$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
 			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
 			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
 			
