@@ -8,6 +8,32 @@ class Users_model extends MY_Model {
 		parent::__construct();
 	}
 
+	public function getDataById($fin_user_id){
+		$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
+		$qr = $this->db->query($ssql,[$fin_user_id]);		
+		$rwUser = $qr->row();
+		if($rwUser){
+			if (file_exists(FCPATH . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg')) {
+				$avatarURL = site_url() . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg';
+			}else{
+				
+				$avatarURL = site_url() . 'assets/app/users/avatar/default.jpg';
+			}
+			$rwUser->avatarURL = $avatarURL;
+		}
+
+		//Groups
+		$ssql = "select * from user_group where fin_user_id = ? ";
+		$qr = $this->db->query($ssql,[$fin_id]);
+		$rsGroup = $qr->result();
+
+		$data = [
+			"user" => $rwUser,
+			"list_group" => $rsGroup
+		];
+		return $data;
+	}
+
 	public function getRules($mode="ADD",$id=0){
 
 		$rules = [];
@@ -47,15 +73,6 @@ class Users_model extends MY_Model {
 		$rules[] =[
 			'field' => 'fst_birthplace',
 			'label' => 'Birth Place',
-			'rules' => 'required',
-			'errors' => array(
-				'required' => '%s tidak boleh kosong',
-			)
-		];
-
-		$rules[] = [
-			'field' => 'fin_department_id',
-			'label' => 'Department ID',
 			'rules' => 'required',
 			'errors' => array(
 				'required' => '%s tidak boleh kosong',
