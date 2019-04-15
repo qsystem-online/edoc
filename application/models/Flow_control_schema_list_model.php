@@ -34,7 +34,8 @@ class Flow_control_schema_list_model extends MY_Model {
     }
 
     public function getFlowDetail($fin_flow_control_schema_id){
-        $ssql = "select * from ". $this->tableName . " where fin_flow_control_schema_id = ? and fst_active = 'A'";
+        $ssql = "select a.*,fst_username from ". $this->tableName .  " a inner join 
+        users b on a.fin_user_id = b.fin_user_id  where fin_flow_control_schema_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
         return $qr->result();
     }

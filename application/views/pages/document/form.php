@@ -5,9 +5,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 
-
-
-
 <style type="text/css">
 	.border-0{
 		border: 0px;
@@ -275,32 +272,89 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script type="text/javascript">
 		$(function(){
 			$("#tbl_search_doc_list").DataTable({
-				columns:[
+				columns:[			
+					{"title" : "","width": "5%",data:"fin_id",
+						visible:true,
+						orderable: false,
+						className: 'select-checkbox',
+					},
 					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
 					{"title" : "<?= lang("Document Name") ?>","width": "30%",data:"id_product",visible:true},
 					{"title" : "<?= lang("Notes") ?>","width": "35%",data:"product_name"},
 					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_qty"},
 					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fin_qty"}					  
 				],
+				select: {
+					style:    'os',
+					selector: 'td:first-child'
+				},
 			});
 		});
 	</script>
 </div>
+
+<div id="mdlFlowControl" class="modala fadea" role="dialog" style="display: unset">
+	<div class="modal-dialog" style="display:table;width:60%;min-width:400px;max-width:100%">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
+				<h4 class="modal-title"><?=lang("Add Flow Control User")?></h4>
+			</div>
+
+			<div class="modal-body">
+				<form class="form-horizontal ">	
+					<div class="form-group">						
+						<label for="fin-flow-control-user" class="col-md-3 control-label"><?= lang("User")?></label>
+						<div class="col-md-9">
+							<select class="select2 form-control" id="fin-flow-control-user"></select>
+						</div>											
+					</div>
+					<div class="form-group">						
+						<label for="fst-flow-control-order" class="col-md-3 control-label"><?= lang("Order")?> </label>
+						<div class="col-md-9">							
+							<input type="TEXT" class="form-control inputmask" id="fin-flow-control-order" value="1" data-inputmask="'alias': 'numeric'" im-insert="true" style="text-align: right;" />
+						</div>											
+					</div>
+				</form>				
+			</div>
+			<div class="modal-footer">
+				<button id="btn-add-flow-control-user" type="button" class="btn btn-primary">Add</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(function(){			
+			fill_selec2_users("fin-flow-control-user");
+			$(".inputmask").inputmask();
+			$("#btn-add-flow-control-user").click(function(){
+				selectedUser = $('#fin-flow-control-user').select2('data')[0];				
+				tblFlowControl = $("#tbl_flow_control").DataTable();
+				data = {
+					fin_id : 0,
+					fin_user_id : selectedUser.id,
+					fst_username : selectedUser.text,
+					fin_seq_no : $("#fin-flow-control-order").val(),
+				}
+				tblFlowControl.row.add(data).order([2,'asc'],[1,'asc']).draw();
+			});
+		});
+	</script>
+</div>
+
+
 <script src="<?=base_url()?>bower_components/pdfjs/build/pdf.js"></script>
-
-
-
-
-
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="<?=base_url()?>	bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 
+<script type="text/javascript">	
+	var tblFlowControl;
 
-<script type="text/javascript">
-	
 	$(function(){
 		// Fill Flow Control
 		$.ajax({
@@ -325,22 +379,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		//datatables Flow Control init
-		$("#tbl_flow_control").DataTable({
+		tblFlowControl = $("#tbl_flow_control").DataTable({
 			searching: false,
 			paging:   false,
 			info: false,
 			columns:[
 				{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
-				{"title" : "<?= lang("User ID") ?>","width": "0%",data:"fin_user_id",visible:false},
-				{"title" : "<?= lang("Name") ?>","width": "25%",data:"fin_username",visible:true},
-				{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
-				{"title" : "<?= lang("Status") ?>","width": "20%",data:"fst_control_status",
+				{"title" : "<?= lang("User") ?>","width": "25%",data:"fin_user_id",
 					visible:true,
 					render: function ( data, type, row ) {
-						return data +' ('+ row[3]+')';
+						return row.fst_username;
 					}
 				},
-				{"title" : "<?= lang("Memo") ?>","width": "40%",data:"fst_memo"}					  
+				{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
+				{"title" : "<?= lang("Action") ?>","width": "10%",
+				data:"action",
+					render: function ( data, type, row ) {
+						return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
+					},
+					"sortable": false,
+					"className":"dt-center"
+				},
 			],
 		});
 
@@ -354,25 +413,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				success:function(resp){	
 					data = resp.data;
 					dataFlow = [];
-					$.each(respData,function(index,value){
-						dataFlow.push({
+					$.each(data,function(index,value){
+						console.log(value);
+						dataFlow.push({							
 							fin_id: 0,
 							fin_user_id: value.fin_user_id,
-							fin_username: value.fst_username,
+							fst_username: value.fst_username,
 							fin_seq_no: value.fin_seq_no,
-							fst_control_status: value.fin_id,
-							fst_memo: value.fin_id
+							fst_control_status: 'NA',
+							fst_memo:''
 						});
 					});
-
-					$("#tbl_flow_control").DataTable({
-						data:dataFlow
-					});
 					
+					var table = $('#tbl_flow_control').DataTable();
+					table.clear();
+					table.rows.add(dataFlow).order([2,'asc'],[1,'asc']).draw();
 				}
 			})
 		})
 
+		//delete detail
+		$(document).on('click','.btn-delete-flow-detail', function(event){
+			event.preventDefault();
+			var t = $('#tbl_flow_control').DataTable();
+			var trRow = $(this).parents('tr');
+			t.row(trRow).remove().draw();
+		});
+		
 		//iCheck for checkbox and radio inputs
 		$('#fbl_flow_control').iCheck({
 			checkboxClass: 'icheckbox_minimal-blue',
@@ -399,68 +466,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		//Fill custom scope department as default
 		fill_scope_department();
-
 		$('#scope-custom-type').on('select2:select', function (e) {
 			console.log(e.params);
   			if ($('#scope-custom-type').val() == "DEPARTMENT"){
 				fill_scope_department();
 			}else{
-				fill_scope_users();
+				fill_selec2_users("scope-custom-value");
 			}
 		});	
     });
-
-	function fill_scope_department(){
-		$.ajax({
-			url: '{base_url}department/getAllList',
-			dataType : "json",
-			method :"GET",
-			success:function(resp){
-				respData = resp.data;
-				selectData = [];
-				$.each(respData,function(index,value){
-					selectData.push({
-						"id" : value.fin_department_id,
-						"text" : value.fst_department_name
-					});	
-				});
-				//$("#scope-custom-value").select2("destroy");
-				$('#scope-custom-value').empty();
-				$('#scope-custom-value').val(null).trigger('change');
-				$("#scope-custom-value").select2({
-					data: selectData,
-				});
-				console.log(selectData);
-				$(".select2-container").addClass("form-control"); 
-			}
-		})
-	}
-	function fill_scope_users(){
-		$.ajax({
-			url: '{base_url}users/getAllList',
-			dataType : "json",
-			method :"GET",
-			success:function(resp){
-				respData = resp.data;
-				selectData = [];
-				$.each(respData,function(index,value){
-					selectData.push({
-						"id" : value.fin_user_id,
-						"text" : value.fst_username
-					});	
-				});
-				$('#scope-custom-value').empty();
-				$('#scope-custom-value').val(null).trigger('change');
-				$("#scope-custom-value").select2({
-					data: selectData,
-				});
-				$("#scope-custom-value").select2();
-				console.log(selectData);
-				$(".select2-container").addClass("form-control"); 
-			}
-		})
-	}
-
 </script>
 
 <script type="text/javascript">
@@ -667,4 +681,55 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
+
+	function fill_selec2_users(element_id){
+		$.ajax({
+			url: '{base_url}users/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_user_id,
+						"text" : value.fst_username
+					});	
+				});
+				$('#' + element_id).empty();
+				$('#' + element_id).val(null).trigger('change');
+				$("#" + element_id).select2({
+					data: selectData,
+				});
+				$("#" + element_id).select2();
+				$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+	function fill_scope_department(){
+		$.ajax({
+			url: '{base_url}department/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_department_id,
+						"text" : value.fst_department_name
+					});	
+				});
+				//$("#scope-custom-value").select2("destroy");
+				$('#scope-custom-value').empty();
+				$('#scope-custom-value').val(null).trigger('change');
+				$("#scope-custom-value").select2({
+					data: selectData,
+				});
+				console.log(selectData);
+				$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+	
 </script>
