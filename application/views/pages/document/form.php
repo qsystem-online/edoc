@@ -2,8 +2,22 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
+
+<!--
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+-->
+
+<!-- <link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.css"> -->
+
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.css">
+
+<!--
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+-->
+<!--
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+-->
 
 <style type="text/css">
 	.border-0{
@@ -98,7 +112,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="form-group">
 						<label for="fst_view_scope" class="col-sm-2 control-label"><?=lang("View Scope")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fst_view_scope" name="fst_view_scope">
+							<select class="select2 form-control scope-control" id="fst_view_scope" name="fst_view_scope">
 								<option value='PRV'><?= lang("Private")?></option>
 								<option value='GBL'><?= lang("Global")?></option>
                                 <option value='CST'><?= lang("Custom")?></option>
@@ -106,7 +120,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
                         <label for="fst_print_scope" class="col-sm-2 control-label"><?=lang("Print Scope")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fst_print_scope" name="fst_print_scope">
+							<select class="select2 form-control scope-control" id="fst_print_scope" name="fst_print_scope">
                                 <option value='PRV'><?= lang("Private")?></option>
 								<option value='GBL'><?= lang("Global")?></option>
                                 <option value='CST'><?= lang("Custom")?></option>
@@ -152,8 +166,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 					<div class="form-group">						
-						<div class="col-sm-10 col-sm-offset-2">
-							<input type="checkbox" class="minimal form-control" id="fbl_flow_control" name="fbl_flow_control"> &nbsp;
+						<div class="col-sm-10 col-sm-offset-2">							
+							<input type="checkbox" class="minimal form-control icheck" id="fbl_flow_control" name="fbl_flow_control"> &nbsp;
 							<label for="fbl_flow_control" class="control-label"> <?= lang("Document Flow Control")?> </label>
 						</div>
 					</div>
@@ -161,13 +175,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
-							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
-                            <li class="" id="list_flow" style="display:unset;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
-							<li class=""><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
+							<li class=""><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
+                            <li class="" id="list_flow" style="display:none;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
+							<li class="active" id="list_scope" style="display:none;"><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
 							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
-							<div class="tab-pane active" id="doc_list">
+							<div class="tab-pane " id="doc_list">
 								<button class="btn btn-primary btn-sm" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
 
 								<table id="tbl_doc_items" class="compat hover stripe" style="width:100%;"></table>
@@ -189,27 +203,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								
 							</div>
 							<!-- /.tab-pane -->
-							<div class="tab-pane" id="tab_custom-scope">
+							<div class="tab-pane active" id="tab_custom-scope">
 								<form class="form-horizontal ">	
-									<div class="form-group">						
-										<label for="select-product" class="col-md-5 control-label"><?= lang("Permission For :")?></label>
-										<div class="col-md-3">
-											<select id="scope-custom-type" class="select2 form-control" style="width:100%">
-												<option value="DEPARTMENT"><?= lang("Department")?></option>
-												<option value="USER"><?= lang("User")?></option>
-											</select>
-										</div>						
-										<div class="col-md-3">
-											<select id="scope-custom-value" class="select2" style="width:100%">
-											</select>
-										</div>
+									<div class="form-group">
+										<div class="col-md-10">				
+											<label for="select-product" class="col-md-6 control-label"><?= lang("Permission For :")?></label>
+											<div class="col-md-3">
+												<select id="scope-custom-type" class="select2 form-control" style="width:100%">
+													<option value="DEPARTMENT"><?= lang("Department")?></option>
+													<option value="USER"><?= lang("User")?></option>
+												</select>
+											</div>						
+											<div class="col-md-3">
+												<select id="scope-custom-value" class="select2" style="width:100%">
+												</select>
+											</div>
+										</div>				
 										<div class="col-md-1">
-											<button class="btn btn-sm btn-primary" style="width:100%"><?=lang("Add")?></button>
+											<div>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_view" name="fbl_flow_control"> &nbsp;
+												<label for="fbl_flow_control" class=""> <?= lang("View")?> </label>
+											</div>
+											<div>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_print" name="fbl_flow_control"> &nbsp;
+												<label for="fbl_flow_control" class=""> <?= lang("Print")?> </label>
+											</div>
+
+										</div>
+										
+										<div class="col-md-1">
+											<button id="btn-custom-scope" class="btn btn-sm btn-primary" style="width:100%"><?=lang("Add")?></button>
 										</div>						
 									
 									</div>
 								</form>
-								<table id="tbl_flow_control"></table>
+								<table id="tbl_custom_scope" class="compat hover stripe" style="width:100%" ></table>
 							</div>
 							<div class="tab-pane" id="doc-viwer" style="text-align:center">
 								
@@ -276,8 +304,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#tbl_doc_items").DataTable({
 				searching: false,
 				paging:   false,
-				info: false,
-				columns:[								
+				info: false,				
+				columns:[										
 					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
 					{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fin_document_id",visible:true,
 						render:function(data,type,row){
@@ -295,8 +323,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fdt_insert_datetime"},
 					{"title" : "<?= lang("Action") ?>","width": "10%",
 						render:function(data,type,row){	
-							action = "<a class='btn-add-document-items' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
-							action += "<a class='btn-add-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>"; 					
+							action = "<a class='btn-delete-document-items' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+							action += "<a class='btn-view-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>"; 					
 							return action;
 						},
 						"sortable": false,
@@ -308,7 +336,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#tbl_search_doc_list").on('preXhr.dt', function ( e, settings, data ) {
         		data.optionSearch = $('#doc-search-by').val();
     		} ).DataTable({
-				columns:[								
+				ajax: {
+					url: '<?= base_url() ?>document/fetch_list_data',
+					//dataSrc: 'data'
+					dataSrc: function(json){
+						console.log(json.data);
+						data = [];
+						$.each(json.data,function(index,value){
+							value.fbl_check = 1;
+							data.push(value);
+						});
+						return data;
+					}
+				},
+				processing: true,
+				serverSide: true,
+				select: {
+					'style': 'multi'
+				},
+				order: [[1, 'asc']],
+				columns:[
+					{
+						width: "10%",
+						checkboxes : {
+							'selectRow': true
+						},
+						data:"fbl_check",						
+					},									
 					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_document_id",visible:true},
 					{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fst_name",visible:true},
 					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
@@ -326,13 +380,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						"sortable": false,
 						"className":"dt-center"
 					}					  
-				],
-				ajax: {
-					url: '<?= base_url() ?>document/fetch_list_data',
-					dataSrc: 'data'
-				},
-				processing: true,
-				serverSide: true,
+				]				
+			});
+
+			$("#btn-add-product-detail").click(function(event){
+				event.preventDefault();
+				t = $("#tbl_search_doc_list").DataTable();
+				//console.log(t.rows('.selected').data());
+
+				//arrData = [];
+				var t2 = $("#tbl_doc_items").DataTable();
+
+				$.each(t.rows('.selected').data(),function(i,v){
+					
+					v.fin_id =0;
+					//arrData.push(v);
+					t2.row.add(v);	
+				});
+				t2.draw();
+			});
+
+
+			$('#tbl_doc_items').on('click','.btn-delete-document-items',function(event){
+				event.preventDefault();
+				var t = $('#tbl_doc_items').DataTable();
+				var trRow = $(this).parents('tr');
+				t.row(trRow).remove().draw();
+								
 			});
 
 			$(document).on('click','.btn-add-document-items', function(event){
@@ -408,10 +482,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>	bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
 
-<script type="text/javascript">	
+
+<!--
+<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+
+<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+-->
+
+
+
+
+
+<!-- <script src="https://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.js"></script>  -->
+<!--
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+-->
+
+
+
+
+<script type="text/javascript">	//Flow Control
 	var tblFlowControl;
 
 	$(function(){
@@ -499,12 +592,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			t.row(trRow).remove().draw();
 		});
 		
-		//iCheck for checkbox and radio inputs
-		$('#fbl_flow_control').iCheck({
-			checkboxClass: 'icheckbox_minimal-blue',
-			radioClass   : 'iradio_minimal-blue'
-		})
-
 		$('#fbl_flow_control').on('ifChanged', function(event){
 			console.log(event);
 			//alert(event.type + $('#fbl_flow_control').val() );
@@ -517,8 +604,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	})
 </script>
 
-<script type="text/javascript">
-	//Custom Scope
+<script type="text/javascript"> //Custom Scope
     $(function(){
 		//$(".select2").select2();
         $(".select2-container").addClass("form-control"); 
@@ -534,6 +620,109 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});	
     });
+</script>
+
+<script type="text/javascript">
+	$(function(){
+
+		$(".scope-control").change(function(event){
+			event.preventDefault();
+			$("#list_scope").hide();
+
+			$(".scope-control").each(function(index){				
+				if ($(this).val() == "CST"){
+					$("#list_scope").show();
+				} 
+			});
+		});
+
+
+		$(".scope-control").each(function(index){
+			$( this ).change(function(event){
+				event.preventDefault();
+				console.log($(".scope-control").val());
+			});
+		});
+	});
+	
+</script>
+
+<script type="text/javascript">
+	$(function(){
+		$("#tbl_custom_scope").DataTable({
+			searching: false,
+			paging:   false,
+			info: false,
+			columns:[		
+				{"title" : "<?= lang("ID") ?>","width": "10%",data:"fin_id",visible:true,className:"dt-center"},
+				{"title" : "<?= lang("Mode") ?>","width": "20%",data:"fst_mode",visible:true},				
+				{"title" : "<?= lang("User / Department") ?>","width": "35%",data:"fin_user_department_id",visible:true,
+					render: function(data, type, row) {											
+						return row.fst_user_department_name;
+					},
+				},
+				{"title" : "<?= lang("View") ?>","width": "10%",data:"fbl_view",
+					render: function(data, type, row) {						
+						if (data == true) {
+							return '<input type="checkbox" class="editor-active" checked>';
+						} else {
+							return '<input type="checkbox" class="editor-active">';
+						}
+						return data;
+					},
+					className: "dt-body-center text-center",
+					"sortable": false,
+				},
+				{"title" : "<?= lang("Print") ?>","width": "10%",data:"fbl_print",
+					render: function(data, type, row) {						
+						if (data == true) {
+							return '<input type="checkbox" class="editor-active" onclick="return false" checked>';
+						} else {
+							return '<input type="checkbox" class="editor-active" onclick="return false">';
+						}
+						return data;
+					},
+					className: "dt-body-center text-center",
+					"sortable": false,
+				},
+
+				{"title" : "<?= lang("Action") ?>","width": "10%",
+					render:function(data,type,row){	
+						action = "<a class='btn-delete-document-scope' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+						return action;
+					},
+					"sortable": false,
+					"className":"dt-body-center text-center"
+				}					  
+			],
+		});
+		
+		$("#tbl_custom_scope").on("click",".btn-delete-document-scope",function(event){
+			event.preventDefault();
+			t = $("#tbl_custom_scope").DataTable();
+			var trRow = $(this).parents('tr');
+			t.row(trRow).remove().draw();
+
+
+
+		});
+		
+		$("#btn-custom-scope").click(function(event){
+			event.preventDefault();
+			data = {
+				fbl_check: 1,
+				fin_id: 0,
+				fst_mode: $("#scope-custom-type").val(),
+				fin_user_department_id: $("#scope-custom-value").val(),
+				fst_user_department_name: $("#scope-custom-value :selected").text(),
+				fbl_view: $("#fbl_scope_view").prop("checked"),
+				fbl_print:$("#fbl_scope_print").prop("checked")
+			}
+			t = $("#tbl_custom_scope").DataTable();
+			t.row.add(data).draw();
+		});
+	})
+
 </script>
 
 <script type="text/javascript">

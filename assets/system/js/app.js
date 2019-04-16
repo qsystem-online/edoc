@@ -10,6 +10,14 @@ $(function(){
         $(".select2").select2();
     };
 
+    if (typeof $('.icheck').iCheck === "function") {
+        $('.icheck').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass   : 'iradio_minimal-blue'
+        })
+    }
+    
+
 });
 
 //Format data dari ajax ke format datepicker, setting di config.js

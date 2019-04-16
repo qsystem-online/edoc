@@ -38,10 +38,11 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
 		<!-- jQuery 3 -->
-		<script src="<?=base_url()?>bower_components/jquery/dist/jquery.min.js"></script>		
-		
+		<script src="<?=base_url()?>bower_components/jquery/dist/jquery.min.js"></script>				
 		<!-- CONFIG JS -->
 		<script src="<?=base_url()?>assets/system/js/config.js"></script>
+		<!-- APP JS -->
+		<script src="<?=base_url()?>assets/system/js/app.js"></script>
 
 		<!-- Theme style -->
 		<link rel="stylesheet" href="<?=base_url()?>dist/css/AdminLTE.min.css">
@@ -115,8 +116,7 @@
 
 
 
-		<!-- APP JS -->
-		<script src="<?=base_url()?>assets/system/js/app.js"></script>
+		
 
 		<!-- jQuery UI 1.11.4 -->
 		<script src="<?=base_url()?>bower_components/jquery-ui/jquery-ui.min.js"></script>
