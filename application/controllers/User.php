@@ -4,8 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class User extends MY_Controller {
     public function __construct(){
         parent:: __construct();
-		$this->load->library('form_validation');
-		$this->load->model('users_model');
+				$this->load->library('form_validation');
     }
 
     public function index(){
@@ -14,42 +13,43 @@ class User extends MY_Controller {
 
     public function lizt(){
       $this->load->library('menus');
-        $this->list['page_name']="User";
-        $this->list['list_name']="User List";
-        $this->list['addnew_ajax_url']=site_url().'user/add';
-        $this->list['pKey']="id";
-		    $this->list['fetch_list_data_ajax_url']=site_url().'user/fetch_list_data';
-        $this->list['delete_ajax_url']=site_url().'user/delete/';
-        $this->list['edit_ajax_url']=site_url().'user/edit/';
-        $this->list['arrSearch']=[
-            'a.fin_user_id' => 'User ID',
-            'a.fst_username' => 'User Name'
-		];
+      $this->list['page_name']="User";
+      $this->list['list_name']="User List";
+      $this->list['addnew_ajax_url']=site_url().'user/add';
+      $this->list['pKey']="id";
+		  $this->list['fetch_list_data_ajax_url']=site_url().'user/fetch_list_data';
+      $this->list['delete_ajax_url']=site_url().'user/delete/';
+      $this->list['edit_ajax_url']=site_url().'user/edit/';
+      $this->list['arrSearch']=[
+        'a.fin_user_id' => 'User ID',
+        'a.fst_username' => 'User Name'
+			];
 
-		$this->list['breadcrumbs']=[
-			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-			['title'=>'User','link'=>'#','icon'=>''],
-			['title'=>'List','link'=> NULL ,'icon'=>''],
-		];
-		$this->list['columns']=[
-			['title' => 'User ID', 'width'=>'10%', 'data'=>'fin_user_id'],
-            ['title' => 'Full Name', 'width'=>'25%', 'data'=>'fst_fullname'],
-            ['title' => 'Gender', 'width' =>'15%', 'data'=>'fst_gender'],
-            ['title' => 'Birthdate', 'width' =>'15%', 'data'=>'fdt_birthdate'],
-            ['title' => 'Birthplace', 'width' =>'15%', 'data'=>'fdt_birthplace'],
-			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
-		];
-        $main_header = $this->parser->parse('inc/main_header',[],true);
-        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
-        $page_content = $this->parser->parse('template/standardList',$this->list,true);
-        $main_footer = $this->parser->parse('inc/main_footer',[],true);
-        $control_sidebar=null;
-        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
-        $this->data['MAIN_HEADER'] = $main_header;
-        $this->data['MAIN_SIDEBAR']= $main_sidebar;
-        $this->data['PAGE_CONTENT']= $page_content;
-        $this->data['MAIN_FOOTER']= $main_footer;        
-        $this->parser->parse('template/main',$this->data);
+			$this->list['breadcrumbs']=[
+				['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+				['title'=>'User','link'=>'#','icon'=>''],
+				['title'=>'List','link'=> NULL ,'icon'=>''],
+			];
+			$this->list['columns']=[
+				['title' => 'User ID', 'width'=>'10%', 'data'=>'fin_user_id'],
+							['title' => 'Full Name', 'width'=>'25%', 'data'=>'fst_fullname'],
+							['title' => 'Gender', 'width' =>'10%', 'data'=>'fst_gender'],
+							['title' => 'Birthdate', 'width' =>'15%', 'data'=>'fdt_birthdate'],
+							['title' => 'Birthplace', 'width' =>'15%', 'data'=>'fst_birthplace'],
+							['title' => 'Phone', 'width' =>'13%', 'data'=>'fst_phone'],
+				['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
+			];
+      $main_header = $this->parser->parse('inc/main_header',[],true);
+    	$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+      $page_content = $this->parser->parse('template/standardList',$this->list,true);
+      $main_footer = $this->parser->parse('inc/main_footer',[],true);
+      $control_sidebar=null;
+      $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+      $this->data['MAIN_HEADER'] = $main_header;
+      $this->data['MAIN_SIDEBAR']= $main_sidebar;
+      $this->data['PAGE_CONTENT']= $page_content;
+      $this->data['MAIN_FOOTER']= $main_footer;        
+      $this->parser->parse('template/main',$this->data);
     }
 
     private function openForm($mode = "ADD",$fin_user_id = 0){
@@ -108,7 +108,12 @@ class User extends MY_Controller {
 				"fdt_birthdate"=>$this->input->post("fdt_birthdate"),
 				"fst_gender"=>$this->input->post("fst_gender"),
 				"fst_active"=>'A',
-				"fst_birthplace"=>$this->input->post("fst_birthplace")
+				"fst_birthplace"=>$this->input->post("fst_birthplace"),
+				"fst_address"=>$this->input->post("fst_address"),
+				"fst_email"=>$this->input->post("fst_email"),
+				"fst_phone"=>$this->input->post("fst_phone"),
+				"fin_department_id"=>$this->input->post("fin_department_id"),
+				"fbl_admin"=>$this->input->post("fbl_admin")
 			];
 
 			$this->db->trans_start();
@@ -124,7 +129,7 @@ class User extends MY_Controller {
 			}
 
 			//Save Group
-			$this->load->model("user_group_model");		
+			/*$this->load->model("user_group_model");		
 			$arr_group_id = $this->input->post("fin_group_id");
 			if ($arr_group_id){
 				foreach ($arr_group_id as $group_id) {
@@ -135,7 +140,7 @@ class User extends MY_Controller {
 					];
 					$this->user_group_model->insert($data);
 				}
-			}
+			}*/
 	
 			//Save File
 			if(!empty($_FILES['fst_avatar']['tmp_name'])) {
@@ -203,7 +208,12 @@ class User extends MY_Controller {
 				"fdt_birthdate"=>$this->input->post("fdt_birthdate"),
 				"fst_gender"=>$this->input->post("fst_gender"),
 				"fst_active"=>'A',
-				"fst_birthplace"=>$this->input->post("fst_birthplace")
+				"fst_birthplace"=>$this->input->post("fst_birthplace"),
+				"fst_address"=>$this->input->post("fst_address"),
+				"fst_email"=>$this->input->post("fst_email"),
+				"fst_phone"=>$this->input->post("fst_phone"),
+				"fin_department_id"=>$this->input->post("fin_department_id"),
+				"fbl_admin"=>$this->input->post("fbl_admin")
 			];
 
 			$this->db->trans_start();
@@ -220,7 +230,7 @@ class User extends MY_Controller {
 			}
 
 			//Save Group
-			$this->load->model("user_group_model");
+			/*$this->load->model("user_group_model");
 			$this->user_group_model->deleteByUserId($fin_user_id);
 
 			$arr_group_id = $this->input->post("fin_group_id");
@@ -233,7 +243,7 @@ class User extends MY_Controller {
 					];
 					$this->user_group_model->insert($data);
 				}
-			}
+			}*/
 
 			//Save File
 			if(!empty($_FILES['fst_avatar']['tmp_name'])) {
@@ -267,11 +277,10 @@ class User extends MY_Controller {
 			$this->ajxResp["message"] = "Data Saved !";
 			$this->ajxResp["data"]["insert_id"] = $fin_user_id;
 			$this->json_output();
-			}
+		}
 			
 		public function add_save(){
 			$this->load->model('users_model');
-
 			$data=[
 				'fst_fullname'=>$this->input->get("fst_fullname"),
 				'fdt_insert_datetime'=>'sekarang'
@@ -293,7 +302,6 @@ class User extends MY_Controller {
 			if ($this->form_validation->run() == FALSE){
 				echo form_error();
 				//$this->add();
-
 			}else{
 				//$this->load->view('formsuccess');
 				echo "Success";
@@ -318,7 +326,7 @@ class User extends MY_Controller {
 			$this->load->library("datatables");
 			$this->datatables->setTableName("users");
 			
-			$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
+			$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,fst_phone,'action' as action";
 			$this->datatables->setSelectFields($selectFields);
 
 			$searchFields = ["fst_fullname","fst_birthplace"];

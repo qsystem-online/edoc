@@ -23,13 +23,13 @@ class Users_model extends MY_Model {
 		}
 
 		//Groups
-		$ssql = "select * from user_group where fin_user_id = ? ";
-		$qr = $this->db->query($ssql,[$fin_id]);
-		$rsGroup = $qr->result();
+		//$ssql = "select * from user_group where fin_user_id = ? ";
+		//$qr = $this->db->query($ssql,[$fin_user_id]);
+		//$rsGroup = $qr->result();
 
 		$data = [
 			"user" => $rwUser,
-			"list_group" => $rsGroup
+			//"list_group" => $rsGroup
 		];
 		return $data;
 	}
