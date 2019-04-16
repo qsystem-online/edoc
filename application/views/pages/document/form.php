@@ -504,7 +504,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 
-<script type="text/javascript">	
+<script type="text/javascript">	//Flow Control
 	var tblFlowControl;
 
 	$(function(){
@@ -604,8 +604,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	})
 </script>
 
-<script type="text/javascript">
-	//Custom Scope
+<script type="text/javascript"> //Custom Scope
     $(function(){
 		//$(".select2").select2();
         $(".select2-container").addClass("form-control"); 
