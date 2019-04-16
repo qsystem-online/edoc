@@ -130,8 +130,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
 						$('#fst_department_name').prop('readonly', true);
-						//$("#tabs-user-detail").show();
-						//console.log(data.data_image);
 					}
 				},
 				error: function (e) {
