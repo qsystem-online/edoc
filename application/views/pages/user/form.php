@@ -299,12 +299,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.users.fst_department_name, resp.users.fin_department_id, true, true);
+				//var newOption = new Option(resp.users.fst_department_name, resp.users.fin_department_id, true, true);
     			// Append it to the select
-    			$('#select-departmentname').append(newOption).trigger('change');
+    			//$('#select-departmentname').append(newOption).trigger('change');
 
 				//Image Load 
-				$('#imgAvatar').attr("src",resp.users.avatarURL);
+				//$('#imgAvatar').attr("src",resp.users.avatarURL);
 
 				//populate Group (select2)
 				var groups = [];
