@@ -51,17 +51,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<!-- /.box-header -->
 			<!-- form start -->
 			<form id="frmDocument" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
-				
-
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
-                    <input type="hidden" id="fin_id" name = "fin_id" value="<?=$fin_id?>">
-                    <input type="hidden" id="frm-mode" value="<?=$mode?>">
                     <div class="form-group">
 						<label for="fin_document_id" class="col-sm-2 control-label"><?=lang("Document ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="">
-							<div id="fin_document_id_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="" readonly>
 						</div>
 					</div>
 
@@ -158,7 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<hr>
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
-					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
+					<div class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
                             <li class="" id="list_flow" style="display:none;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
@@ -248,7 +243,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
-<div id="mdlDocList" class="modal fade in" role="dialog" style="display: none">
+<div id="mdlDocList" class="modal fadein" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:90%;min-width:700px;max-width:100%">
 		<!-- Modal content-->
 		<div class="modal-content">
@@ -258,25 +253,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form class="form-horizontal ">	
-					<input type="hidden" id="fin-detail-id" value="0">
-					<div class="form-group">						
-						<label for="select-product" class="col-md-9 control-label">Search By</label>
-						<div class="col-md-3">
-							<select class="select2 col-md-12" id="doc-search-by" name="" >
-								<option value="fst_search_marks">Search mark</option>
-								<option value="fst_memo">Notes</option>
-							</select>														
-						</div>						
-					
+				<div class="row">
+					<div class="col-md-12">
+						<form>	
+							<input type="hidden" id="fin-detail-id" value="0">
+							<div class="form-group">						
+								<label for="select-product" class="col-md-10 control-label text-right">Search By</label>
+								<div class="col-md-2 text-right" style="padding:0px;margin-bottom:10px">
+									<select class="select2" style="width:100%" id="doc-search-by"  data-minimumResultsForSearch = 'Infinity' >
+										<option value="fst_search_marks">Search mark</option>
+										<option value="fst_memo">Notes</option>
+									</select>														
+								</div>						
+								
+							</div>
+						</form>
 					</div>
-				</form>
-
-				<div class="col-md-12">
-					<div class="row">
-						<table id="tbl_search_doc_list"  class="table-bordered table-hover" style="width:100%"></table>
-					</div>					
-				</div>				
+				</div>
+				<div class="row">
+				
+					<div class="col-md-12">
+						
+						<table id="tbl_search_doc_list"  class="table table-bordered table-hover" style="width:100%"></table>
+										
+					</div>
+						
+				</div>	
 			</div>
 			<div class="modal-footer">
 				<button id="btn-add-product-detail" type="button" class="btn btn-primary">Add</button>
@@ -799,7 +801,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
 						$('#fst_username').prop('readonly', true);
-						$("#tabs-user-detail").show();
 						console.log(data.data_image);
 
 					}
