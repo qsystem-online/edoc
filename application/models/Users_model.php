@@ -10,8 +10,9 @@ class Users_model extends MY_Model {
 
 	public function getDataById($fin_user_id){
 		$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
+		//$ssql = "select a.*,b.fst_department_name from users a left join departments b on a.fin_department_id = b.fin_department_id where a.fin_user_id = ?";
 		$qr = $this->db->query($ssql,[$fin_user_id]);		
-		$rwUser = $qr->row();
+		$rwUser = $qr->result();
 		if($rwUser){
 			if (file_exists(FCPATH . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg')) {
 				$avatarURL = site_url() . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg';
@@ -23,13 +24,13 @@ class Users_model extends MY_Model {
 		}
 
 		//Groups
-		//$ssql = "select * from user_group where fin_user_id = ? ";
-		//$qr = $this->db->query($ssql,[$fin_user_id]);
-		//$rsGroup = $qr->result();
+		$ssql = "select * from user_group where fin_user_id = ? ";
+		$qr = $this->db->query($ssql,[$fin_user_id]);
+		$rsGroup = $qr->result();
 
 		$data = [
 			"user" => $rwUser,
-			//"list_group" => $rsGroup
+			"list_group" => $rsGroup
 		];
 		return $data;
 	}
@@ -43,7 +44,7 @@ class Users_model extends MY_Model {
 			'label' => 'Username',
 			'rules' => array(
 				'required',
-				'is_unique[users.fst_username.fin_id.'. $id .']'
+				'is_unique[users.fst_username.fin_user_id.'. $id .']'
 			),
 			'errors' => array(
 				'required' => '%s tidak boleh kosong',

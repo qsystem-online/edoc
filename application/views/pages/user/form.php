@@ -151,8 +151,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<label for="fbl_admin" class="col-sm-2 control-label"><?=lang("Admin")?></label>
-						<div class="col-sm-10">
-							<label><input type="checkbox"><?=lang("Admin")?></label><br>
+						<div class="checkbox">
+							<label><input id="fbl_admin" type="checkbox" value="1"><?=lang("Admin")?></label><br>
 						</div>
 					</div>
 				</div>
@@ -249,7 +249,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-departmentname").select2({
 			width: '100%',
-			minimumInputLength: 2,
 			ajax: {
 				url: '<?=site_url()?>user/get_department',
 				dataType: 'json',
@@ -259,8 +258,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.fin_department_id,
-							"text" : value.fst_department_name,
-							"selected" : true
+							"text" : value.fst_department_name
 						});	
 					});
 					console.log(data2);
@@ -299,19 +297,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				// menampilkan data di select2, menu edit/update
-				//var newOption = new Option(resp.users.fst_department_name, resp.users.fin_department_id, true, true);
+				var newOption = new Option(resp.users.fst_department_name, resp.users.fin_department_id, true, true);
     			// Append it to the select
-    			//$('#select-departmentname').append(newOption).trigger('change');
+    			$('#select-departmentname').append(newOption).trigger('change');
 
 				//Image Load 
 				//$('#imgAvatar').attr("src",resp.users.avatarURL);
 
 				//populate Group (select2)
-				var groups = [];
+				/*var groups = [];
 				$.each(resp.list_group, function(name, val){
 					groups.push(val.fin_group_id);
 				})
-				$("#fin_group_id").val(groups).trigger("change");
+				$("#fin_group_id").val(groups).trigger("change");*/
 			},
 
 			error: function (e) {
