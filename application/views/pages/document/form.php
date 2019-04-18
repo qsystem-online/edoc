@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 			<!-- /.box-header -->
 			<!-- form start -->
-			<form id="frmUser" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
+			<form id="frmDocument" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
 				
 
 				<div class="box-body">
@@ -83,7 +83,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                         <label for="fin_confidential_lvl" class="col-sm-2 control-label"><?=lang("Confidential Level")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fst_source" name="fst_source">
+							<select class="select2 form-control" id="fin_confidential_lvl" name="fin_confidential_lvl">
 								<option value='0'><?= lang("Top Management")?></option>
 								<option value='1'><?= lang("Upper Management")?></option>
                                 <option value='2'><?= lang("Middle Management")?></option>
@@ -750,24 +750,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript">
-	$(function(){				
-		<?php if($mode == "EDIT"){?>
-			init_form($("#fin_id").val());
-		<?php } ?>
+	$(function(){	
+		$("#fdt_published_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			//data = $("#frmUser").serialize();
-			data = new FormData($("#frmUser")[0]);
-			//data = new FormData($("form")[0]);
+			data = new FormData($("#frmDocument")[0]);
 
-			mode = $("#frm-mode").val();
-			if (mode == "ADD"){
-				url =  "<?= site_url() ?>system/user/ajx_add_save";
-			}else{
-				url =  "<?= site_url() ?>system/user/ajx_edit_save";
-			}
+			//console.log(data);
+			//return;
 
+			url =  "<?= site_url() ?>document/ajx_add_save";
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
@@ -826,12 +819,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			alert("TEST MOUSE");
 			event.preventDefault();
 		})
-		
-		
-		$(".datepicker").datepicker({
-			format:"yyyy-mm-dd"
-		});
-		
 	});
 
 	function init_form(fin_id){
@@ -904,7 +891,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function fill_selec2_users(element_id){
 		$.ajax({
-			url: '{base_url}users/getAllList',
+			url: '{base_url}user/getAllList',
 			dataType : "json",
 			method :"GET",
 			success:function(resp){

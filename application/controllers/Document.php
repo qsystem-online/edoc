@@ -69,10 +69,12 @@ class Document extends MY_Controller {
 
 
 	public function ajx_add_save(){
-		$this->load->model('users_model');
-		$this->form_validation->set_rules($this->users_model->getRules("ADD",0));
+		$this->load->model('documents_model');
+		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
+		print_r($this->input->post());
+		print_r($_FILES);
+		die();
 		if ($this->form_validation->run() == FALSE){
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -121,14 +123,23 @@ class Document extends MY_Controller {
 		
 
 
-		//Save File
-		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
-			$config['upload_path']          = './assets/app/users/avatar';
-			$config['file_name']			= 'avatar_'. $insertId . '.jpg' ;
+		//Save File & cek revision and rule when flow control
+		/*Array ( [name] => helloworld.pdf 
+			[type] => application/pdf 
+			[tmp_name] => D:\xampp\tmp\php9974.tmp
+			[error] => 0 
+			[size] => 678 ) 
+			)
+		//size in byte
+		*/
+
+		if(!empty($_FILES['fst_file_name']['tmp_name'])) {
+			$config['upload_path']          = getDbConfig("document_folder");
+			$config['file_name']			= 'doc_'. $insertId . '.pdf' ;
 			$config['overwrite']			= TRUE;
 			$config['file_ext_tolower']		= TRUE;
-			$config['allowed_types']        = 'gif|jpg|png';
-			$config['max_size']             = 0; //kilobyte
+			$config['allowed_types']        = 'pdf'; //'gif|jpg|png';
+			$config['max_size']             = (int) getDbConfig("document_max_size"); //kilobyte
 			$config['max_width']            = 0; //1024; //pixel
 			$config['max_height']           = 0; //768; //pixel
 
