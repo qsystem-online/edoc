@@ -2,23 +2,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
-
-<!--
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
--->
-
-<!-- <link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.css"> -->
-
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.css">
-
-<!--
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
--->
-<!--
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
--->
-
 <style type="text/css">
 	.border-0{
 		border: 0px;
@@ -175,16 +160,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
 					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
-							<li class=""><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
+							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
                             <li class="" id="list_flow" style="display:none;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
-							<li class="active" id="list_scope" style="display:none;"><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
+							<li class="" id="list_scope" style="display:none;"><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
 							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
-							<div class="tab-pane " id="doc_list">
-								<button class="btn btn-primary btn-sm" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
-
-								<table id="tbl_doc_items" class="compat hover stripe" style="width:100%;"></table>
+							<div class="tab-pane active" id="doc_list">
+								<button id="btn-open-list-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
+								<div>
+									<table id="tbl_doc_items" class="table table-bordered table-hover" style="width:100%;"></table>
+								</div>
 							</div>
 							<!-- /.tab-pane -->
 							<div class="tab-pane" id="tab_flow">
@@ -203,7 +189,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								
 							</div>
 							<!-- /.tab-pane -->
-							<div class="tab-pane active" id="tab_custom-scope">
+							<div class="tab-pane" id="tab_custom-scope">
 								<form class="form-horizontal ">	
 									<div class="form-group">
 										<div class="col-md-10">				
@@ -262,7 +248,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
-<div id="mdlDocList" class="modala fadea" role="dialog" style="display: unset">
+<div id="mdlDocList" class="modal fade in" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:90%;min-width:700px;max-width:100%">
 		<!-- Modal content-->
 		<div class="modal-content">
@@ -288,7 +274,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<div class="col-md-12">
 					<div class="row">
-						<table id="tbl_search_doc_list"  class="display compact" style="width:100%"></table>
+						<table id="tbl_search_doc_list"  class="table-bordered table-hover" style="width:100%"></table>
 					</div>					
 				</div>				
 			</div>
@@ -301,12 +287,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<script type="text/javascript">
 		$(function(){
+			
+			$("#btn-open-list-doc").click(function(event){
+				event.preventDefault();
+				$("#mdlDocList").modal('show');
+			});			
 			$("#tbl_doc_items").DataTable({
 				searching: false,
 				paging:   false,
 				info: false,				
 				columns:[										
-					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
+					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:false},
 					{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fin_document_id",visible:true,
 						render:function(data,type,row){
 							//console.log(row);
@@ -314,7 +305,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					},
 					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
-					{"title" : "<?= lang("Notes") ?>","width": "20%",data:"fst_memo"},
+					{"title" : "<?= lang("Notes") ?>","width": "25%",data:"fst_memo"},
 					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
 						render : function(data,type,row){
 							return row.fst_username;
@@ -328,7 +319,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							return action;
 						},
 						"sortable": false,
-						"className":"dt-center"
+						"className":"dt-body-center text-center"
 					}					  
 				],
 			});
@@ -484,25 +475,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
-
-
-<!--
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
--->
-
-
-
-
-
-<!-- <script src="https://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.js"></script>  -->
-<!--
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
--->
-
-
-
 
 <script type="text/javascript">	//Flow Control
 	var tblFlowControl;
