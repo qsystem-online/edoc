@@ -2,7 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <style type="text/css">
 	.border-0{
@@ -152,7 +151,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fbl_admin" class="col-sm-2 control-label"><?=lang("Admin")?></label>
 						<div class="checkbox">
-							<label><input id="fbl_admin" type="checkbox" value="1"><?=lang("Admin")?></label><br>
+							<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?=lang("Admin")?></label><br>
 						</div>
 					</div>
 				</div>
@@ -213,7 +212,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#fin_id").val(data.insert_id);
+						$("#fin_user_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
@@ -243,9 +242,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             reader.readAsDataURL(this.files[0]);
 		});
 
-		$(".datepicker").datepicker({
+		/*$(".datepicker").datepicker({
 			format:"yyyy-mm-dd"
-		});
+		});*/
 
 		$("#select-departmentname").select2({
 			width: '100%',
@@ -269,6 +268,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+
+		$("#fdt_birthdate").datepicker('update', dateFormat(user.fdt_birthdate));
 	});
 
 	function init_form(fin_user_id){
@@ -278,9 +279,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.users);
+				console.log(resp.user);
 
-				$.each(resp.users, function(name, val){
+				$.each(resp.user, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -297,12 +298,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.users.fst_department_name, resp.users.fin_department_id, true, true);
+				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
     			// Append it to the select
     			$('#select-departmentname').append(newOption).trigger('change');
 
 				//Image Load 
-				//$('#imgAvatar').attr("src",resp.users.avatarURL);
+				$('#imgAvatar').attr("src",resp.user.avatarURL);
 
 				//populate Group (select2)
 				/*var groups = [];
