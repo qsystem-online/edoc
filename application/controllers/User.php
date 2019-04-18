@@ -31,14 +31,13 @@ class User extends MY_Controller {
 			['title'=>'User','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
-			
-        $this->list['columns']=[
+
+		$this->list['columns']=[
 			['title' => 'User ID', 'width'=>'10%', 'data'=>'fin_user_id'],
-			['title' => 'Full Name', 'width'=>'20%', 'data'=>'fst_fullname'],
+			['title' => 'Full Name', 'width'=>'25%', 'data'=>'fst_fullname'],
 			['title' => 'Gender', 'width' =>'10%', 'data'=>'fst_gender'],
-			['title' => 'Birthdate', 'width' =>'13%', 'data'=>'fdt_birthdate'],
-			['title' => 'Birthplace', 'width' =>'13%', 'data'=>'fst_birthplace'],
-			['title' => 'Phone', 'width' =>'13%', 'data'=>'fst_phone'],
+			['title' => 'Birthdate', 'width' =>'15%', 'data'=>'fdt_birthdate'],
+			['title' => 'Birthplace', 'width' =>'15%', 'data'=>'fst_birthplace'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
 
@@ -108,7 +107,7 @@ class User extends MY_Controller {
 			"fst_username"=>$this->input->post("fst_username"),
 			"fst_password"=> md5("inipassword"),
 			"fst_fullname"=>$this->input->post("fst_fullname"),
-			"fdt_birthdate"=>$this->input->post("fdt_birthdate"),
+			"fdt_birthdate"=>dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender"=>$this->input->post("fst_gender"),
 			"fst_active"=>'A',
 			"fst_birthplace"=>$this->input->post("fst_birthplace"),
@@ -132,7 +131,7 @@ class User extends MY_Controller {
 		}
 
         //Save Group
-        $this->load->model("user_group_model");		
+        /*$this->load->model("user_group_model");		
 		$arr_group_id = $this->input->post("fin_group_id");
 		if ($arr_group_id){
 			foreach ($arr_group_id as $group_id) {
@@ -143,7 +142,7 @@ class User extends MY_Controller {
 				];
 				$this->user_group_model->insert($data);
 			}
-		}
+		}*/
 
         //Save File
 		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
@@ -208,7 +207,7 @@ class User extends MY_Controller {
 			"fst_username"=>$this->input->post("fst_username"),
 			"fst_password"=> md5("defaultpassword"),//$this->input->post("fst_password"),
 			"fst_fullname"=>$this->input->post("fst_fullname"),
-			"fdt_birthdate"=>$this->input->post("fdt_birthdate"),
+			"fdt_birthdate"=>dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender"=>$this->input->post("fst_gender"),
 			"fst_active"=>'A',
 			"fst_birthplace"=>$this->input->post("fst_birthplace"),
@@ -327,10 +326,8 @@ class User extends MY_Controller {
     public function fetch_list_data(){
         $this->load->library("datatables");
 		$this->datatables->setTableName("users");
-		$this->datatables->setGroupBy("a.fin_user_id");
-		$this->datatables->setCountTableName("users");
 			
-		$selectFields = "a.fin_user_id,fst_fullname,b.fst_department_name,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
+		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 	
 		$searchFields = ["fst_fullname", "fst_birthplace"];
@@ -341,8 +338,8 @@ class User extends MY_Controller {
 		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$date = strtotime($data["fdt_date"]);			
-			$data["fdt_date"] = date("d-M-Y",$date);
+			$birthdate = strtotime($data["fdt_birthdate"]);			
+			$data["fdt_insert_datetime"] = dBDateFormat("fdt_birthdate");
 	
 			//action
 			$data["action"]	= "<div style='font-size:16px'>

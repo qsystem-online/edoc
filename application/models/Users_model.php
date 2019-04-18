@@ -1,5 +1,6 @@
 <?php 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 class Users_model extends MY_Model {
 	public $tableName = "users";
 	public $pkey = "fin_user_id";
@@ -9,10 +10,10 @@ class Users_model extends MY_Model {
 	}
 
 	public function getDataById($fin_user_id){
-		$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
-		//$ssql = "select a.*,b.fst_department_name from users a left join departments b on a.fin_department_id = b.fin_department_id where a.fin_user_id = ?";
+		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
+		$ssql = "select a.*,b.fst_department_name from " . $this->tableName ." a left join departments b on a.fin_department_id = b.fin_department_id where a.fin_user_id = ?";
 		$qr = $this->db->query($ssql,[$fin_user_id]);		
-		$rwUser = $qr->result();
+		$rwUser = $qr->row();
 		if($rwUser){
 			if (file_exists(FCPATH . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg')) {
 				$avatarURL = site_url() . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg';
@@ -24,14 +25,15 @@ class Users_model extends MY_Model {
 		}
 
 		//Groups
-		$ssql = "select * from user_group where fin_user_id = ? ";
+		/*$ssql = "select * from user_group where fin_user_id = ? ";
 		$qr = $this->db->query($ssql,[$fin_user_id]);
-		$rsGroup = $qr->result();
+		$rsGroup = $qr->result();*/
 
 		$data = [
-			"user" => $rwUser,
-			"list_group" => $rsGroup
+			"user" => $rwUser
+			//"list_group" => $rsGroup
 		];
+
 		return $data;
 	}
 
@@ -64,7 +66,7 @@ class Users_model extends MY_Model {
 
 		$rules[] = [
 			'field' => 'fdt_birthdate',
-			'label' => 'Birth date',
+			'label' => 'Birth Date',
 			'rules' => 'required',
 			'errors' => array(
 				'required' => '%s tidak boleh kosong',
@@ -80,14 +82,14 @@ class Users_model extends MY_Model {
 			)
 		];
 
-		$rules[] = [
+		/*$rules[] = [
 			'field' => 'fbl_admin',
 			'label' => 'Admin',
 			'rules' => 'required',
 			'errors' =>array(
 				'required' => '%s tidak boleh kosong'
 			)
-		];
+		];*/
 
 		return $rules;
 		
