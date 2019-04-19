@@ -30,24 +30,7 @@ class Document_flow_control_model extends MY_Model {
             )
         ];
 
-        $rules[] = [
-            'field' => 'fst_control_status',
-            'label' => 'Control Status',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'fdt_approved_datetime',
-            'label' => 'Approved Datetime',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
+        
         return $rules;
     }
 
