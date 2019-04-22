@@ -70,7 +70,7 @@ class Document extends MY_Controller {
 		
 	}
 
-	private function openForm($mode = "ADD",$fin_document_id = 0){
+	private function openForm($mode = "ADD",$fin_document_id = ""){
 		$this->load->library("menus");
 		
 
@@ -100,7 +100,7 @@ class Document extends MY_Controller {
 
 
 	public function add(){
-		$this->openForm("ADD",0);
+		$this->openForm("ADD","");
 	}
 
 	public function Edit($fin_document_id){
@@ -155,105 +155,60 @@ class Document extends MY_Controller {
 			$this->json_output();
 			return;
 		}
-
 		$this->db->trans_start();
-		$insertId = $this->documents_model->insert($data);
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
+		try{
+			$insertId = $this->documents_model->insert($data);			
 
-		//Save File & cek revision and rule when flow control
-		//print_r($_FILES);
-		/*Array ( [name] => helloworld.pdf 
-			[type] => application/pdf 
-			[tmp_name] => D:\xampp\tmp\php9974.tmp
-			[error] => 0 
-			[size] => 678 ) 
-			)
-		//size in byte
-		*/
-		if(!empty($_FILES['fst_file_name']['tmp_name'])) {
-			$config['upload_path']          = getDbConfig("document_folder");
-			$config['file_name']			=  md5('doc_'. $insertId .'_0');  //'doc_'. $insertId .'_0'. '.pdf' ;
-			//$config['encrypt_name'] 		= TRUE;
-			$config['overwrite']			= TRUE;
-			$config['file_ext_tolower']		= TRUE;
-			$config['allowed_types']        = 'pdf'; //'gif|jpg|png';
-			$config['max_size']             = (int) getDbConfig("document_max_size"); //kilobyte
-			$config['max_width']            = 0; //1024; //pixel
-			$config['max_height']           = 0; //768; //pixel
+			//Save File & cek revision and rule when flow control
+			//print_r($_FILES);
+			/*Array ( [name] => helloworld.pdf 
+				[type] => application/pdf 
+				[tmp_name] => D:\xampp\tmp\php9974.tmp
+				[error] => 0 
+				[size] => 678 ) 
+				)
+			//size in byte
+			*/
+			if(!empty($_FILES['fst_file_name']['tmp_name'])) {
+				$config['upload_path']          = getDbConfig("document_folder");
+				$config['file_name']			=  md5('doc_'. $insertId .'_0');  //'doc_'. $insertId .'_0'. '.pdf' ;
+				//$config['encrypt_name'] 		= TRUE;
+				$config['overwrite']			= TRUE;
+				$config['file_ext_tolower']		= TRUE;
+				$config['allowed_types']        = 'pdf'; //'gif|jpg|png';
+				$config['max_size']             = (int) getDbConfig("document_max_size"); //kilobyte
+				$config['max_width']            = 0; //1024; //pixel
+				$config['max_height']           = 0; //768; //pixel
 
+				
+
+				$this->load->library('upload', $config);
+
+				if ( ! $this->upload->do_upload('fst_file_name')){			
+					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+					$this->ajxResp["message"] = "Failed to upload document";// . $this->upload->display_errors();
+					$this->ajxResp["data"] = ["fst_file_name" =>$this->upload->display_errors()];
+					$this->json_output();
+					$this->db->trans_rollback();
+					return;
+				}else{
+					//$data = array('upload_data' => $this->upload->data());			
+				}
+				//print_r($this->upload->data());
+				$this->ajxResp["data"]["document_upload"] = $this->upload->data();
+			}
 			
-
-			$this->load->library('upload', $config);
-
-			if ( ! $this->upload->do_upload('fst_file_name')){			
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Failed to upload document";// . $this->upload->display_errors();
-				$this->ajxResp["data"] = ["fst_file_name" =>$this->upload->display_errors()];
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}else{
-				//$data = array('upload_data' => $this->upload->data());			
-			}
-			//print_r($this->upload->data());
-			$this->ajxResp["data"]["document_upload"] = $this->upload->data();
-		}
-		
-		//Detail Document
-		$this->load->model('document_details_model');
-		$this->form_validation->set_rules($this->document_details_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		$detail_doc_items = $this->input->post("detail_doc_items");
-		$detail_doc_items = json_decode($detail_doc_items);
-		//print_r($detail_doc_items);
-		//echo "<br><br><br>";
-		foreach ($detail_doc_items as $doc_item) {
-			$dataTmp = [			
-				//fin_id
-				"fin_document_id"=> $insertId,
-				"fin_document_item_id" => $doc_item->fin_document_id,
-				"fst_active"=>"A"
-			];
-			$this->form_validation->set_data($dataTmp);
-			if ($this->form_validation->run() == FALSE){
-				//print_r($this->form_validation->error_array());
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Detail Document";
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->json_output();
-				return;
-			}
-			$this->document_details_model->insert($dataTmp);
-		}
-
-
-		//Detail Flow
-		if ($data["fbl_flow_control"] == 1){
-			$this->load->model('document_flow_control_model');
-			$this->form_validation->set_rules($this->document_flow_control_model->getRules("ADD",0));
+			//Detail Document
+			$this->load->model('document_details_model');
+			$this->form_validation->set_rules($this->document_details_model->getRules("ADD",0));
 			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			$detail_flow_control = $this->input->post("detail_flow_control");
-			$detail_flow_control = json_decode($detail_flow_control);
-			//print_r($detail_flow_control);
+			$detail_doc_items = $this->input->post("detail_doc_items");
+			$detail_doc_items = json_decode($detail_doc_items);
+			//print_r($detail_doc_items);
 			//echo "<br><br><br>";
-			foreach ($detail_flow_control as $flow_control) {
+			foreach ($detail_doc_items as $doc_item) {
 				$dataTmp = [			
-					"fin_document_id"=> $insertId,
-					"fin_seq_no"=> $flow_control->fin_seq_no,
-					"fin_user_id"=> $flow_control->fin_user_id,
-					"fst_control_status " => "NA",   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision
-					"fst_memo" => NULL,
-					"fdt_approved_datetime" => NULL,
-					"fin_version" => 0,
-					"fst_active" => "A",
+					//fin_id
 					"fin_document_id"=> $insertId,
 					"fin_document_item_id" => $doc_item->fin_document_id,
 					"fst_active"=>"A"
@@ -262,43 +217,91 @@ class Document extends MY_Controller {
 				if ($this->form_validation->run() == FALSE){
 					//print_r($this->form_validation->error_array());
 					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = "Error Validation Detail Flow";
+					$this->ajxResp["message"] = "Error Validation Detail Document";
 					$this->ajxResp["data"] = $this->form_validation->error_array();
 					$this->json_output();
 					return;
 				}
-				$this->document_flow_control_model->insert($dataTmp);
+				
+				$this->document_details_model->insert($dataTmp);				
+			}
+
+
+			//Detail Flow
+			if ($data["fbl_flow_control"] == 1){
+				$this->load->model('document_flow_control_model');
+				$this->form_validation->set_rules($this->document_flow_control_model->getRules("ADD",0));
+				$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+				$detail_flow_control = $this->input->post("detail_flow_control");
+				$detail_flow_control = json_decode($detail_flow_control);
+				//print_r($detail_flow_control);
+				//echo "<br><br><br>";
+				foreach ($detail_flow_control as $flow_control) {
+					$dataTmp = [			
+						"fin_document_id"=> $insertId,
+						"fin_seq_no"=> $flow_control->fin_seq_no,
+						"fin_user_id"=> $flow_control->fin_user_id,
+						"fst_control_status " => "NA",   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision
+						"fst_memo" => NULL,
+						"fdt_approved_datetime" => NULL,
+						"fin_version" => 0,
+						"fst_active" => "A",
+						"fin_document_id"=> $insertId,
+						"fst_active"=>"A"
+					];
+					$this->form_validation->set_data($dataTmp);
+					if ($this->form_validation->run() == FALSE){
+						//print_r($this->form_validation->error_array());
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = "Error Validation Detail Flow";
+						$this->ajxResp["data"] = $this->form_validation->error_array();
+						$this->json_output();
+						return;
+					}
+					$this->document_flow_control_model->insert($dataTmp);																
+				}			
+			}
+
+			
+			//Detail Custom Scope
+			$this->load->model('document_custom_permission_model');
+			$this->form_validation->set_rules($this->document_custom_permission_model->getRules("ADD",0));
+			$detail_custom_scope = $this->input->post("detail_custom_scope");
+			$detail_custom_scope = json_decode($detail_custom_scope);
+			//print_r($detail_custom_scope);
+
+			foreach ($detail_custom_scope as $scope) {
+				$dataTmp = [
+					"fin_document_id"=>$insertId,
+					"fst_mode"=> $scope->fst_mode,
+					"fin_user_department_id"=> $scope->fin_user_department_id,
+					"fbl_view" => ($scope->fbl_view == NULL) ? 0 : 1,
+					"fbl_print" => ($scope->fbl_print == NULL) ? 0 : 1,
+					"fst_active" => "A"
+				];
+				$this->form_validation->set_data($dataTmp);
+				if ($this->form_validation->run() == FALSE){
+					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+					$this->ajxResp["message"] = "Error Validation Custom Scope";
+					$this->ajxResp["data"] = $this->form_validation->error_array();
+					$this->json_output();
+					return;
+				}
+				$this->document_custom_permission_model->insert($dataTmp);
+			}
+		}catch(Exception $e){
+			if ($e->getCode() == 1000){
+				$dbError  = $this->db->error();
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->ajxResp["debug"] = print_r($e,true);
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
 			}			
 		}
-
 		
-		//Detail Custom Scope
-		$this->load->model('document_custom_permission_model');
-		$this->form_validation->set_rules($this->document_custom_permission_model->getRules("ADD",0));
-		$detail_custom_scope = $this->input->post("detail_custom_scope");
-		$detail_custom_scope = json_decode($detail_custom_scope);
-		//print_r($detail_custom_scope);
-
-		foreach ($detail_custom_scope as $scope) {
-			$dataTmp = [
-				"fin_document_id"=>$insertId,
-				"fst_mode"=> $scope->fst_mode,
-				"fin_user_department_id"=> $scope->fin_user_department_id,
-				"fbl_view" => ($scope->fbl_view == NULL) ? 0 : 1,
-				"fbl_print" => ($scope->fbl_print == NULL) ? 0 : 1,
-				"fst_active" => "A"
-			];
-			$this->form_validation->set_data($dataTmp);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Custom Scope";
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->json_output();
-				return;
-			}
-			$this->document_custom_permission_model->insert($dataTmp);
-		}
-			
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -440,15 +443,19 @@ class Document extends MY_Controller {
 		$this->json_output($datasources);
 	}
 	
-	public function fetch_data($fin_id){
-		$this->load->model("users_model");
-
-		$data = $this->users_model->getDataById($fin_id);
-
-		//$this->load->library("datatables");		
+	public function fetch_data($fin_document_id){
+		$this->load->model("documents_model");
+		$this->load->model("document_details_model");
+		$this->load->model("document_flow_control_model");
+		$this->load->model("document_custom_permission_model");
+		$data = [];
+		$data["header"] = $this->documents_model->getDataById($fin_document_id);
+		$data["doc_details"] = $this->document_details_model->getRowsByParentId($fin_document_id);
+		$data["flow_details"] = $this->document_flow_control_model->getRowsByParentId($fin_document_id);
+		$data["custom_details"] = $this->document_custom_permission_model->getRowsByParentId($fin_document_id);
 		$this->json_output($data);
-
 	}
+
 	public function delete($id){
 		if(!$this->aauth->is_permit("")){
 			$this->ajxResp["status"] = "NOT_PERMIT";

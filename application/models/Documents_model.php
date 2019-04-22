@@ -50,4 +50,14 @@ class Documents_model extends MY_Model {
 
         return $rules;
     }
+
+
+    public function getDataById($id){
+        $ssql = "select * from ". $this->tableName . " where " . $this->pkey ." = ?";
+        $qr = $this->db->query($ssql,[$id]);
+        if ($qr){
+            return $qr->row();
+        }
+        return NULL;
+    }
 }

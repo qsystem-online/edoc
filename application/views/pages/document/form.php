@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="form-group">
 						<label for="fin_document_id" class="col-sm-2 control-label"><?=lang("Document ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="" readonly>
+							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="{fin_document_id}" readonly>
 						</div>
 					</div>
 
@@ -209,12 +209,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										</div>				
 										<div class="col-md-1">
 											<div>
-												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_view" name="fbl_flow_control"> &nbsp;
-												<label for="fbl_flow_control" class=""> <?= lang("View")?> </label>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_view" name="fbl_scope_view"> &nbsp;
+												<label for="fbl_scope_view" class=""> <?= lang("View")?> </label>
 											</div>
 											<div>
-												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_print" name="fbl_flow_control"> &nbsp;
-												<label for="fbl_flow_control" class=""> <?= lang("Print")?> </label>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_print" name="fbl_scope_print"> &nbsp;
+												<label for="fbl_scope_print" class=""> <?= lang("Print")?> </label>
 											</div>
 
 										</div>
@@ -745,6 +745,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript"> // Main
 	$(function(){	
+		
+
 		$("#fdt_published_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 
 		$("#btnSubmitAjax").click(function(event){ //Submit AJAX
@@ -801,6 +803,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							content: resp.message,
 						});
 					}
+					if (typeof resp.debug !== "undefined"){
+						$("debug").html(resp.debug);
+					}
 
 					if(resp.status == "VALIDATION_FORM_FAILED" ){
 						//Show Error
@@ -848,19 +853,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			alert("TEST MOUSE");
 			event.preventDefault();
 		})
+
+		if ($("#fin_document_id").val() != ""){
+			init_form();
+		}
 	});
 
-	function init_form(fin_id){
+	function init_form(){
 		//alert("Init Form");
-		var url = "<?=site_url()?>/system/user/fetch_data/" + fin_id;
+
+		var url = "{base_url}document/fetch_data/" + $("#fin_document_id").val();
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.user);
-				console.log(resp.list_address);
+				
 
-				$.each(resp.user, function(name, val){
+				$.each(resp.header, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -875,8 +884,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+				$("#fst_source").trigger('change');
+				$("#fst_view_scope").trigger('change');
+				$("#fst_print_scope").trigger('change');
+				$("#fin_confidential_lvl").trigger('change');
+				$("#fdt_published_date").datepicker('update', dateFormat(resp.header.fdt_published_date));
+
+				if (resp.header.fbl_flow_control == 1){
+					//alert("check");
+					$('#fbl_flow_control').iCheck('check');
+					$('#fbl_flow_control').iCheck('update');
+					$('#list_flow').show();
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_flow_control').iCheck('uncheck');
+				}
+				$(".scope-control").each(function( index ) {
+					//console.log( index + ": " + $( this ).text() );
+					if ($(this).val() == 'CST'){
+						$('#list_scope').show();
+					}
+				});
+				
+
 				//Image Load 
-				$('#imgAvatar').attr("src",resp.user.avatarURL);
+				//$('#imgAvatar').attr("src",resp.user.avatarURL);
 
 
 				/*
