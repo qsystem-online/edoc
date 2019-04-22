@@ -30,25 +30,16 @@ class Document_flow_control_model extends MY_Model {
             )
         ];
 
-        $rules[] = [
-            'field' => 'fst_control_status',
-            'label' => 'Control Status',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'fdt_approved_datetime',
-            'label' => 'Approved Datetime',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
+        
         return $rules;
     }
 
+    public function getRowsByParentId($parent_id){
+        $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$parent_id]);
+        if($qr){
+            return $qr->result();
+        }
+        return [];
+    }
 }

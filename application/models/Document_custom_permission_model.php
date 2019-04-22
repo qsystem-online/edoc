@@ -22,8 +22,8 @@ class Document_custom_permission_model extends MY_Model {
         ];
 
         $rules[] = [
-            'field' => 'fin_user_id',
-            'label' => 'User ID',
+            'field' => 'fin_user_department_id',
+            'label' => 'User / Department ID',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
@@ -42,7 +42,7 @@ class Document_custom_permission_model extends MY_Model {
         $rules[] = [
             'field' => 'fbl_print',
             'label' => 'Print',
-            'rules' => 'required'
+            'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
             )
@@ -51,4 +51,12 @@ class Document_custom_permission_model extends MY_Model {
         return $rules;
     }
 
+    public function getRowsByParentId($parent_id){
+        $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$parent_id]);
+        if($qr){
+            return $qr->result();
+        }
+        return [];
+    }
 }

@@ -21,9 +21,12 @@ class MY_Model extends CI_Model {
 		
 		$this->db->insert($this->tableName,$data);
 		$insertId = $this->db->insert_id();
-		if ($insertId == 0){
-			//error when insert
-		}
+		$error = $this->db->error();
+		if($error["code"] != 0 ){
+			throw new Exception("Database Error !",1000); 
+			//echo "TEST throw, never call statement";
+		}	
+			
 		return $insertId;
 	}
 

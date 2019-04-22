@@ -52,5 +52,16 @@
             echo number_format($number,$digitComma,$commaSeparators,$thousandsSeparators);
         }
     }
-
+    if (!function_exists('getDbConfig')){
+        function getDbConfig($key){
+            $CI = & get_instance();
+            $ssql ="select fst_value from config where fst_key = ? and fbl_active = true";
+            $qr = $CI->db->query($ssql,[$key]);
+            $rw = $qr->row();
+            if ($rw){
+                return $rw->fst_value;
+            }
+            return null;
+        }
+    }
     

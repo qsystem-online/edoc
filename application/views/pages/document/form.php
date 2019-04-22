@@ -36,7 +36,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<h1><?=lang("Document")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Document") ?></a></li>
+		<li><a href="{base_url}document"><?= lang("Document") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -50,18 +50,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 			<!-- /.box-header -->
 			<!-- form start -->
-			<form id="frmUser" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
-				
-
+			<form id="frmDocument" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
-                    <input type="hidden" id="fin_id" name = "fin_id" value="<?=$fin_id?>">
-                    <input type="hidden" id="frm-mode" value="<?=$mode?>">
                     <div class="form-group">
 						<label for="fin_document_id" class="col-sm-2 control-label"><?=lang("Document ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="">
-							<div id="fin_document_id_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_document_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_id" value="{fin_document_id}" readonly>
 						</div>
 					</div>
 
@@ -83,7 +78,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                         <label for="fin_confidential_lvl" class="col-sm-2 control-label"><?=lang("Confidential Level")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fst_source" name="fst_source">
+							<select class="select2 form-control" id="fin_confidential_lvl" name="fin_confidential_lvl">
 								<option value='0'><?= lang("Top Management")?></option>
 								<option value='1'><?= lang("Upper Management")?></option>
                                 <option value='2'><?= lang("Middle Management")?></option>
@@ -148,6 +143,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label for="fst_file_name" class="col-sm-2 control-label"><?= lang("File Document")?></label>
 						<div class="col-sm-10">
 							<input type="file" class="form-control" id="fst_file_name"  name="fst_file_name" accept="application/pdf">
+							<div id="fst_file_name_err" class="text-danger"></div>
 						</div>
 					</div>
 					<div class="form-group">						
@@ -158,16 +154,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<hr>
 					<?php $displayDetail = ($mode == "ADD") ? "none" : "" ?>
-					<div id="tabs-user-detail" class="nav-tabs-custom" style="display:unset">
+					<div class="nav-tabs-custom" style="display:unset">
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
                             <li class="" id="list_flow" style="display:none;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
 							<li class="" id="list_scope" style="display:none;"><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
-							<li class=""><a href="#doc-viwer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
+							<li class="doc-viewer" id="tab-doc" ><a href="#doc-viewer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
 							<div class="tab-pane active" id="doc_list">
-								<button id="btn-open-list-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Document")?></button>
+								<button id="btn-open-list-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Document")?></button>
 								<div>
 									<table id="tbl_doc_items" class="table table-bordered table-hover" style="width:100%;"></table>
 								</div>
@@ -184,6 +180,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<button id="btn-apply-flow" class="btn btn-sm btn-primary" style="width:100%">Apply</button>
 										</div>															
 									</div>
+									<div class="form-group">
+										<div class="col-md-12">
+											<button id="btn-open-flow-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Flow")?></button>
+										</div>
+									</div>
+									
 								</form>
 								<table id="tbl_flow_control" class="compat hover stripe" style="width:100%" ></table>
 								
@@ -207,12 +209,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										</div>				
 										<div class="col-md-1">
 											<div>
-												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_view" name="fbl_flow_control"> &nbsp;
-												<label for="fbl_flow_control" class=""> <?= lang("View")?> </label>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_view" name="fbl_scope_view"> &nbsp;
+												<label for="fbl_scope_view" class=""> <?= lang("View")?> </label>
 											</div>
 											<div>
-												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_print" name="fbl_flow_control"> &nbsp;
-												<label for="fbl_flow_control" class=""> <?= lang("Print")?> </label>
+												<input type="checkbox" class="minimal form-control icheck" id="fbl_scope_print" name="fbl_scope_print"> &nbsp;
+												<label for="fbl_scope_print" class=""> <?= lang("Print")?> </label>
 											</div>
 
 										</div>
@@ -225,7 +227,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</form>
 								<table id="tbl_custom_scope" class="compat hover stripe" style="width:100%" ></table>
 							</div>
-							<div class="tab-pane" id="doc-viwer" style="text-align:center">
+							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">
 								
 								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
 								<!--
@@ -240,7 +242,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">
-					<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
+					<a id="btnSubmitAjax" href="#" class="btn btn-primary pull-right">Save Document</a>
+					<a id="btnNewDoc" href="#" class="btn btn-primary pull-right" style="margin-right:10px">New Doc</a>
 				</div>
 				<!-- /.box-footer -->		
 			</form>
@@ -248,7 +251,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
-<div id="mdlDocList" class="modal fade in" role="dialog" style="display: none">
+<div id="mdlDocList" class="modal fadein" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:90%;min-width:700px;max-width:100%">
 		<!-- Modal content-->
 		<div class="modal-content">
@@ -258,25 +261,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form class="form-horizontal ">	
-					<input type="hidden" id="fin-detail-id" value="0">
-					<div class="form-group">						
-						<label for="select-product" class="col-md-9 control-label">Search By</label>
-						<div class="col-md-3">
-							<select class="select2 col-md-12" id="doc-search-by" name="" >
-								<option value="fst_search_marks">Search mark</option>
-								<option value="fst_memo">Notes</option>
-							</select>														
-						</div>						
-					
+				<div class="row">
+					<div class="col-md-12">
+						<form>	
+							<input type="hidden" id="fin-detail-id" value="0">
+							<div class="form-group">						
+								<label for="select-product" class="col-md-10 control-label text-right">Search By</label>
+								<div class="col-md-2 text-right" style="padding:0px;margin-bottom:10px">
+									<select class="select2" style="width:100%" id="doc-search-by"  data-minimumResultsForSearch = 'Infinity' >
+										<option value="fst_search_marks">Search mark</option>
+										<option value="fst_memo">Notes</option>
+									</select>														
+								</div>						
+								
+							</div>
+						</form>
 					</div>
-				</form>
-
-				<div class="col-md-12">
-					<div class="row">
-						<table id="tbl_search_doc_list"  class="table-bordered table-hover" style="width:100%"></table>
-					</div>					
-				</div>				
+				</div>
+				<div class="row">
+				
+					<div class="col-md-12">
+						
+						<table id="tbl_search_doc_list"  class="table table-bordered table-hover" style="width:100%"></table>
+										
+					</div>
+						
+				</div>	
 			</div>
 			<div class="modal-footer">
 				<button id="btn-add-product-detail" type="button" class="btn btn-primary">Add</button>
@@ -417,8 +427,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</script>
 </div>
 
-<div id="mdlFlowControl" class="modala fadea" role="dialog" style="display: unset">
-	<div class="modal-dialog" style="display:table;width:60%;min-width:400px;max-width:100%">
+<div id="mdlFlowControl" class="modal fade in" role="dialog" style="display: none">
+	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
 		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
@@ -431,7 +441,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">						
 						<label for="fin-flow-control-user" class="col-md-3 control-label"><?= lang("User")?></label>
 						<div class="col-md-9">
-							<select class="select2 form-control" id="fin-flow-control-user"></select>
+							<select class="select2 form-control" id="fin-flow-control-user" style="width:100%"></select>
 						</div>											
 					</div>
 					<div class="form-group">						
@@ -450,9 +460,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 	
 	<script type="text/javascript">
-		$(function(){			
+		var tblFlowControl;
+		$(function(){
+			// Fill Flow Control select2
+			$.ajax({
+				url: '{base_url}flow_schema/getFlow/{active_user_id}',
+				dataType : "json",
+				method :"GET",
+				success:function(resp){
+					respData = resp.data;
+					selectData = [];
+					$.each(respData,function(index,value){
+						selectData.push({
+							"id" : value.fin_flow_control_schema_id,
+							"text" : value.fst_name
+						});	
+					});
+					$("#select-flow-control").select2({
+						data: selectData,
+					});
+					$(".select2-container").addClass("form-control"); 
+
+				}
+			});
+			
 			fill_selec2_users("fin-flow-control-user");
+
 			$(".inputmask").inputmask();
+
 			$("#btn-add-flow-control-user").click(function(){
 				selectedUser = $('#fin-flow-control-user').select2('data')[0];				
 				tblFlowControl = $("#tbl_flow_control").DataTable();
@@ -464,6 +499,76 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				tblFlowControl.row.add(data).order([2,'asc'],[1,'asc']).draw();
 			});
+
+			$("#btn-open-flow-doc").click(function(event){
+				event.preventDefault();
+				$("#mdlFlowControl").modal('show');
+			});	
+
+			//datatables Flow Control init
+			tblFlowControl = $("#tbl_flow_control").DataTable({
+				searching: false,
+				paging:   false,
+				info: false,
+				columns:[
+					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:false},
+					{"title" : "<?= lang("User") ?>","width": "75%",data:"fin_user_id",
+						visible:true,
+						render: function ( data, type, row ) {
+							return row.fst_username;
+						}
+					},
+					{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
+					{"title" : "<?= lang("Action") ?>","width": "10%",
+					data:"action",
+						render: function ( data, type, row ) {
+							return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
+						},
+						"sortable": false,
+						"className":"dt-body-center text-center"
+					},
+				],
+			});
+
+			//apply flow
+			$("#btn-apply-flow").click(function(event){
+				event.preventDefault();
+				$.ajax({
+					url: '{base_url}flow_schema/getFlowDetail/' + $("#select-flow-control").val(),
+					dataType : "json",
+					method :"GET",
+					success:function(resp){	
+						data = resp.data;
+						dataFlow = [];
+						$.each(data,function(index,value){
+							console.log(value);
+							dataFlow.push({							
+								fin_id: 0,
+								fin_user_id: value.fin_user_id,
+								fst_username: value.fst_username,
+								fin_seq_no: value.fin_seq_no,
+								fst_control_status: 'NA',
+								fst_memo:''
+							});
+						});
+						
+						var table = $('#tbl_flow_control').DataTable();
+						table.clear();
+						table.rows.add(dataFlow).order([2,'asc'],[1,'asc']).draw();
+					}
+				})
+			});
+
+			//delete detail
+			$(document).on('click','.btn-delete-flow-detail', function(event){
+				event.preventDefault();
+				var t = $('#tbl_flow_control').DataTable();
+				var trRow = $(this).parents('tr');
+				t.row(trRow).remove().draw();
+			});
+
+
+
 		});
 	</script>
 </div>
@@ -476,105 +581,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
 
-<script type="text/javascript">	//Flow Control
-	var tblFlowControl;
-
-	$(function(){
-		// Fill Flow Control
-		$.ajax({
-			url: '{base_url}flow_schema/getFlow/{active_user_id}',
-			dataType : "json",
-			method :"GET",
-			success:function(resp){
-				respData = resp.data;
-				selectData = [];
-				$.each(respData,function(index,value){
-					selectData.push({
-						"id" : value.fin_flow_control_schema_id,
-						"text" : value.fst_name
-					});	
-				});
-				$("#select-flow-control").select2({
-					data: selectData,
-				});
-				$(".select2-container").addClass("form-control"); 
-
-			}
-		});
-
-		//datatables Flow Control init
-		tblFlowControl = $("#tbl_flow_control").DataTable({
-			searching: false,
-			paging:   false,
-			info: false,
-			columns:[
-				{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:true},
-				{"title" : "<?= lang("User") ?>","width": "25%",data:"fin_user_id",
-					visible:true,
-					render: function ( data, type, row ) {
-						return row.fst_username;
-					}
-				},
-				{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
-				{"title" : "<?= lang("Action") ?>","width": "10%",
-				data:"action",
-					render: function ( data, type, row ) {
-						return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
-					},
-					"sortable": false,
-					"className":"dt-center"
-				},
-			],
-		});
-
-		//apply flow
-		$("#btn-apply-flow").click(function(event){
-			event.preventDefault();
-			$.ajax({
-				url: '{base_url}flow_schema/getFlowDetail/' + $("#select-flow-control").val(),
-				dataType : "json",
-				method :"GET",
-				success:function(resp){	
-					data = resp.data;
-					dataFlow = [];
-					$.each(data,function(index,value){
-						console.log(value);
-						dataFlow.push({							
-							fin_id: 0,
-							fin_user_id: value.fin_user_id,
-							fst_username: value.fst_username,
-							fin_seq_no: value.fin_seq_no,
-							fst_control_status: 'NA',
-							fst_memo:''
-						});
-					});
-					
-					var table = $('#tbl_flow_control').DataTable();
-					table.clear();
-					table.rows.add(dataFlow).order([2,'asc'],[1,'asc']).draw();
-				}
-			})
-		})
-
-		//delete detail
-		$(document).on('click','.btn-delete-flow-detail', function(event){
-			event.preventDefault();
-			var t = $('#tbl_flow_control').DataTable();
-			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw();
-		});
-		
-		$('#fbl_flow_control').on('ifChanged', function(event){
-			console.log(event);
-			//alert(event.type + $('#fbl_flow_control').val() );
-			if ($("#fbl_flow_control").is(":checked")){
-				$("#list_flow").show();
-			}else{
-				$("#list_flow").hide();
-			};
-		});
-	})
-</script>
 
 <script type="text/javascript"> //Custom Scope
     $(function(){
@@ -590,37 +596,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{
 				fill_selec2_users("scope-custom-value");
 			}
-		});	
-    });
-</script>
-
-<script type="text/javascript">
-	$(function(){
-
-		$(".scope-control").change(function(event){
-			event.preventDefault();
-			$("#list_scope").hide();
-
-			$(".scope-control").each(function(index){				
-				if ($(this).val() == "CST"){
-					$("#list_scope").show();
-				} 
-			});
 		});
 
-
-		$(".scope-control").each(function(index){
-			$( this ).change(function(event){
-				event.preventDefault();
-				console.log($(".scope-control").val());
-			});
-		});
-	});
-	
-</script>
-
-<script type="text/javascript">
-	$(function(){
 		$("#tbl_custom_scope").DataTable({
 			searching: false,
 			paging:   false,
@@ -636,7 +613,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "<?= lang("View") ?>","width": "10%",data:"fbl_view",
 					render: function(data, type, row) {						
 						if (data == true) {
-							return '<input type="checkbox" class="editor-active" checked>';
+							return '<input type="checkbox" class="editor-active" onclick="return false" checked>';
 						} else {
 							return '<input type="checkbox" class="editor-active">';
 						}
@@ -668,17 +645,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}					  
 			],
 		});
-		
+
 		$("#tbl_custom_scope").on("click",".btn-delete-document-scope",function(event){
 			event.preventDefault();
 			t = $("#tbl_custom_scope").DataTable();
 			var trRow = $(this).parents('tr');
 			t.row(trRow).remove().draw();
-
-
-
 		});
-		
+
 		$("#btn-custom-scope").click(function(event){
 			event.preventDefault();
 			data = {
@@ -693,12 +667,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			t = $("#tbl_custom_scope").DataTable();
 			t.row.add(data).draw();
 		});
-	})
 
+		$(".scope-control").change(function(event){
+			event.preventDefault();
+			$("#list_scope").hide();
+
+			$(".scope-control").each(function(index){				
+				if ($(this).val() == "CST"){
+					$("#list_scope").show();
+				} 
+			});
+		});
+
+		$(".scope-control").each(function(index){
+			$( this ).change(function(event){
+				event.preventDefault();
+				console.log($(".scope-control").val());
+			});
+		});
+
+    });
 </script>
 
-<script type="text/javascript">
-	//Document Viewer
+<script type="text/javascript"> //Document Viewer
 	$(function(){
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
@@ -745,30 +736,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				// PDF loading error
 				console.error(reason);
 			});
+
+			$('.nav-tabs a[href="#doc-viewer"]').tab('show');
+
 		});
 	});
 </script>
 
-<script type="text/javascript">
-	$(function(){				
-		<?php if($mode == "EDIT"){?>
-			init_form($("#fin_id").val());
-		<?php } ?>
+<script type="text/javascript"> // Main
+	$(function(){	
+		
 
-		$("#btnSubmitAjax").click(function(event){
+		$("#fdt_published_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
+
+		$("#btnSubmitAjax").click(function(event){ //Submit AJAX
 			event.preventDefault();
-			//data = $("#frmUser").serialize();
-			data = new FormData($("#frmUser")[0]);
-			//data = new FormData($("form")[0]);
+			$(".text-danger").html("");
+			data = new FormData($("#frmDocument")[0]);
 
-			mode = $("#frm-mode").val();
-			if (mode == "ADD"){
-				url =  "<?= site_url() ?>system/user/ajx_add_save";
-			}else{
-				url =  "<?= site_url() ?>system/user/ajx_edit_save";
+			//detail Document
+			t = $('#tbl_doc_items').DataTable();
+			detail = new Array();			
+			$.each(t.data(),function(i,v){
+				console.log(v);
+				detail.push({
+					fin_document_id : v.fin_document_id
+				});
+			});
+			data.append("detail_doc_items", JSON.stringify(detail));
+
+
+			//Detail Flow
+			detail = new Array();
+			if ($("#fbl_flow_control").is(":checked")){
+				t = $('#tbl_flow_control').DataTable();
+				$.each(t.data(),function(i,v){
+					detail.push(v);
+				});
 			}
+			data.append("detail_flow_control", JSON.stringify(detail));
+			
 
-			//var formData = new FormData($('form')[0])
+			//Scope Permission
+			detail = new Array();
+			t = $('#tbl_custom_scope').DataTable();
+			$.each(t.data(),function(i,v){
+				detail.push(v);
+			});
+			data.append("detail_custom_scope", JSON.stringify(detail));
+			//console.log(data);
+
+			url =  "<?= site_url() ?>document/ajx_add_save";
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',
@@ -783,10 +801,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							confirm: function(){
-								//alert('the user clicked yes');
-							}
 						});
+					}
+					if (typeof resp.debug !== "undefined"){
+						$("debug").html(resp.debug);
 					}
 
 					if(resp.status == "VALIDATION_FORM_FAILED" ){
@@ -797,17 +815,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#fin_id").val(data.insert_id);
-
+						$("#fin_document_id").val(data.insert_id);
 						//Clear all previous error
 						$(".text-danger").html("");
-
-						// Change to Edit mode
-						$("#frm-mode").val("EDIT");  //ADD|EDIT
-
-						$('#fst_username').prop('readonly', true);
-						$("#tabs-user-detail").show();
-						console.log(data.data_image);
 
 					}
 
@@ -822,29 +832,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		});
 
+		$("#btnNewDoc").click(function(event){
+			event.preventDefault();
+			window.location.replace("{base_url}document/add");
+		});
+
+		// Document Flow Control Checked
+		$('#fbl_flow_control').on('ifChanged', function(event){
+			console.log(event);
+			//alert(event.type + $('#fbl_flow_control').val() );
+			if ($("#fbl_flow_control").is(":checked")){
+				$("#list_flow").show();
+			}else{
+				$("#list_flow").hide();
+			};
+		});
+
+
 		$('#plugin').click(function(event) {
 			alert("TEST MOUSE");
 			event.preventDefault();
 		})
-		
-		
-		$(".datepicker").datepicker({
-			format:"yyyy-mm-dd"
-		});
-		
+
+		if ($("#fin_document_id").val() != ""){
+			init_form();
+		}
 	});
 
-	function init_form(fin_id){
+	function init_form(){
 		//alert("Init Form");
-		var url = "<?=site_url()?>/system/user/fetch_data/" + fin_id;
+
+		var url = "{base_url}document/fetch_data/" + $("#fin_document_id").val();
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.user);
-				console.log(resp.list_address);
+				
 
-				$.each(resp.user, function(name, val){
+				$.each(resp.header, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -859,8 +884,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+				$("#fst_source").trigger('change');
+				$("#fst_view_scope").trigger('change');
+				$("#fst_print_scope").trigger('change');
+				$("#fin_confidential_lvl").trigger('change');
+				$("#fdt_published_date").datepicker('update', dateFormat(resp.header.fdt_published_date));
+
+				if (resp.header.fbl_flow_control == 1){
+					//alert("check");
+					$('#fbl_flow_control').iCheck('check');
+					$('#fbl_flow_control').iCheck('update');
+					$('#list_flow').show();
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_flow_control').iCheck('uncheck');
+				}
+				$(".scope-control").each(function( index ) {
+					//console.log( index + ": " + $( this ).text() );
+					if ($(this).val() == 'CST'){
+						$('#list_scope').show();
+					}
+				});
+				
+
 				//Image Load 
-				$('#imgAvatar').attr("src",resp.user.avatarURL);
+				//$('#imgAvatar').attr("src",resp.user.avatarURL);
 
 
 				/*
@@ -904,7 +953,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function fill_selec2_users(element_id){
 		$.ajax({
-			url: '{base_url}users/getAllList',
+			url: '{base_url}user/getAllList',
 			dataType : "json",
 			method :"GET",
 			success:function(resp){

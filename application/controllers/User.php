@@ -387,6 +387,7 @@ class User extends MY_Controller {
     }
 
     public function getAllList(){
+		$this->load->model('users_model');
         $result = $this->users_model->getAllList();
 		$this->ajxResp["data"] = $result;
 		$this->json_output();	

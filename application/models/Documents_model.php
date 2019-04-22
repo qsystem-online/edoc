@@ -30,7 +30,7 @@ class Documents_model extends MY_Model {
             )
         ];
 
-        $rules[] => [
+        $rules[] = [
             'field' => 'fst_print_scope',
             'label' => 'Print Scope',
             'rules' => 'required',
@@ -39,7 +39,7 @@ class Documents_model extends MY_Model {
             )
         ];
 
-        $rules[] => [
+        $rules[] = [
             'field' => 'fbl_flow_control',
             'label' => 'Flow Control',
             'rules' => 'required',
@@ -49,5 +49,15 @@ class Documents_model extends MY_Model {
         ];
 
         return $rules;
+    }
+
+
+    public function getDataById($id){
+        $ssql = "select * from ". $this->tableName . " where " . $this->pkey ." = ?";
+        $qr = $this->db->query($ssql,[$id]);
+        if ($qr){
+            return $qr->row();
+        }
+        return NULL;
     }
 }
