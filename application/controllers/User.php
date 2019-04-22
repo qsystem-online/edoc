@@ -131,7 +131,7 @@ class User extends MY_Controller {
 		}
 
         //Save Group
-        /*$this->load->model("user_group_model");		
+        $this->load->model("user_group_model");		
 		$arr_group_id = $this->input->post("fin_group_id");
 		if ($arr_group_id){
 			foreach ($arr_group_id as $group_id) {
@@ -142,7 +142,7 @@ class User extends MY_Controller {
 				];
 				$this->user_group_model->insert($data);
 			}
-		}*/
+		}
 
         //Save File
 		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
