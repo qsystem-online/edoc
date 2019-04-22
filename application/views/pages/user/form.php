@@ -198,8 +198,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							confirm: function(){
+							onDestroy: function(){
 								//alert('the user clicked yes');
+								window.location.href = "<?= site_url() ?>user/lizt";
+								return;
 							}
 						});
 					}
@@ -268,9 +270,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
-
+		
 		$("#fdt_birthdate").datepicker('update', dateFormat(user.fdt_birthdate));
 	});
+
 
 	function init_form(fin_user_id){
 		//alert("Init Form");

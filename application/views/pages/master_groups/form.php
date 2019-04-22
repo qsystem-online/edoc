@@ -123,7 +123,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							confirm: function(){
+							onDestroy: function(){
+								//alert('the user clicked yes');
+								window.location.href = "<?= site_url() ?>master_groups/lizt";
+								return;
 							}
 						});
 					}
