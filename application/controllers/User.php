@@ -280,7 +280,7 @@ class User extends MY_Controller {
 		$this->json_output();
     }
 
-    public function add_save(){
+    public function remove_add_save(){
         $this->load->model('users_model');
 		$data=[
 			'fst_fullname'=>$this->input->get("fst_fullname"),

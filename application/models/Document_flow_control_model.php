@@ -35,7 +35,9 @@ class Document_flow_control_model extends MY_Model {
     }
 
     public function getRowsByParentId($parent_id){
-        $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fst_active = 'A'";
+        $ssql = "select a.*,b.fst_username from " . $this->tableName . " a
+            inner join users b on a.fin_user_id = b.fin_user_id
+            where a.fin_document_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql,[$parent_id]);
         if($qr){
             return $qr->result();

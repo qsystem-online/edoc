@@ -314,7 +314,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							return row.fst_name;
 						}
 					},
-					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
+					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true,
+						render: function(data,type,row){
+							if(data == "INT"){
+								return "INTERNAL";
+							}else{
+								return "EXTERNAL";
+							}
+						}
+					
+					},
 					{"title" : "<?= lang("Notes") ?>","width": "25%",data:"fst_memo"},
 					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
 						render : function(data,type,row){
@@ -496,7 +505,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fin_user_id : selectedUser.id,
 					fst_username : selectedUser.text,
 					fin_seq_no : $("#fin-flow-control-order").val(),
-				}
+					fst_control_status: 'NA',
+					fst_memo:'',
+					fdt_approved_datetime:null
+				}		
 				tblFlowControl.row.add(data).order([2,'asc'],[1,'asc']).draw();
 			});
 
@@ -511,16 +523,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				paging:   false,
 				info: false,
 				columns:[
-					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:false},
-					{"title" : "<?= lang("User") ?>","width": "75%",data:"fin_user_id",
+					{"title" : "<?= lang("ID") ?>","width": "0%",data:"fin_id",visible:false},
+					{"title" : "<?= lang("User") ?>","width": "20%",data:"fin_user_id",
 						visible:true,
 						render: function ( data, type, row ) {
 							return row.fst_username;
 						}
 					},
-					{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
-					{"title" : "<?= lang("Action") ?>","width": "10%",
-					data:"action",
+					{"title" : "<?= lang("Order") ?>","width": "5%",data:"fin_seq_no"},
+					{"title" : "<?= lang("Status") ?>","width": "20%",data:"fst_control_status",
+						render:function(data,type,row){
+							switch (data){
+								case "NA" :
+									return "Need Approval";
+								case "RA" :
+									return "Ready To Approve";
+								case "NR" :
+									return "Need Revision";
+								case "AP" :
+									return "Approved";
+							}
+						}
+					},
+					{"title" : "<?= lang("Memo") ?>","width": "35%",data:"fst_memo"},
+					{"title" : "<?= lang("approved") ?>","width": "10%",data:"fdt_approved_datetime"},
+					{"title" : "<?= lang("Action") ?>","width": "10%",data:"action",
 						render: function ( data, type, row ) {
 							return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
 						},
@@ -548,7 +575,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								fst_username: value.fst_username,
 								fin_seq_no: value.fin_seq_no,
 								fst_control_status: 'NA',
-								fst_memo:''
+								fst_memo:'',
+								fdt_approved_datetime:null,
 							});
 						});
 						
@@ -907,39 +935,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 				
-
-				//Image Load 
-				//$('#imgAvatar').attr("src",resp.user.avatarURL);
-
-
-				/*
-				imgurl = "<?= site_url()?>assets/app/users/avatar/avatar_" + fin_id +".jpg";
-				imgurlDefault = "<?= site_url()?>assets/app/users/avatar/default.jpg";
-
-				$('#imgAvatar').load(imgurl, function(response, status, xhr) {
-					if (status == "error") 
-						$(this).attr('src', imgurlDefault);
-					else
-						$(this).attr('src', imgurl);
-				});
-				*/
-
-				//populate Group (select2)
-				var groups = [];
-				$.each(resp.list_group, function(name, val){
-					groups.push(val.fin_group_id);
+				//Fill Document Detail
+				t = $("#tbl_doc_items").DataTable();
+				$.each(resp.doc_details,function(i,v){
+					
+					data = {
+						fin_id: v.fin_id,
+						fin_document_id : v.fin_document_id,
+						fst_name: v.fst_name,
+						fst_source : v.fst_source,
+						fst_memo : v.fst_memo,
+						fin_insert_id : v.fin_insert_id,
+						fst_username : v.fst_username,
+						fdt_insert_datetime : v.fdt_insert_datetime
+					};
+					
+					t.row.add(data).draw();
 				})
-				$("#fin_group_id").val(groups).trigger("change");
-
-				//populate address
-				$.each(resp.list_address, function(name, val){
-					console.log(val);
-					isPrimary = false;
-					if (val.fbl_primary == "1"){
-						isPrimary = true;
+				
+				//Fill Document Flow
+				t = $("#tbl_flow_control").DataTable();
+				$.each(resp.flow_details,function(i,v){
+					data = {
+						fin_id:v.fin_id,
+						fin_user_id:v.fin_user_id,
+						fst_username: v.fst_username,
+						fin_seq_no: v.fin_seq_no,
+						fst_control_status :v.fst_control_status,
+						fdt_approved_datetime :v.fdt_approved_datetime,
+						fst_memo : v.fst_memo
 					}
-					add_address(val.fin_id,val.fst_name,val.fst_address,isPrimary);
-				})
+					t.row.add(data);
+				});
+				t.draw();
+				
+				//Fill custom scope
+				t = $("#tbl_custom_scope").DataTable();
+				$.each(resp.custom_details,function(i,v){
+					data = {
+						fin_id:v.fin_id,
+						fst_mode:v.fst_mode,
+						fin_user_department_id: v.fin_departent_id,
+						fst_user_department_name:v.fst_user_department_name,
+						fbl_view:v.fbl_view,
+						fbl_print:v.fbl_print
+
+					}
+					t.row.add(data);
+				});
+				t.draw();
+				
 
 
 			},
