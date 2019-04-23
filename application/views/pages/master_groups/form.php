@@ -81,7 +81,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
 				<!-- end box body -->
 
-                <div class="box-footer">
+                <div class="box-footer text-right">
                     <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
                 </div>
                 <!-- end box-footer -->

@@ -52,7 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_user_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_user_id" value="<?=$fin_user_id?>" readonly>
 							<div id="fin_user_id_err" class="text-danger"></div>
-
 						</div>
 					</div>
 

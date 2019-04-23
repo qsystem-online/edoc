@@ -1,7 +1,7 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Flow_control_schema_items_model extends MY_Model {
-    public $tableName = "flow_control_schema_items";
+class Flow_control_schema_detail_model extends MY_Model {
+    public $tableName = "flow_control_schema_detail";
     public $pkey = "fin_id";
 
     public function __construct(){
@@ -13,8 +13,17 @@ class Flow_control_schema_items_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_flow_control',
-            'label' => 'Flow Control',
+            'field' => 'fin_flow_control_schema_id',
+            'label' => 'Flow Schema ID',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fin_user_id',
+            'label' => 'User ID',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
