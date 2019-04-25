@@ -1,7 +1,7 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Flow_control_schema_detail_model extends MY_Model {
-    public $tableName = "flow_control_schema_detail";
+class Flow_control_schema_items_model extends MY_Model {
+    public $tableName = "flow_control_schema_items";
     public $pkey = "fin_id";
 
     public function __construct(){
