@@ -122,7 +122,7 @@ class Flow_schema extends MY_Controller {
 		foreach ($details as $item) {
 			$data = [
 				"fin_flow_control_schema_id"=> $insertId,
-				"fin_user_id"=> $insertId,
+				"fin_user_id"=> $item->fin_user_id,
 				"fin_seq_no"=> $item->fin_seq_no
 			];
 			
@@ -216,19 +216,6 @@ class Flow_schema extends MY_Controller {
 			}
 		}
 		
-		/*$arr_schema_id = $this->input->post("fin_flow_control_schema_id");
-		if ($arr_schema_id){
-			foreach ($arr_schema_id as $schema_id) {
-				$data = [
-					"fin_flow_control_schema_id"=> $schema_id,
-					"fin_id"=> $fin_id,
-					"fin_user_id"=> $fin_user_id,
-					"fst_active"=> "A"
-				];
-				$this->flow_control_schema_detail_model->insert($data);
-			}
-		}*/
-	
 		$this->db->trans_complete();
 
 		$this->ajxResp["status"] = "SUCCESS";
