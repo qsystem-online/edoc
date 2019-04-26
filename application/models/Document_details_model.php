@@ -36,4 +36,9 @@ class Document_details_model extends MY_Model {
         }
         return [];
     }
+
+    public function deleteByParentId($fin_document_id){
+        $this->db->where("fin_document_id",$fin_document_id);
+        $this->db->delete($this->tableName);
+    }
 }

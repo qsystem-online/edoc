@@ -67,4 +67,23 @@ class Document_custom_permission_model extends MY_Model {
         }
         return [];
     }
+
+    public function deleteByParentId($fin_document_id){
+        $this->db->where("fin_document_id",$fin_document_id);
+        $this->db->delete($this->tableName);
+    }
+
+    public function isPermit($mode = "USER", $permitionMode = "VIEW",$fin_document_id,$fin_user_department_id){        
+        $field = ($permitionMode == "VIEW") ? "fbl_view" : "fbl_print";
+        $fstMode = ($mode == "USER") ? "USER" : "DEPARTMENT";
+        $ssql = "select $field from " . $this->tableName . " where fst_mode = ? and fin_user_department_id = ? and fin_document_id = ?";
+        $qr = $this->db->query($ssql,[$fstMode,$fin_user_department_id,$fin_document_id]);
+        if($qr){
+            $rw = $qr->row();
+            return $rw->$field;
+        }
+        return false;
+
+    }
+    
 }

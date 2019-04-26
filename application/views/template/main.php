@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<debug style="display:none">
-			test debug here
-		</debug>
+	<head>		
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -87,7 +84,7 @@
 
 			<footer class="main-footer">
 				{MAIN_FOOTER}
-			</footer>r
+			</footer>
 
 			{CONTROL_SIDEBAR}
 		
