@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <input type="hidden" id="frm-mode" value="<?=$mode?>">
 
                     <div class='form-group'>
-                    <label for="fin_flow_control_schema_id" class="col-sm-2 control-label"><?=lang("Flow Schema ID")?> *</label>
+                    <label for="fin_flow_control_schema_id" class="col-sm-2 control-label"><?=lang("FC Schema ID")?> #</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_flow_control_schema_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_flow_control_schema_id" value="<?=$fin_flow_control_schema_id?>" readonly>
 							<div id="fin_flow_control_schema_id_err" class="text-danger"></div>
@@ -74,9 +74,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<div class="col-sm-12" style='text-align:right'>
-							<button id="btn-add-product" class="btn btn-default btn-sm">
+							<button id="btn-add-detail" class="btn btn-default btn-sm">
 								<i class="fa fa-plus" aria-hidden="true"></i>
-								Add Product
+								<?=lang("Add Detail")?>
 							</button>
 						</div>
 					</div>
@@ -86,7 +86,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <!-- end box body -->
 
                 <div class="box-footer text-right">
-					<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
+					<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save")?> Ajax</a>
 				</div>
 				<!-- end box-footer -->	
             </form>
@@ -94,30 +94,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </section>
 
-<!-- modal atau popup -->
+<!-- modal atau popup "ADD" -->
 <div id="myModal" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table">
 		<!-- modal content -->
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Add Flow Control Schema Detail</h4>
+				<h4 class="modal-title"><?=lang("Add Flow Control Schema Detail")?></h4>
 			</div>
 
 			<div class="modal-body">
 				<form  class="form-horizontal">				
 					<div class="form-group">
-						<label for="fin_flow_control_schema_id" class="col-sm-2 control-label"><?=lang("FCS ID")?></label>
+						<label for="select-username" class="col-sm-2 control-label"><?=lang("User Name")?></label>
 						<div class="col-sm-10">
-							<input type="text" id="fin_flow_control_schema_id" class="form-control" ></select>
-							<div id="fin_flow_control_schema_id_err" class="text-danger"></div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="fin_user_id" class="col-sm-2 control-label"><?=lang("User ID")?></label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fin_user_id">
-							<div id="fin_user_id_err" class="text-danger"></div>
+							<select id="select-username" class="form-control"></select>
+							<div id="fst_username_err" class="text-danger"></div>
 						</div>
 					</div>
 					<div class="form-group">
@@ -131,8 +124,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-add-detail" type="button" class="btn btn-primary" >Add</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button id="btn-add-schema-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
 			</div>
 		</div>
 	</div>
@@ -162,7 +155,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 			//console.log(data);
-			//return;
+			//return;*/
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -177,9 +170,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				processData: false,
-				contentType: false,
-				cache: false,
+				//processData: false,
+				//contentType: false,
+				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -202,7 +195,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
 						$("#fin_flow_control_schema_id ").val(data.insert_id);
-
 						//Clear all previous error
 						$(".text-danger").html("");
 
@@ -221,7 +213,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             });
         });
 
-		$("#btn-add-product").click(function(event){
+		$("#select-username").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>flow_schema/get_data_username',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data) {
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.fin_user_id,
+							"text" : value.fst_username
+						});	
+					});
+					console.log(data2);
+					return {
+						results: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		var selected_username;
+		var arrDetail;
+
+		$('#select-username').on('select2:select', function (e) {
+			console.log(selected_username);
+			var data = e.params.data;
+			selected_username = data;
+			console.log(selected_username);
+		});
+
+		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
 			
 			$("#myModal").modal({
@@ -229,17 +254,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		})
 
-		$("#btn-add-detail").click(function(event){
+		$("#btn-add-schema-detail").click(function(event){
 			event.preventDefault();
 			t = $('#tblFlowSchemaDetail').DataTable();
 		
 			var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a><button class="btnsubmit" contenteditable="true" style="display: none;">submit</button></div>';
-
 			t.row.add({
 				fin_id:0,
-				fin_flow_control_schema_id:1,
-				fin_user_id:text,
-				fin_seq_no:3,
+				fin_flow_control_schema_id:0,
+				fin_user_id:selected_username.id,
+				fst_username:selected_username.text,
+				fin_seq_no:$("#fin_seq_no").val(),
 				action: action
 			}).draw(false);
 		});
@@ -249,10 +274,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				{"title" : "ID","width": "10%",sortable:false,data:"fin_id",visible:false},
-				{"title" : "Flow Control Schema ID","width": "15%",sortable:false,data:"fin_flow_control_schema_id"},
-				{"title" : "User ID","width": "10%",sortable:false,data:"fin_user_id"},
-				{"title" : "Sequence No.","width": "10%",sortable:false,data:"fin_seq_no"},
+				{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
+				{"title" : "fin_flow_control_schema_id","width": "0%",sortable:false,data:"fin_flow_control_schema_id",visible:false},
+				{"title" : "fin_user_id","width": "0%",sortable:false,data:"fin_user_id",visible:false},
+				{"title" : "User Name","width": "20%",sortable:false,data:"fst_username"},
+				{"title" : "Sequence No.","width": "15%",sortable:false,data:"fin_seq_no"},
 				{"title" : "action","width": "10%",data:"action",sortable:false,className:'dt-center'},
 			],
 			processing: true,
@@ -272,7 +298,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t = $('#tblFlowSchemaDetail').DataTable();
 				var trRow = $(this).parents('tr');
 				t.row(trRow).remove().draw();
-				//calculateTotal();	
+			
 			});
 
 			$(".btn-edit").click(function(event){
@@ -296,9 +322,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.flow_schema);
+				//console.log(resp.fcsheader);
+				//console.log(resp.fcsdetail);
 
-				$.each(resp.flow_schema, function(name, val){
+				$.each(resp.fcsheader, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -316,18 +343,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				// Schema Detail DataTable
 				t = $('#tblFlowSchemaDetail').DataTable();
-				$.each(resp.flow_schema_detail, function(name,val){
+				$.each(resp.fcsdetail, function(name,val){
 					console.log(val);
 					var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a><button class="btnsubmit" contenteditable="true" style="display: none;">submit</button></div>';
 					t.row.add({
 						fin_id:val.fin_id,
 						fin_flow_control_schema_id:val.fin_flow_control_schema_id,
 						fin_user_id:val.fin_user_id,
-						user_name:val.name,
+						fst_username:val.fst_username,
 						fin_seq_no:val.fin_seq_no,
 						action: action
 					}).draw(false);
 				});
+
+				// menampilkan data di select2
+				var newOption = new Option(resp.fcsdetail.fst_username, resp.fcsdetail.fin_user_id, true, true);
+    			// Append it to the select
+    			$('#select-username').append(newOption).trigger('change');
 			},
 
 			error: function (e) {

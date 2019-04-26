@@ -241,18 +241,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">
 								<div id="canvas-container" style="display:none;text-align:center;width:100%">
 									<div style="margin-bottom:10px">
-										<button id="btnDocFirst"> << First</button>
-										<button id="btnDocPrev"> < prev</button>
-										<button id="btnDocNext">Next > </button>
-										<button id="btnDocLast">Last >> </button>
-										<button id="btnDocLast">Download </button>
+										<button id="btnDocFirst" class="doc-view-tool"> << First</button>
+										<button id="btnDocPrev" class="doc-view-tool"> < prev</button>
+										<button id="btnDocNext" class="doc-view-tool">Next > </button>
+										<button id="btnDocLast" class="doc-view-tool">Last >> </button>
+										<button id="btnDocDownload" class="doc-print-tool">Download Document</button>
 									</div>
 									<canvas id="the-canvas" style="border:1px solid #00f;width:100%;"></canvas>
 								</div>
 								<!--
 								<object id="obj-plugin" data="" type="application/pdf"></object>
-								-->
-								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5" />
+								-->								
+								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5"/>
 							</div>
 						</div>
 						<!-- /.tab-pane -->
@@ -769,7 +769,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		//var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);	
 		$('#canvas-container').show();
 		$("#plugin").hide();
-		var url = "{base_url}document/getDocument/1234567";
+
+		if (fblView == false){
+			$('.doc-view-tool').hide();	
+			$("#the-canvas").remove();
+		}else{
+			$('.doc-view-tool').show();
+		}
+		if (fblPrint == false){			
+			$('.doc-print-tool').hide();
+		}else{
+			$('.doc-print-tool').show();
+		}
+
+
+		var url = "{base_url}document/getDocument/" + token;
 		var pdfjsLib = window['pdfjs-dist/build/pdf'];
 		pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
 		var loadingTask = pdfjsLib.getDocument(url);
@@ -862,6 +876,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			lastDoc();
 		});
+		$("#btnDocDownload").click(function(event){
+			event.preventDefault();
+			window.location.replace("{base_url}document/downloadDocument/" + $("#fin_document_id").val());
+		});
+		
 
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();

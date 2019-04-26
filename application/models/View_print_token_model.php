@@ -33,12 +33,12 @@ class View_print_token_model extends MY_Model {
 
     public function useToken($token){
 
-        $ssql = "select * from " . $this->tableName . " where fst_token = ? and fst_session_id = ? and fin_insert_id = ? ";
+        $ssql = "select * from " . $this->tableName . " where fst_token = ? and fst_session_id = ? and fin_insert_id = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$token,$this->session->session_id,$this->aauth->get_user_id()]);
         if ($qr){
             $rw = $qr->row();  
             if ($rw){
-                var_dump($rw);
+                //var_dump($rw);
                 $dteStart = new DateTime($rw->fdt_insert_datetime); 
                 $dteEnd   = new DateTime(date("Y-m-d H:i:s")); 
                 $interval = $dteEnd->getTimestamp() - $dteStart->getTimestamp(); // seconds

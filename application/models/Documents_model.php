@@ -162,7 +162,7 @@ class Documents_model extends MY_Model {
 		$this->load->helper('download');
 		$this->load->helper('file');
 
-		$ssql = "select * from " .$this->tableName . " where fin_document_id = ?";
+		$ssql = "select * from " .$this->tableName . " where fin_document_id = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$fin_document_id]);
 		$rw = $qr->row();
 		if ($rw){
@@ -174,9 +174,8 @@ class Documents_model extends MY_Model {
 			$string = read_file($fileLoc);
 			//header("Content-type:application/pdf");
 			//header("Content-Disposition:inline;filename=download.pdf");
+			header("Content-Disposition:inline;filename=". $rw->fst_real_file_name);
 			return $string;
-			
-
 		}
 		return NULL;
 	}

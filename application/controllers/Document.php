@@ -616,13 +616,13 @@ class Document extends MY_Controller {
 	public function getDocument($token){
 		$this->load->model("view_print_token_model");
 		$this->load->model("documents_model");
-		/*
+		
 		$docId = $this->view_print_token_model->useToken($token);
 		if(! $docId){
 			show_404();
 		}
-		*/
-		$docId = 45;
+		
+		//$docId = 45;
 
 		$document = $this->documents_model->getFile($docId);
 		header("Content-type:application/pdf");
@@ -631,4 +631,29 @@ class Document extends MY_Controller {
 		
 		echo $document;
 	}
+
+	public function downloadDocument($fin_document_id){		
+		$this->load->model("documents_model");
+		
+		
+		$isPermit = $this->documents_model->scopePermission($fin_document_id,"PRINT");
+		if ($isPermit){		
+			$document = $this->documents_model->getFile($fin_document_id);
+			//header("Content-type:application/pdf");
+			header('Content-Type: application/octet-stream');
+			header("Content-Transfer-Encoding: Binary"); 				
+			echo $document;
+		}else{
+			show_404();
+		}
+
+		/*
+		$docId = $this->view_print_token_model->useToken($token);
+		if(! $docId){
+			show_404();
+		}
+		*/
+		
+	}
+
 }

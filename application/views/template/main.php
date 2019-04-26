@@ -84,7 +84,7 @@
 
 			<footer class="main-footer">
 				{MAIN_FOOTER}
-			</footer>r
+			</footer>
 
 			{CONTROL_SIDEBAR}
 		
