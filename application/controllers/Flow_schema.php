@@ -31,6 +31,7 @@ class Flow_schema extends MY_Controller {
 		];
 		$this->list['columns']=[
 			['title' => 'Flow Control Schema ID', 'width'=>'20%', 'data'=>'fin_flow_control_schema_id'],
+			['title' => 'Insert ID', 'width'=>'20%', 'data'=>'fin_insert_id'],
             ['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
             ['title' => 'Memo', 'width'=>'20%', 'data'=>'fst_memo'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
@@ -97,7 +98,7 @@ class Flow_schema extends MY_Controller {
 		}
 
 		$data = [
-			"fin_user_id"=>$this->input->post("fin_user_id"),
+			"fin_insert_id"=>$this->input->post("fin_insert_id"),
 			"fst_name"=>$this->input->post("fst_name"),
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fst_active"=>'A'
@@ -115,8 +116,8 @@ class Flow_schema extends MY_Controller {
 			return;
 		}
 
-        // Save Schema Detail
-        $this->load->model("flow_control_schema_detail_model");		
+        // Save Schema Items
+        $this->load->model("flow_control_schema_items_model");		
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		foreach ($details as $item) {
@@ -126,7 +127,7 @@ class Flow_schema extends MY_Controller {
 				"fin_seq_no"=> $item->fin_seq_no
 			];
 			
-			$this->flow_control_schema_detail_model->insert($data);
+			$this->flow_control_schema_items_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -171,7 +172,7 @@ class Flow_schema extends MY_Controller {
 
 		$data = [
 			"fin_flow_control_schema_id"=>$fin_flow_control_schema_id,
-			"fin_user_id"=>$this->input->post("fin_user_id"),
+			"fin_insert_id"=>$this->input->post("fin_insert_id"),
             "fst_name"=>$this->input->post("fst_name"),
             "fst_memo"=>$this->input->post("fst_memo"),
 			"fst_active"=>'A'
@@ -190,11 +191,11 @@ class Flow_schema extends MY_Controller {
 			return;
 		}
 
-		//Edit Detail
-		$this->load->model("flow_control_schema_detail_model");
-		$this->flow_control_schema_detail_model->deleteByDetail($fin_flow_control_schema_id);
+		//Edit Items
+		$this->load->model("flow_control_schema_items_model");
+		$this->flow_control_schema_items_model->deleteByDetail($fin_flow_control_schema_id);
 
-		$this->load->model("flow_control_schema_detail_model");		
+		$this->load->model("flow_control_schema_items_model");		
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		foreach ($details as $item) {
@@ -204,7 +205,7 @@ class Flow_schema extends MY_Controller {
 				"fin_seq_no"=> $item->fin_seq_no
 			];
 			
-			$this->flow_control_schema_detail_model->insert($data);
+			$this->flow_control_schema_items_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -226,9 +227,9 @@ class Flow_schema extends MY_Controller {
 	
     public function fetch_list_data(){
         $this->load->library("datatables");
-        $this->datatables->setTableName("flow_control_schema_header");
+		$this->datatables->setTableName("flow_control_schema_header");
 
-		$selectFields = "fin_flow_control_schema_id,fin_user_id,fst_name,fst_memo,'action' as action";
+		$selectFields = "fin_flow_control_schema_id,fin_insert_id,fst_name,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = ["fin_flow_control_schema_id","fst_name"];
@@ -256,7 +257,7 @@ class Flow_schema extends MY_Controller {
 		$data = $this->flow_control_schema_header_model->getDataById($fin_flow_control_schema_id);
 
 		// Detail Schema
-		$this->load->model("flow_control_schema_detail_model");		
+		$this->load->model("flow_control_schema_items_model");		
 		$this->json_output($data);
 	}
 
@@ -292,8 +293,8 @@ class Flow_schema extends MY_Controller {
     }
 
     public function getFlowDetail($fin_flow_control_schema_id){
-        $this->load->model("Flow_control_schema_items_model");
-        $result = $this->Flow_control_schema_items_model->getFlowDetail($fin_flow_control_schema_id);
+        $this->load->model("flow_control_schema_items_model");
+        $result = $this->flow_control_schema_items_model->getFlowDetail($fin_flow_control_schema_id);
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
