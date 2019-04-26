@@ -1,14 +1,8 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-<<<<<<< .mine
+
 class Flow_control_schema_items_model extends MY_Model {
     public $tableName = "flow_control_schema_items";
-
-=======
-
-class Flow_control_schema_detail_model extends MY_Model {
-    public $tableName = "flow_control_schema_detail";
->>>>>>> .theirs
     public $pkey = "fin_id";
 
     public function __construct(){
@@ -19,10 +13,10 @@ class Flow_control_schema_detail_model extends MY_Model {
 		$ssql = "delete from " . $this->tableName  . " where fin_flow_control_schema_id = ?";
 		$this->db->query($ssql,[$fin_flow_control_schema_id]);
         /*$qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
-        $rwFlowSchemaDetail = $qr->row();
+        $rwFlowSchemaItems = $qr->row();
         
         $data = [
-            "fcsdetail" => $rwFlowSchemaDetail
+            "fcsitems" => $rwFlowSchemaItems
 		];
 
 		return $data;*/

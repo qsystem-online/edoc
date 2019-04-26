@@ -343,7 +343,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				// Schema Detail DataTable
 				t = $('#tblFlowSchemaDetail').DataTable();
-				$.each(resp.fcsdetail, function(name,val){
+				$.each(resp.fcsitems, function(name,val){
 					console.log(val);
 					var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a><button class="btnsubmit" contenteditable="true" style="display: none;">submit</button></div>';
 					t.row.add({
@@ -357,9 +357,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				// menampilkan data di select2
-				var newOption = new Option(resp.fcsdetail.fst_username, resp.fcsdetail.fin_user_id, true, true);
+				//var newOption = new Option(resp.fcsdetail.fst_username, resp.fcsdetail.fin_user_id, true, true);
     			// Append it to the select
-    			$('#select-username').append(newOption).trigger('change');
+    			//$('#select-username').append(newOption).trigger('change');
 			},
 
 			error: function (e) {
