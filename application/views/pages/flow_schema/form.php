@@ -349,25 +349,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				// Schema Detail DataTable
-				t = $('#tblFlowSchemaDetail').DataTable();
-				$.each(resp.fcsItems, function(name,val){
-					console.log(val);
-					var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a></div>';
-					t.row.add({
-						//fin_id:val.fin_id,
-						fin_flow_control_schema_id:val.fin_flow_control_schema_id,
-						fin_user_id:val.fin_user_id,
-						fst_username:val.fst_username,
-						fin_seq_no:val.fin_seq_no,
+				FlowSchemaItems = resp.fcsItems;
+				$.each(FlowSchemaItems, function(idx, detail){
+					data = {
+						fin_flow_control_schema_id:detail.fin_flow_control_schema_id,
+						fin_user_id:detail.fin_user_id,
+						fst_username:detail.fst_username,
+						fin_seq_no: detail.fin_seq_no,
 						action: action
-					}).draw(false);
-				});
-
-				// menampilkan data di select2
-				var newOption = new Option(resp.fcsItems.fst_username, resp.fcsItems.fin_user_id, true, true);
-    			// Append it to the select
-    			$('#select-username').append(newOption).trigger('change');
+					}
+					t = $('#tblFlowSchemaDetail').DataTable();			
+					t.row.add(data).draw(false);	
+					
+					//set Data select2		
+					var newOption = new Option(detail.fst_username, detail.fin_user_id, false, false);
+					$('#select-username').append(newOption);
+				});		
 			},
 			error: function (e) {
 				$("#result").text(e.responseText);
