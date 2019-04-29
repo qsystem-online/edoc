@@ -1,16 +1,19 @@
 <?php
-if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Master_groups_model extends MY_Model {
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+class Master_groups_model extends MY_Model
+{
     public $tableName = "master_groups";
     public $pkey = "fin_group_id";
 
-    public function __construct(){
-        parent:: __construct();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    public function getDataById($fin_group_id){
-		$ssql = "select * from " . $this->tableName ." where fin_group_id = ?";
-		$qr = $this->db->query($ssql,[$fin_group_id]);		
+    public function getDataById($fin_group_id)
+    {
+        $ssql = "select * from " . $this->tableName . " where fin_group_id = ?";
+        $qr = $this->db->query($ssql, [$fin_group_id]);
         $rwMasterGroups = $qr->row();
         /*
         switch($rwMasterGroups->fin_level){
@@ -45,13 +48,14 @@ class Master_groups_model extends MY_Model {
                 end)";
         $qr = $this->db->query($ssql,[$fin_group_id]);*/
         //print_r ($rwMasterGroups);
-		$data = [
-			"master_groups" => $rwMasterGroups
-		];
+        $data = [
+            "master_groups" => $rwMasterGroups
+        ];
         return $data;
-	}
+    }
 
-    public function getRules($mode="ADD",$id=0){
+    public function getRules($mode = "ADD", $id = 0)
+    {
         $rules = [];
 
         $rules[] = [
@@ -70,4 +74,11 @@ class Master_groups_model extends MY_Model {
     /*public function delete($key, $softdelete = false){
 		parent::delete($key,$softdelete);
     }*/
+
+    public function get_list_group()
+    {
+        $ssql = "select fin_group_id,fst_group_name from master_groups where fst_active = 'A' order by fst_group_name";
+        $query = $this->db->query($ssql, []);
+        return $query->result();
+    }
 }
