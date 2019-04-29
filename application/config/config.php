@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
+date_default_timezone_set("Asia/Jakarta");
+
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
@@ -381,7 +384,7 @@ $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
-$config['sess_time_to_update'] = 300;
+$config['sess_time_to_update'] = 300 * 1000;
 $config['sess_regenerate_destroy'] = FALSE;
 
 /*
@@ -450,7 +453,7 @@ $config['global_xss_filtering'] = FALSE;
 $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = '__c9da2c3066cf64f25a59677d1666d7ac';
 $config['csrf_cookie_name'] = '__c9da2c3066cf64f25a59677d1666d7ac';
-$config['csrf_expire'] = 7200;
+$config['csrf_expire'] = 10800;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array();
 
