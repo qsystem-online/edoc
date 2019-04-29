@@ -12,14 +12,6 @@ class Flow_control_schema_items_model extends MY_Model {
     public function deleteByDetail($fin_flow_control_schema_id){
 		$ssql = "delete from " . $this->tableName  . " where fin_flow_control_schema_id = ?";
 		$this->db->query($ssql,[$fin_flow_control_schema_id]);
-        /*$qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
-        $rwFlowSchemaItems = $qr->row();
-        
-        $data = [
-            "fcsitems" => $rwFlowSchemaItems
-		];
-
-		return $data;*/
 	}
 
     public function getRules($mode="ADD",$id=0){
