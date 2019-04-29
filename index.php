@@ -100,6 +100,7 @@ switch (ENVIRONMENT)
  */
 	$system_path = 'C:\CI3.1.10\system';
 
+
 /*
  *---------------------------------------------------------------
  * APPLICATION DIRECTORY NAME
