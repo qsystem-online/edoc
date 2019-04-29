@@ -18,8 +18,8 @@ class Flow_control_schema_header_model extends MY_Model {
 		$rsFlowSchemaItems = $qr->result();
 
 		$data = [
-            "fcsheader" => $rwFlowSchemaHeader,
-            "fcsitems" => $rsFlowSchemaItems
+            "fcsHeader" => $rwFlowSchemaHeader,
+            "fcsItems" => $rsFlowSchemaItems
 		];
 
 		return $data;

@@ -11,17 +11,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
-
-    .nav-tabs-custom>.nav-tabs>li.active>a{
-        font-weight:bold;
-        border-left-color: #3c8dbc;
-        border-right-color: #3c8dbc;
-        border-style:fixed;
-    }
-    .nav-tabs-custom>.nav-tabs{
-        border-bottom-color: #3c8dbc;        
-        border-bottom-style:fixed;
-    }
 </style>
 
 <section class="content-header">
@@ -35,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <section class="content">
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
@@ -49,31 +38,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <input type="hidden" id="frm-mode" value="<?=$mode?>">
 
                     <div class='form-group'>
-                    <label for="fin_flow_control_schema_id" class="col-sm-2 control-label"><?=lang("FC Schema ID")?> #</label>
-						<div class="col-sm-10">
+                    <label for="fin_flow_control_schema_id" class="col-md-2 control-label"><?=lang("FC Schema ID")?> #</label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fin_flow_control_schema_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_flow_control_schema_id" value="<?=$fin_flow_control_schema_id?>" readonly>
 							<div id="fin_flow_control_schema_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
                     <div class="form-group">
-						<label for="fst_name" class="col-sm-2 control-label"><?=lang("Name")?></label>
-						<div class="col-sm-10">
+						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_name" placeholder="<?=lang("Name")?>" name="fst_name">
 							<div id="fst_name_err" class="text-danger"></div>
 						</div>
 					</div>
 
                     <div class="form-group">
-						<label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?></label>
-						<div class="col-sm-10">
+						<label for="fst_memo" class="col-md-2 control-label"><?=lang("Memo")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo">
 							<div id="fst_memo_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<div class="col-sm-12" style='text-align:right'>
+						<div class="col-md-12" style='text-align:right'>
 							<button id="btn-add-detail" class="btn btn-default btn-sm">
 								<i class="fa fa-plus" aria-hidden="true"></i>
 								<?=lang("Add Detail")?>
@@ -105,17 +94,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">				
+				<form  class="form-horizontal">
+				<input type='hidden' id='fin-detail-id'/>			
 					<div class="form-group">
-						<label for="select-username" class="col-sm-2 control-label"><?=lang("User Name")?></label>
-						<div class="col-sm-10">
+						<label for="select-username" class="col-md-2 control-label"><?=lang("User Name")?></label>
+						<div class="col-md-10">
 							<select id="select-username" class="form-control"></select>
 							<div id="fst_username_err" class="text-danger"></div>
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="fin_seq_no" class="col-sm-2 control-label"><?=lang("Seq No.")?></label>
-						<div class="col-sm-10">
+						<label for="fin_seq_no" class="col-md-2 control-label"><?=lang("Seq No.")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fin_seq_no">
 							<div id="fin_seq_no_err" class="text-danger"></div>
 						</div>
@@ -131,24 +121,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
+
 <script type="text/javascript">
+	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
     $(function(){
         <?php if($mode == "EDIT"){?>
 			init_form($("#fin_flow_control_schema_id ").val());
 		<?php } ?>
 
+		var edited_schema_detail = null;
+		var mode_schema_detail = "ADD";
+
         $("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmFlowSchema").serializeArray();
-			console.log(data);
+			//console.log(data);
 			detail = new Array();
-
 			t = $('#tblFlowSchemaDetail').DataTable();
 			datas = t.data();
 			$.each(datas,function(i,v){
 				detail.push(v);
 			});
-
 			data.push({
 				name:"detail",
 				value: JSON.stringify(detail)
@@ -170,9 +163,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				//processData: false,
-				//contentType: false,
-				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -197,7 +187,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#fin_flow_control_schema_id ").val(data.insert_id);
 						//Clear all previous error
 						$(".text-danger").html("");
-
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#fst_name').prop('readonly', true);
@@ -215,6 +204,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-username").select2({
 			width: '100%',
+			minimumInputLength: 2,
 			ajax: {
 				url: '<?=site_url()?>flow_schema/get_data_username',
 				dataType: 'json',
@@ -240,53 +230,65 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var arrDetail;
 
 		$('#select-username').on('select2:select', function (e) {
-			console.log(selected_username);
+			//console.log(selected_username);
 			var data = e.params.data;
 			selected_username = data;
-			console.log(selected_username);
+			//console.log(selected_username);
 		});
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
-			
+			mode_schema_detail = "ADD"; // 28/04/2019
 			$("#myModal").modal({
 				backdrop:"static",
 			});
+
+			$('#select-username').val(null).trigger('change'); // 28/04/2019
+			$("#fin-detail-id").val(0);
+			$("#fin_seq_no").val(1);
 		})
 
 		$("#btn-add-schema-detail").click(function(event){
 			event.preventDefault();
-			t = $('#tblFlowSchemaDetail').DataTable();
+			selected_username = $("#select-username").select2('data')[0];
+			var seq_no = $("#fin_seq_no").val();
+			//t = $('#tblFlowSchemaDetail').DataTable();
 		
-			var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a><button class="btnsubmit" contenteditable="true" style="display: none;">submit</button></div>';
-			t.row.add({
-				fin_id:0,
-				fin_flow_control_schema_id:0,
+			data = {
+				//fin_id:$("#fin_id").val(),
+				fin_flow_control_schema_id:$("#fin-detail-id").val(),
 				fin_user_id:selected_username.id,
 				fst_username:selected_username.text,
-				fin_seq_no:$("#fin_seq_no").val(),
+				fin_seq_no: $("#fin_seq_no").val(),
 				action: action
-			}).draw(false);
-		});
+			}
 
+			t = $('#tblFlowSchemaDetail').DataTable();			
+			if(mode_schema_detail =="EDIT"){
+				edited_schema_detail.data(data).draw(false);
+			}else{
+				t.row.add(data).draw(false);	
+			}
+		});
+		
 		$('#tblFlowSchemaDetail').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
+				//{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
 				{"title" : "fin_flow_control_schema_id","width": "0%",sortable:false,data:"fin_flow_control_schema_id",visible:false},
 				{"title" : "fin_user_id","width": "0%",sortable:false,data:"fin_user_id",visible:false},
 				{"title" : "User Name","width": "20%",sortable:false,data:"fst_username"},
 				{"title" : "Sequence No.","width": "15%",sortable:false,data:"fin_seq_no"},
-				{"title" : "action","width": "10%",data:"action",sortable:false,className:'dt-center'},
+				{"title" : "action","width": "10%",sortable:false,data:"action",className:'dt-center'},
 			],
 			processing: true,
 			serverSide: false,
 			searching: false,
 			lengthChange: false,
 			paging: false,
-			info:true,
+			info:false,
 		}).on('draw',function(){
 			$('.btn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
@@ -298,34 +300,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t = $('#tblFlowSchemaDetail').DataTable();
 				var trRow = $(this).parents('tr');
 				t.row(trRow).remove().draw();
-			
 			});
 
 			$(".btn-edit").click(function(event){
-				$('.btnsubmit').toggle();
-				$(this).parents('tr').attr({
-					"contenteditable": "true",
-					"style": "color:#a9a9a9;background:white"
-				});			
-			});
+				event.preventDefault();
+				$("#myModal").modal({
+					backdrop:"static",
+				});
 
-			$(".btnsubmit").click(function(event){
-			//	$(this).toggle();
+				t = $('#tblFlowSchemaDetail').DataTable();
+				var trRow = $(this).parents('tr');
+
+				mode_schema_detail = "EDIT";
+				edited_schema_detail = t.row(trRow);
+				row = edited_schema_detail.data();	
+
+				//$("#fin_id").val(row.fin_id); // 28/04/2019
+				$("#fin_flow_control_schema_id").val(row.fin_flow_control_schema_id);
+				$("#select-username").val(row.fin_user_id).change();
+				$("#fin_seq_no").val(row.fin_seq_no);
 			});
 		});
     });
 
+
+	// Menampilkan Data Form Edit
     function init_form(fin_flow_control_schema_id){
 		//alert("Init Form");
 		var url = "<?=site_url()?>flow_schema/fetch_data/" + fin_flow_control_schema_id ;
 		$.ajax({
 			type: "GET",
 			url: url,
-			success: function (resp) {	
-				//console.log(resp.fcsheader);
-				//console.log(resp.fcsdetail);
+			success: function (resp) {
 
-				$.each(resp.fcsheader, function(name, val){
+				$.each(resp.fcsHeader, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -341,27 +349,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				// Schema Detail DataTable
-				t = $('#tblFlowSchemaDetail').DataTable();
-				$.each(resp.fcsitems, function(name,val){
-					console.log(val);
-					var action= '<div style="font-size:16px"><a id="btnedit" class="btn-edit" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-pencil"></i></a> <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a><button class="btnsubmit" contenteditable="true" style="display: none;">submit</button></div>';
-					t.row.add({
-						fin_id:val.fin_id,
-						fin_flow_control_schema_id:val.fin_flow_control_schema_id,
-						fin_user_id:val.fin_user_id,
-						fst_username:val.fst_username,
-						fin_seq_no:val.fin_seq_no,
+				FlowSchemaItems = resp.fcsItems;
+				$.each(FlowSchemaItems, function(idx, detail){
+					data = {
+						fin_flow_control_schema_id:detail.fin_flow_control_schema_id,
+						fin_user_id:detail.fin_user_id,
+						fst_username:detail.fst_username,
+						fin_seq_no: detail.fin_seq_no,
 						action: action
-					}).draw(false);
-				});
-
-				// menampilkan data di select2
-				//var newOption = new Option(resp.fcsdetail.fst_username, resp.fcsdetail.fin_user_id, true, true);
-    			// Append it to the select
-    			//$('#select-username').append(newOption).trigger('change');
+					}
+					t = $('#tblFlowSchemaDetail').DataTable();			
+					t.row.add(data).draw(false);	
+					
+					//set Data select2		
+					var newOption = new Option(detail.fst_username, detail.fin_user_id, false, false);
+					$('#select-username').append(newOption);
+				});		
 			},
-
 			error: function (e) {
 				$("#result").text(e.responseText);
 				console.log("ERROR : ", e);
