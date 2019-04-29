@@ -25,11 +25,20 @@ class Document_details_model extends MY_Model {
     }
 
     public function getRowsByParentId($parent_id){
-        $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fst_active = 'A'";
+        $ssql = "select a.fin_id,b.fin_document_id,b.fst_name,b.fst_source,b.fst_memo,b.fin_insert_id,b.fdt_insert_datetime,c.fst_username from " . $this->tableName . " a 
+            inner join documents b on a.fin_document_item_id = b.fin_document_id
+            inner join users c on b.fin_insert_id = c.fin_user_id
+            where a.fin_document_id = ? and b.fst_active = 'A'";
+
         $qr = $this->db->query($ssql,[$parent_id]);
         if($qr){
             return $qr->result();
         }
         return [];
+    }
+
+    public function deleteByParentId($fin_document_id){
+        $this->db->where("fin_document_id",$fin_document_id);
+        $this->db->delete($this->tableName);
     }
 }

@@ -53,6 +53,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<form id="frmDocument" class="form-horizontal" action="<?=site_url()?>system/user/add" method="POST" enctype="multipart/form-data">
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
+					
+					<div class="form-group">
+						<label  class="col-sm-10 control-label"><?=lang("Creator")?> : </label>
+						<label  id="creator_by" class="col-sm-2 control-label">
+							<?php
+								$user = $this->aauth->user();
+								echo $user->fst_username;
+							?>
+						</label>						
+					</div>
+
                     <div class="form-group">
 						<label for="fin_document_id" class="col-sm-2 control-label"><?=lang("Document ID")?></label>
 						<div class="col-sm-10">
@@ -163,15 +174,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</ul>
 						<div class="tab-content">							
 							<div class="tab-pane active" id="doc_list">
-								<button id="btn-open-list-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Document")?></button>
+								<button id="btn-open-list-doc" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Document")?></button>
 								<div>
 									<table id="tbl_doc_items" class="table table-bordered table-hover" style="width:100%;"></table>
 								</div>
 							</div>
 							<!-- /.tab-pane -->
 							<div class="tab-pane" id="tab_flow">
-								<form class="form-horizontal ">	
-									<div class="form-group">						
+								<form class="form-horizontal edit-mode">	
+									<div class="form-group edit-mode">						
 										<label for="select-product" class="col-md-8 control-label">Flow Control</label>
 										<div class="col-md-3">
 											<select id="select-flow-control" class="select2 form-control" style="width:100%"></select>
@@ -180,7 +191,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<button id="btn-apply-flow" class="btn btn-sm btn-primary" style="width:100%">Apply</button>
 										</div>															
 									</div>
-									<div class="form-group">
+									<div class="form-group edit-mode">
 										<div class="col-md-12">
 											<button id="btn-open-flow-doc" class="btn btn-primary btn-sm pull-right" style="margin-bottom:20px"><i class="fa fa-plus"></i><?= lang("Add Flow")?></button>
 										</div>
@@ -192,7 +203,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<!-- /.tab-pane -->
 							<div class="tab-pane" id="tab_custom-scope">
-								<form class="form-horizontal ">	
+								<form class="form-horizontal edit-mode ">	
 									<div class="form-group">
 										<div class="col-md-10">				
 											<label for="select-product" class="col-md-6 control-label"><?= lang("Permission For :")?></label>
@@ -228,12 +239,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<table id="tbl_custom_scope" class="compat hover stripe" style="width:100%" ></table>
 							</div>
 							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">
-								
-								<canvas id="the-canvas" style="border:1px solid #00f;width:50%;display:none"></canvas>
+								<div id="canvas-container" style="display:none;text-align:center;width:100%">
+									<div style="margin-bottom:10px">
+										<button id="btnDocFirst" class="doc-view-tool"> << First</button>
+										<button id="btnDocPrev" class="doc-view-tool"> < prev</button>
+										<button id="btnDocNext" class="doc-view-tool">Next > </button>
+										<button id="btnDocLast" class="doc-view-tool">Last >> </button>
+										<button id="btnDocDownload" class="doc-print-tool">Download Document</button>
+									</div>
+									<canvas id="the-canvas" style="border:1px solid #00f;width:100%;"></canvas>
+								</div>
 								<!--
 								<object id="obj-plugin" data="" type="application/pdf"></object>
-								-->
-								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5" />
+								-->								
+								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5"/>
 							</div>
 						</div>
 						<!-- /.tab-pane -->
@@ -242,7 +261,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">
-					<a id="btnSubmitAjax" href="#" class="btn btn-primary pull-right">Save Document</a>
+					<a id="btnSubmitAjax" href="#" class="btn btn-primary pull-right edit-mode">Save Document</a>
 					<a id="btnNewDoc" href="#" class="btn btn-primary pull-right" style="margin-right:10px">New Doc</a>
 				</div>
 				<!-- /.box-footer -->		
@@ -314,7 +333,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							return row.fst_name;
 						}
 					},
-					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
+					{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true,
+						render: function(data,type,row){
+							if(data == "INT"){
+								return "INTERNAL";
+							}else{
+								return "EXTERNAL";
+							}
+						}
+					
+					},
 					{"title" : "<?= lang("Notes") ?>","width": "25%",data:"fst_memo"},
 					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
 						render : function(data,type,row){
@@ -324,7 +352,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fdt_insert_datetime"},
 					{"title" : "<?= lang("Action") ?>","width": "10%",
 						render:function(data,type,row){	
-							action = "<a class='btn-delete-document-items' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+							action = "<a class='btn-delete-document-items edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
 							action += "<a class='btn-view-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>"; 					
 							return action;
 						},
@@ -496,7 +524,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fin_user_id : selectedUser.id,
 					fst_username : selectedUser.text,
 					fin_seq_no : $("#fin-flow-control-order").val(),
-				}
+					fst_control_status: 'NA',
+					fst_memo:'',
+					fdt_approved_datetime:null
+				}		
 				tblFlowControl.row.add(data).order([2,'asc'],[1,'asc']).draw();
 			});
 
@@ -511,21 +542,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				paging:   false,
 				info: false,
 				columns:[
-					{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_id",visible:false},
-					{"title" : "<?= lang("User") ?>","width": "75%",data:"fin_user_id",
+					{"title" : "<?= lang("ID") ?>","width": "0%",data:"fin_id",visible:false},
+					{"title" : "<?= lang("User") ?>","width": "20%",data:"fin_user_id",
 						visible:true,
 						render: function ( data, type, row ) {
 							return row.fst_username;
 						}
 					},
-					{"title" : "<?= lang("Order") ?>","width": "10%",data:"fin_seq_no"},
-					{"title" : "<?= lang("Action") ?>","width": "10%",
-					data:"action",
+					{"title" : "<?= lang("Order") ?>","width": "5%",data:"fin_seq_no"},
+					{"title" : "<?= lang("Status") ?>","width": "20%",data:"fst_control_status",
+						render:function(data,type,row){
+							switch (data){
+								case "NA" :
+									return "Need Approval";
+								case "RA" :
+									return "Ready To Approve";
+								case "NR" :
+									return "Need Revision";
+								case "AP" :
+									return "Approved";
+							}
+						}
+					},
+					{"title" : "<?= lang("Memo") ?>","width": "35%",data:"fst_memo"},
+					{"title" : "<?= lang("approved") ?>","width": "10%",data:"fdt_approved_datetime"},
+					{"title" : "<?= lang("Action") ?>","width": "10%",data:"action",
 						render: function ( data, type, row ) {
-							return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
+							if (row.fst_control_status != "AP"){
+								return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
+							}
+							return "";						
 						},
 						"sortable": false,
-						"className":"dt-body-center text-center"
+						"className":"dt-body-center text-center edit-mode"
 					},
 				],
 			});
@@ -533,6 +582,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//apply flow
 			$("#btn-apply-flow").click(function(event){
 				event.preventDefault();
+				var table = $('#tbl_flow_control').DataTable();
+				dataFlow = table.rows().data();
+				exitNow = false;
+
+				$.each(dataFlow,function(i,v){
+					if(v.fst_control_status == "AP"){
+						alert("Data already to approved, you can not apply new schema !");
+						exitNow = true;
+						return;
+					}
+				});
+				if (exitNow){
+					return;
+				}
+
 				$.ajax({
 					url: '{base_url}flow_schema/getFlowDetail/' + $("#select-flow-control").val(),
 					dataType : "json",
@@ -542,13 +606,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						dataFlow = [];
 						$.each(data,function(index,value){
 							console.log(value);
+							var controlStatus = 'NA';
+
+							if (value.fin_seq_no == 1){
+								controlStatus = 'RA';
+							}
 							dataFlow.push({							
 								fin_id: 0,
 								fin_user_id: value.fin_user_id,
 								fst_username: value.fst_username,
 								fin_seq_no: value.fin_seq_no,
-								fst_control_status: 'NA',
-								fst_memo:''
+								fst_control_status: controlStatus,
+								fst_memo:'',
+								fdt_approved_datetime:null,
 							});
 						});
 						
@@ -557,6 +627,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						table.rows.add(dataFlow).order([2,'asc'],[1,'asc']).draw();
 					}
 				})
+
 			});
 
 			//delete detail
@@ -631,7 +702,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 						return data;
 					},
-					className: "dt-body-center text-center",
+					className: "dt-body-center text-center ",
 					"sortable": false,
 				},
 
@@ -641,7 +712,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						return action;
 					},
 					"sortable": false,
-					"className":"dt-body-center text-center"
+					"className":"dt-body-center text-center edit-mode"
 				}					  
 			],
 		});
@@ -690,53 +761,135 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript"> //Document Viewer
+	var docPdf = null;
+	var curPage = 1;
+
+
+	function showDocument(fblView,fblPrint,token){
+		//var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);	
+		$('#canvas-container').show();
+		$("#plugin").hide();
+
+		if (fblView == false){
+			$('.doc-view-tool').hide();	
+			$("#the-canvas").remove();
+		}else{
+			$('.doc-view-tool').show();
+		}
+		if (fblPrint == false){			
+			$('.doc-print-tool').hide();
+		}else{
+			$('.doc-print-tool').show();
+		}
+
+
+		var url = "{base_url}document/getDocument/" + token;
+		var pdfjsLib = window['pdfjs-dist/build/pdf'];
+		pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
+		var loadingTask = pdfjsLib.getDocument(url);
+		loadingTask.promise.then(function(pdf) {
+			docPdf = pdf;
+			curPage = 1;
+			renderPage(1);			
+
+		}, function (reason) {
+			// PDF loading error
+			console.error(reason);
+		});
+	}
+
+	function nextDoc(){		
+		if (curPage >= docPdf.numPages) {
+    		return;
+  		}
+		curPage++
+		renderPage(curPage);
+	}
+
+	function prevDoc(){		
+		if (curPage <= 1) {
+    		return;
+  		}
+		curPage--;
+		renderPage(curPage);
+	}
+
+	function firstDoc(){
+		curPage = 1;
+		renderPage(curPage);
+	}
+	function lastDoc(){
+		curPage = docPdf.numPages;
+		renderPage(curPage);
+	}
+
+
+	function renderPage(pageNumber) {
+		// Fetch the first page
+		//var pageNumber = 1;
+		docPdf.getPage(pageNumber).then(function(page) {
+			// Prepare canvas using PDF page dimensions
+			var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
+			var context = canvas.getContext('2d');
+
+			// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
+			//var scale_required = canvas.width / page.getViewport(1).width;
+			var scale_required =2;
+			var viewport = page.getViewport(scale_required);
+
+			canvas.width = viewport.width;
+			canvas.height = viewport.height;
+			
+
+			// Render PDF page into canvas context
+			var renderContext = {
+				canvasContext: context,
+				viewport: viewport
+			};
+			var renderTask = page.render(renderContext);
+			renderTask.promise.then(function () {
+				console.log('Page rendered');
+				//$("#the-canvas").show();
+			});
+		});
+
+		console.log(curPage);
+	}
+
+
 	$(function(){
+		
+		
+		$("#btnDocFirst").click(function(event){
+			event.preventDefault();
+			firstDoc();
+		});
+		$("#btnDocPrev").click(function(event){
+			event.preventDefault();
+			prevDoc();
+		});
+		$("#btnDocNext").click(function(event){
+			event.preventDefault();
+			nextDoc();
+		});
+		$("#btnDocLast").click(function(event){
+			event.preventDefault();
+			lastDoc();
+		});
+		$("#btnDocDownload").click(function(event){
+			event.preventDefault();
+			window.location.replace("{base_url}document/downloadDocument/" + $("#fin_document_id").val());
+		});
+		
+
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
 			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
 			//$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
 			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
-			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
-			
-			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
-			var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);		
+			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");			
+			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';			
 			console.log(url);
-			var pdfjsLib = window['pdfjs-dist/build/pdf'];
-			pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
-			var loadingTask = pdfjsLib.getDocument(url);
-			loadingTask.promise.then(function(pdf) {
-				// Fetch the first page
-				var pageNumber = 1;
-				pdf.getPage(pageNumber).then(function(page) {
-					// Prepare canvas using PDF page dimensions
-					var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
-					var context = canvas.getContext('2d');
-
-					// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
-					//var scale_required = canvas.width / page.getViewport(1).width;
-					var scale_required =1.5;
-					var viewport = page.getViewport(scale_required);
-
-					canvas.width = viewport.width;
-					canvas.height = viewport.height;
-					
-
-					// Render PDF page into canvas context
-					var renderContext = {
-						canvasContext: context,
-						viewport: viewport
-					};
-					var renderTask = page.render(renderContext);
-					renderTask.promise.then(function () {
-						console.log('Page rendered');
-						//$("#the-canvas").show();
-					});
-				});
-			}, function (reason) {
-				// PDF loading error
-				console.error(reason);
-			});
-
 			$('.nav-tabs a[href="#doc-viewer"]').tab('show');
 
 		});
@@ -760,6 +913,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$.each(t.data(),function(i,v){
 				console.log(v);
 				detail.push({
+					fin_id : v.fin_id,
 					fin_document_id : v.fin_document_id
 				});
 			});
@@ -786,7 +940,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data.append("detail_custom_scope", JSON.stringify(detail));
 			//console.log(data);
 
-			url =  "<?= site_url() ?>document/ajx_add_save";
+			if ($("#fin_document_id").val() == ""){
+				url =  "<?= site_url() ?>document/ajx_add_save";
+			}else{
+				url =  "<?= site_url() ?>document/ajx_edit_save";
+			}
+
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',
@@ -834,7 +993,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnNewDoc").click(function(event){
 			event.preventDefault();
-			window.location.replace("{base_url}document/add");
+			t= $("#tbl_custom_scope").DataTable();
+			console.log(t.rows().data());
+
+
+			//window.location.replace("{base_url}document/add");
 		});
 
 		// Document Flow Control Checked
@@ -884,6 +1047,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+				$("#creator_by").text(resp.header.fst_username);
+
 				$("#fst_source").trigger('change');
 				$("#fst_view_scope").trigger('change');
 				$("#fst_print_scope").trigger('change');
@@ -907,40 +1072,66 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 				
-
-				//Image Load 
-				//$('#imgAvatar').attr("src",resp.user.avatarURL);
-
-
-				/*
-				imgurl = "<?= site_url()?>assets/app/users/avatar/avatar_" + fin_id +".jpg";
-				imgurlDefault = "<?= site_url()?>assets/app/users/avatar/default.jpg";
-
-				$('#imgAvatar').load(imgurl, function(response, status, xhr) {
-					if (status == "error") 
-						$(this).attr('src', imgurlDefault);
-					else
-						$(this).attr('src', imgurl);
-				});
-				*/
-
-				//populate Group (select2)
-				var groups = [];
-				$.each(resp.list_group, function(name, val){
-					groups.push(val.fin_group_id);
+				//Fill Document Detail
+				t = $("#tbl_doc_items").DataTable();
+				$.each(resp.doc_details,function(i,v){
+					
+					data = {
+						fin_id: v.fin_id,
+						fin_document_id : v.fin_document_id,
+						fst_name: v.fst_name,
+						fst_source : v.fst_source,
+						fst_memo : v.fst_memo,
+						fin_insert_id : v.fin_insert_id,
+						fst_username : v.fst_username,
+						fdt_insert_datetime : v.fdt_insert_datetime
+					};
+					
+					t.row.add(data).draw();
 				})
-				$("#fin_group_id").val(groups).trigger("change");
-
-				//populate address
-				$.each(resp.list_address, function(name, val){
-					console.log(val);
-					isPrimary = false;
-					if (val.fbl_primary == "1"){
-						isPrimary = true;
+				
+				//Fill Document Flow
+				t = $("#tbl_flow_control").DataTable();
+				$.each(resp.flow_details,function(i,v){
+					data = {
+						fin_id:v.fin_id,
+						fin_user_id:v.fin_user_id,
+						fst_username: v.fst_username,
+						fin_seq_no: v.fin_seq_no,
+						fst_control_status :v.fst_control_status,
+						fdt_approved_datetime :v.fdt_approved_datetime,
+						fst_memo : v.fst_memo
 					}
-					add_address(val.fin_id,val.fst_name,val.fst_address,isPrimary);
-				})
+					t.row.add(data);
+				});
+				t.draw();
+				
+				//Fill custom scope
+				t = $("#tbl_custom_scope").DataTable();
+				$.each(resp.custom_details,function(i,v){
+					data = {
+						fin_id:v.fin_id,
+						fst_mode:v.fst_mode,
+						fin_user_department_id: v.fin_user_department_id,
+						fst_user_department_name:v.fst_user_department_name,
+						fbl_view:v.fbl_view,
+						fbl_print:v.fbl_print
 
+					}
+					t.row.add(data);
+				});
+				t.draw();
+				
+				// Show document 
+				showDocument(resp.permission.view_doc,resp.permission.print_doc,resp.permission.token);
+
+
+				//Hiden Button Save when no edit permition
+				if (resp.permission.edit == true){
+					$(".edit-mode").show();
+				}else{
+					$(".edit-mode").hide();
+				}
 
 			},
 

@@ -264,6 +264,36 @@ class User extends MY_Controller
 		$this->json_output();
 	}
 
+	public function remove_add_save()
+	{
+		$this->load->model('users_model');
+		$data = [
+			'fst_fullname' => $this->input->get("fst_fullname"),
+			'fdt_insert_datetime' => 'sekarang'
+		];
+		if ($this->db->insert('users', $data)) {
+			echo "insert success";
+		} else {
+			$error = $this->db->error();
+			print_r($error);
+		}
+		die();
+
+		echo "Table Name :" . $this->users_model->getTableName();
+		print_r($this->users_model->getRules());
+
+		$this->form_validation->set_rules($this->users_model->rules);
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		if ($this->form_validation->run() == FALSE) {
+			echo form_error();
+			//$this->add();
+		} else {
+			//$this->load->view('formsuccess');
+			echo "Success";
+		}
+	}
+
 	public function fetch_list_data()
 	{
 		$this->load->library("datatables");
