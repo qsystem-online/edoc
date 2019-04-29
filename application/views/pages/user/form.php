@@ -51,7 +51,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						<input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
 						<div class='form-group'>
-							<label for="fin_user_id" class="col-sm-2 control-label"><?= lang("User ID") ?></label>
+							<label for="fin_user_id" class="col-sm-2 control-label"><?= lang("User ID") ?> :</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" id="fin_user_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_user_id" value="<?= $fin_user_id ?>" readonly>
 								<div id="fin_user_id_err" class="text-danger"></div>
@@ -59,33 +59,31 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_username" class="col-sm-2 control-label"><?= lang("User Name") ?> *</label>
-							<div class="col-sm-10">
+							<label for="fst_username" class="col-sm-2 control-label"><?= lang("User Name") ?> :</label>
+							<div class="col-sm-4">
 								<input type="text" class="form-control" id="fst_username" placeholder="<?= lang("Username") ?>" name="fst_username" value="<?= set_value("fst_username") ?>">
 								<div id="fst_username_err" class="text-danger"></div>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="fst_password" class="col-sm-2 control-label"><?= lang("Password") ?> *</label>
-							<div class="col-sm-10">
-								<?php $displayPassword = ($mode == "EDIT") ? "readonly" : "" ?>
+							<label for="fst_password" class="col-sm-2 control-label"><?= lang("Password") ?> :</label>
+							<div class="col-sm-4">
+								<!--<?php $displayPassword = ($mode == "EDIT") ? "readonly" : "" ?>
 								<input <?= $displayPassword ?> type="password" class="form-control" id="fst_password" placeholder="<?= lang("Password") ?>" name="fst_password" value="<?= set_value("fst_password") ?>">
+								<div id="fst_password_err" class="text-danger"></div>-->
+								<input type="password" class="form-control" id="fst_password" placeholder="<?= lang("Password") ?>" name="fst_password" value="<?= set_value("fst_password") ?>">
 								<div id="fst_password_err" class="text-danger"></div>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="fst_fullname" class="col-sm-2 control-label"><?= lang("Full Name") ?> *</label>
-							<div class="col-sm-10">
+							<label for="fst_fullname" class="col-sm-2 control-label"><?= lang("Full Name") ?> :</label>
+							<div class="col-sm-4">
 								<input type="text" class="form-control" id="fst_fullname" placeholder="<?= lang("Full Name") ?>" name="fst_fullname">
 								<div id="fst_fullname_err" class="text-danger"></div>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="fst_gender" class="col-sm-2 control-label"><?= lang("Gender") ?></label>
-							<div class="col-sm-3">
+							<label for="fst_gender" class="col-sm-2 control-label"><?= lang("Gender") ?> :</label>
+							<div class="col-sm-4">
 								<select class="form-control" id="fst_gender" name="fst_gender">
 									<option value='M'><?= lang("Male") ?></option>
 									<option value='F'><?= lang("Female") ?></option>
@@ -94,8 +92,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fdt_birthdate" class="col-sm-2 control-label"><?= lang("Birth Date") ?> *</label>
-							<div class="col-sm-3">
+							<label for="fdt_birthdate" class="col-sm-2 control-label"><?= lang("Birth Date") ?> :</label>
+							<div class="col-sm-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
 										<i class="fa fa-calendar"></i>
@@ -104,18 +102,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 								</div>
 								<div id="fdt_birthdate_err" class="text-danger"></div>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="fst_birthplace" class="col-sm-2 control-label"><?= lang("Birth Place") ?></label>
-							<div class="col-sm-10">
+							<label for="fst_birthplace" class="col-sm-2 control-label"><?= lang("Birth Place") ?> :</label>
+							<div class="col-sm-4">
 								<input type="text" class="form-control" id="fst_birthplace" placeholder="<?= lang("Birth Place") ?>" name="fst_birthplace">
 								<div id="fst_birthplace_err" class="text-danger"></div>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="fst_address" class="col-md-2 control-label"><?= lang("Address") ?> *</label>
+							<label for="fst_address" class="col-md-2 control-label"><?= lang("Address") ?> :</label>
 							<div class="col-md-10" row="10" cols="50">
 								<textarea class="form-control" id="fst_address" placeholder="<?= lang("Address") ?>" name="fst_address"></textarea>
 								<div id="fst_address_err" class="text-danger"></div>
@@ -123,52 +119,55 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_phone" class="col-md-2 control-label"><?= lang("Phone") ?> *</label>
-							<div class="col-md-10">
+							<label for="fst_phone" class="col-md-2 control-label"><?= lang("Phone") ?> :</label>
+							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_phone" placeholder="<?= lang("Phone") ?>" name="fst_phone">
 								<div id="fst_phone_err" class="text-danger"></div>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="fst_email" class="col-md-2 control-label"><?= lang("Email") ?> *</label>
-							<div class="col-md-10">
+							<label for="fst_email" class="col-md-2 control-label"><?= lang("Email") ?> :</label>
+							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_email" placeholder="<?= lang("Email") ?>" name="fst_email">
 								<div id="fst_email_err" class="text-danger"></div>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="select-departmentname" class="col-md-2 control-label"><?= lang("Department ID") ?></label>
+							<label for="select-departmentname" class="col-md-2 control-label"><?= lang("Department") ?> :</label>
 							<div class="col-md-4">
 								<select id="select-departmentname" class="form-control" name="fin_department_id"></select>
 								<div id="fst_department_name_err" class="text-danger"></div>
 							</div>
+							<label for="select-groupname" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+							<div class="col-md-4">
+								<select id="select-groupname" class="form-control" name="fin_group_id"></select>
+								<div id="fst_group_name_err" class="text-danger"></div>
+							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="fst_birthplace" class="col-sm-2 control-label"></label>
-							<div class="col-sm-10">
-								<img id="imgAvatar" style="border:1px solid #999;width:128px;" src="<?= site_url() ?>assets/app/users/avatar/default.jpg" />
+							<label for="fbl_admin" class="col-sm-2 control-label"><?= lang("Admin") ?> :</label>
+							<div class="checkbox">
+								<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?= lang("Admin") ?></label><br>
 							</div>
 						</div>
+
 						<div class="form-group">
-							<label for="fst_birthplace" class="col-sm-2 control-label"><?= lang("Avatar") ?></label>
-							<div class="col-sm-10">
+
+							<label for="fst_birthplace" class="col-sm-2 control-label"><?= lang("Foto") ?> :</label>
+							<div class="col-sm-4">
 								<input type="file" class="form-control" id="fst_avatar" name="fst_avatar">
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="fbl_admin" class="col-sm-2 control-label"><?= lang("Admin") ?></label>
-							<div class="checkbox">
-								<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="0"><?= lang("Admin") ?></label><br>
+							<label for="fst_birthplace" class="col-sm-2 control-label"></label>
+							<div class="col-sm-4">
+								<img id="imgAvatar" style="border:1px solid #999;width:128px;" align="right" src="<?= site_url() ?>assets/app/users/avatar/default.jpg" />
 							</div>
 						</div>
 					</div>
 					<!-- end box-body -->
 					<div class="box-footer">
-						<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
+						<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Record</a>
 					</div>
 					<!-- end box-footer -->
 				</form>
@@ -225,7 +224,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						}
 					} else if (resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#fin_user_id").val(data.insert_id);
+						$("#fin_insert_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
@@ -282,7 +281,31 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			}
 		});
 
-		$("#fdt_birthdate").datepicker('update', dateFormat(user.fdt_birthdate));
+
+		$("#select-groupname").select2({
+			width: '100%',
+			ajax: {
+				url: '<?= site_url() ?>user/get_group',
+				dataType: 'json',
+				delay: 250,
+				processResults: function(data) {
+					data2 = [];
+					$.each(data, function(index, value) {
+						data2.push({
+							"id": value.fin_group_id,
+							"text": value.fst_group_name
+						});
+					});
+					console.log(data2);
+					return {
+						results: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+
 	});
 
 
@@ -311,20 +334,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					}
 				});
 
+				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
+
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
 				// Append it to the select
 				$('#select-departmentname').append(newOption).trigger('change');
 
+				var newOption = new Option(resp.user.fst_group_name, resp.user.fin_group_id, true, true);
+				// Append it to the select
+				$('#select-groupname').append(newOption).trigger('change');
+
 				//Image Load 
 				$('#imgAvatar').attr("src", resp.user.avatarURL);
 
-				//populate Group (select2)
-				/*var groups = [];
-				$.each(resp.list_group, function(name, val){
-					groups.push(val.fin_group_id);
-				})
-				$("#fin_group_id").val(groups).trigger("change");*/
 			},
 
 			error: function(e) {

@@ -26,8 +26,8 @@ class User extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'user/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'user/edit/';
 		$this->list['arrSearch'] = [
-			'a.fin_user_id' => 'User ID',
-			'a.fst_username' => 'User Name'
+			'fst_username' => 'User Name',
+			'fin_user_id' => 'User ID'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -61,7 +61,6 @@ class User extends MY_Controller
 	public function openForm($mode = "ADD", $fin_user_id = 0)
 	{
 		$this->load->library("menus");
-		//$this->load->model("groups_model");
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -123,6 +122,7 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" => ($this->input->post("fbl_admin") == null) ? 0 : 1
 		];
 
@@ -136,22 +136,6 @@ class User extends MY_Controller
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
-		}
-
-
-
-		//Save Group
-		$this->load->model("user_group_model");
-		$arr_group_id = $this->input->post("fin_group_id");
-		if ($arr_group_id) {
-			foreach ($arr_group_id as $group_id) {
-				$data = [
-					"fin_group_id" => $group_id,
-					"fin_user_id" => $insertId,
-					"fst_active" => "A"
-				];
-				$this->user_group_model->insert($data);
-			}
 		}
 
 		//Save File
@@ -216,7 +200,6 @@ class User extends MY_Controller
 		$data = [
 			"fin_user_id" => $fin_user_id,
 			"fst_username" => $this->input->post("fst_username"),
-			//"fst_password" => md5($this->input->post("fst_password")),
 			"fst_fullname" => $this->input->post("fst_fullname"),
 			"fdt_birthdate" => dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender" => $this->input->post("fst_gender"),
@@ -226,9 +209,14 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" => $this->input->post("fbl_admin")
 		];
+		$objUser = $this->users_model->getDataById($fin_user_id)['user'];
+		if ($objUser->fst_password != $this->input->post("fst_password")) {
 
+			$data["fst_password"] =  md5($this->input->post("fst_password"));
+		}
 		$this->db->trans_start();
 
 		$this->users_model->update($data);
@@ -240,21 +228,6 @@ class User extends MY_Controller
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
-		}
-
-		//Save Group
-		$this->load->model("user_group_model");
-		$this->user_group_model->deleteByUserId($fin_user_id);
-		$arr_group_id = $this->input->post("fin_group_id");
-		if ($arr_group_id) {
-			foreach ($arr_group_id as $group_id) {
-				$data = [
-					"fin_group_id" => $group_id,
-					"fin_user_id" => $fin_user_id,
-					"fst_active" => "A"
-				];
-				$this->user_group_model->insert($data);
-			}
 		}
 
 		//Save File
@@ -291,50 +264,6 @@ class User extends MY_Controller
 		$this->json_output();
 	}
 
-	public function add_save()
-	{
-		$this->load->model('users_model');
-		$data = [
-			'fst_fullname' => $this->input->get("fst_fullname"),
-			'fdt_insert_datetime' => 'sekarang'
-		];
-		if ($this->db->insert('users', $data)) {
-			echo "insert success";
-		} else {
-			$error = $this->db->error();
-			print_r($error);
-		}
-		die();
-
-		echo "Table Name :" . $this->users_model->getTableName();
-		print_r($this->users_model->getRules());
-
-		$this->form_validation->set_rules($this->users_model->rules);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		if ($this->form_validation->run() == FALSE) {
-			echo form_error();
-			//$this->add();
-		} else {
-			//$this->load->view('formsuccess');
-			echo "Success";
-		}
-
-		//print_r($_POST);
-		$config['allowed_types'] = 'gif|jpg|png'; //Images extensions accepted
-		$config['max_size']    = '2048';
-		$config['max_width']  = '1024';
-		$config['max_height']  = '768';
-		$config['overwrite'] = TRUE;
-
-		$this->load->library('upload', $config);
-		$upload_data = $this->upload->data("fst_avatar");
-
-		print_r($upload_data);
-
-		print_r($_FILES);
-	}
-
 	public function fetch_list_data()
 	{
 		$this->load->library("datatables");
@@ -343,7 +272,7 @@ class User extends MY_Controller
 		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_fullname", "fst_birthplace"];
+		$searchFields = ["fin_user_id", "fst_username"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -385,6 +314,16 @@ class User extends MY_Controller
 		$this->json_output($rs);
 	}
 
+	public function get_group()
+	{
+		$term = $this->input->get("term");
+		$ssql = "select fin_group_id, fst_group_name from master_groups";
+		$qr = $this->db->query($ssql, ['%' . $term . '%']);
+		$rs = $qr->result();
+
+		$this->json_output($rs);
+	}
+
 	public function delete($id)
 	{
 		if (!$this->aauth->is_permit("")) {
@@ -407,6 +346,77 @@ class User extends MY_Controller
 		$this->load->model('users_model');
 		$result = $this->users_model->getAllList();
 		$this->ajxResp["data"] = $result;
+		$this->json_output();
+	}
+
+	public function changepassword()
+	{
+		$this->load->library("menus");
+
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+
+		$data["title"] = "Change password";
+		//$data["fin_user_id"] = $fin_user_id;
+
+		$page_content = $this->parser->parse('pages/user/changepassword', $data, true);
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
+	}
+
+	public function change_password()
+	{
+
+		//$activeUser = $this->session->userdata('active_user');
+		$activeUser = $this->aauth->user();
+		//print_r($activeUser);
+		$fin_user_id = $activeUser->fin_user_id;
+
+		$this->load->model('users_model');
+		$data = $this->users_model->getDataById($fin_user_id);
+		$user = $data["user"];
+
+		$this->form_validation->set_rules($this->users_model->getRulesCp($fin_user_id));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "Error Validation Forms";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->json_output();
+			return;
+		}
+
+		$data = [
+			"fin_user_id" => $fin_user_id,
+			"fst_password" => md5($this->input->post("new_password1"))
+		];
+		$this->db->trans_start();
+
+		$this->users_model->update($data);
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0) {
+			$this->ajxResp["status"] = "DB_FAILED";
+			$this->ajxResp["message"] = "Insert Failed";
+			$this->ajxResp["data"] = $this->db->error();
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+
+		$this->db->trans_complete();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Password updated !";
+		//$this->ajxResp["data"]["insert_id"] = $fin_user_id;
 		$this->json_output();
 	}
 }
