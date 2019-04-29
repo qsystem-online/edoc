@@ -884,7 +884,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
+
+			$("#canvas-container").hide();
+			$("#plugin").show();
+			
 			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
+
 			//$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
 			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
 			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");			
