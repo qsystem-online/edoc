@@ -215,8 +215,10 @@ class Master_groups extends MY_Controller {
 		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_group_id","fst_group_name"];
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
 
 		// Format Data
 		$datasources = $this->datatables->getData();

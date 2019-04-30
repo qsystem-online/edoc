@@ -223,8 +223,10 @@ class Department extends MY_Controller
 		$selectFields = "fin_department_id,fst_department_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_department_id", "fst_department_name"];
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_department_name"];
 		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
 
 		// Format Data
 		$datasources = $this->datatables->getData();
