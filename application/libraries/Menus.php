@@ -42,9 +42,6 @@ class Menus {
 
 				$isActiveParentDisplay = $this->is_active_parent($rw->fin_id) ? "block" :"none";
 
-				
-
-
 				$strMenu .= "<li class='$isActive $treeView $isActiveParent'>
 						<a href='" . site_url($urlLink) ."'>" . $rw->fst_icon . "<span>" .$rw->fst_caption ."</span>" . $foldElemet ."</a>";
 				if ($haveChild){

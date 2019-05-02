@@ -106,6 +106,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$.ajax({
 					url:"<?=$delete_ajax_url?>" + $(this).data("<?=$pKey?>"),
 					success:function(resp){
+						if(resp.message != ""){
+							alert(resp.message);
+						}
 						if (resp.status == "SUCCESS"){
 							trRow.remove();
 						}
