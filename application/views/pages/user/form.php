@@ -174,7 +174,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					</div>
 					<!-- end box-body -->
 					<div class="box-footer">
-						<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Record</a>
+						<?php
+							$captionSave = ($mode == "ADD") ? "Save Record" : "Update Record";
+						?>
+						<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?= $captionSave ?></a>
 					</div>
 					<!-- end box-footer -->
 				</form>

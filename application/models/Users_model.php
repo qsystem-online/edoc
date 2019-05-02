@@ -14,19 +14,12 @@ class Users_model extends MY_Model
 	public function getDataById($fin_user_id)
 	{
 		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
-		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level from " . $this->tableName . " a 
-		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,d.fst_branch_name from " . $this->tableName . " a left join departments b on a.fin_department_id = b.fin_department_id left join master_groups c on a.fin_group_id = c.fin_group_id left join branch d on a.fin_branch_id = d.fin_branch_id where a.fin_user_id = ?";
-<<<<<<< .mine
+		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level,d.fst_branch_name from " . $this->tableName . " a 
+			left join departments b on a.fin_department_id = b.fin_department_id 
+			left join master_groups c on a.fin_group_id = c.fin_group_id 
+			left join branch d on a.fin_branch_id = d.fin_branch_id 
+			where a.fin_user_id = ?";
 
-
-
-
-=======
-		left join departments b on a.fin_department_id = b.fin_department_id 
-		left join master_groups c on a.fin_group_id = c.fin_group_id 
-		where a.fin_user_id = ?";
-
->>>>>>> .theirs
 		$qr = $this->db->query($ssql, [$fin_user_id]);
 		$rwUser = $qr->row();
 		if ($rwUser) {
