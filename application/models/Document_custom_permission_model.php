@@ -78,8 +78,9 @@ class Document_custom_permission_model extends MY_Model {
         $fstMode = ($mode == "USER") ? "USER" : "DEPARTMENT";
         $ssql = "select $field from " . $this->tableName . " where fst_mode = ? and fin_user_department_id = ? and fin_document_id = ?";
         $qr = $this->db->query($ssql,[$fstMode,$fin_user_department_id,$fin_document_id]);
-        if($qr){
-            $rw = $qr->row();
+
+        $rw = $qr->row();
+        if($rw){                    
             return $rw->$field;
         }
         return false;

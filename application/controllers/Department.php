@@ -27,8 +27,8 @@ class Department extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'department/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'department/edit/';
 		$this->list['arrSearch'] = [
-			'a.fin_department_id' => 'Department ID',
-			'a.fst_department_name' => 'Department Name'
+			'fin_department_id' => 'Department ID',
+			'fst_department_name' => 'Department Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -215,17 +215,18 @@ class Department extends MY_Controller
 		print_r($_FILES);
 	}
 
-	public function fetch_list_data()
-	{
+	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("departments");
-
+		
 		$selectFields = "fin_department_id,fst_department_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
-
-		$searchFields = ["fin_department_id", "fst_department_name"];
+		
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
-
+		$this->datatables->activeCondition = "fst_active !='D'";
+		
 		// Format Data
 		$datasources = $this->datatables->getData();
 		$arrData = $datasources["data"];
@@ -236,12 +237,12 @@ class Department extends MY_Controller
 					<a class='btn-edit' href='#' data-id='" . $data["fin_department_id"] . "'><i class='fa fa-pencil'></i></a>
 					<a class='btn-delete' href='#' data-id='" . $data["fin_department_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
-
 			$arrDataFormated[] = $data;
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
+
 
 	public function fetch_data($fin_department_id)
 	{

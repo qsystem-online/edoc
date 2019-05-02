@@ -98,6 +98,76 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+	public function approval($fin_document_flow_control_id){		
+		$this->load->library("menus");
+		$this->load->model("document_flow_control_model");
+
+
+		$flowControl = $this->document_flow_control_model->getDataById($fin_document_flow_control_id);
+		if ($flowControl){
+			$fin_document_id = $flowControl->fin_document_id;
+		}else{
+			show_404();
+		}
+
+		$main_header = $this->parser->parse('inc/main_header',[],true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+
+		$data["title"] = lang("Approval Document");
+		$data["fin_document_flow_control_id"] = $fin_document_flow_control_id;
+		$data["fin_document_id"] = $fin_document_id;
+		$data["base_url"] = base_url();
+		$data["active_user_id"] = $this->aauth->get_user_id();
+
+		$page_content =$this->parser->parse('pages/document/form_approval',$data,true);
+		$main_footer = $this->parser->parse('inc/main_footer',[],true);
+		
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main',$this->data);
+
+	}
+
+	public function do_approval_flow_control(){
+		$this->load->model("document_flow_control_model");
+		$finId = $this->input->post("fin_id");
+		$flowControl = $this->document_flow_control_model->getDataById($finId);
+		if ($flowControl->fst_control_status != "RA"){
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = lang("Invalid Request !");
+			$this->ajxResp["data"] = ["errors" =>"Status Not Ready To Approve"];			
+			$this->json_output();
+			return;
+		}
+		if ($flowControl->fin_user_id != $this->aauth->get_user_id()){
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = lang("Invalid Request !");
+			$this->ajxResp["data"] = ["errors" =>"Invalid user to do approval"];			
+			$this->json_output();
+			return;
+		}
+		$data = [
+			"fin_id"=>$finId,
+			"fst_control_status" => $this->input->post("fst_control_status"),
+			"fst_memo" => $this->input->post("fst_memo"),
+			"fdt_approved_datetime" => date("Y-m-d H:i:s")
+		];
+
+		$this->db->trans_start();
+		$this->document_flow_control_model->update($data);
+		$this->db->trans_complete();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Document Approved !");
+		$this->ajxResp["data"] = ["errors" =>"Invalid user to do approval"];			
+		$this->json_output();
+		
+
+	}
 
 	public function add(){
 		$this->openForm("ADD","");
@@ -442,6 +512,8 @@ class Document extends MY_Controller {
 			$this->load->model('document_flow_control_model');
 
 			$this->document_flow_control_model->deleteNotApprovedByParentId($fin_document_id);
+			$currentSeqNo = $this->document_flow_control_model->getCurrentSeqNo($fin_document_id);
+
 
 			if ($data["fbl_flow_control"] == 1){				
 				$this->form_validation->set_rules($this->document_flow_control_model->getRules("ADD",0));
@@ -458,13 +530,20 @@ class Document extends MY_Controller {
 					$dataFlow = [];
 					if ($flow_control->fin_id != 0){
 						$dataFlow["fin_id"] = $flow_control->fin_id; 
+						$dataFlow["fst_control_status"] = $flow_control->fst_control_status;
+					}else{
+						//"fst_control_status" => $flow_control->fst_control_status,   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision
+						if($currentSeqNo >= $flow_control->fin_seq_no ){
+							$dataFlow["fst_control_status"] = "RA";
+						}else{
+							$dataFlow["fst_control_status"] = "NA";
+						}
 					}
 
 					$dataFlow = [			
 						"fin_document_id"=> $fin_document_id,
 						"fin_seq_no"=> $flow_control->fin_seq_no,
-						"fin_user_id"=> $flow_control->fin_user_id,
-						"fst_control_status " => $flow_control->fst_control_status,   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision
+						"fin_user_id"=> $flow_control->fin_user_id,						
 						"fin_version" => $docVersion,
 						"fin_document_id"=> $fin_document_id,
 						"fst_active" => "A",						
@@ -490,9 +569,10 @@ class Document extends MY_Controller {
 
 			$detail_custom_scope = $this->input->post("detail_custom_scope");
 			$detail_custom_scope = json_decode($detail_custom_scope);
+			$this->form_validation->reset_validation();
+			$this->form_validation->set_rules($this->document_custom_permission_model->getRules("ADD",0));	
+			//print_r($this->document_custom_permission_model->getRules("ADD",0));
 
-			$this->form_validation->set_rules($this->document_custom_permission_model->getRules("ADD",0));			
-			
 			foreach ($detail_custom_scope as $scope) {
 				$dataScope = [
 					"fin_id"=>$scope->fin_id,
@@ -553,7 +633,6 @@ class Document extends MY_Controller {
 			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
 
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-view' href='#' data-id='".$data["fin_document_id"]."'><i class='fa fa-search-plus' aria-hidden='true'></i></a>
 					<a class='btn-edit' href='#' data-id='".$data["fin_document_id"]."'><i class='fa fa-pencil' aria-hidden='true'></i></a>
 					<a class='btn-delete' href='#' data-id='".$data["fin_document_id"]."' data-toggle='confirmation'><i class='fa fa-trash' aria-hidden='true' ></i></a>
 				</div>";
@@ -573,7 +652,14 @@ class Document extends MY_Controller {
 
 		$data = [];
 		$data["header"] = $this->documents_model->getDataById($fin_document_id);
-		$data["doc_details"] = $this->document_details_model->getRowsByParentId($fin_document_id);
+		
+		$tmpDocDetails = $this->document_details_model->getRowsByParentId($fin_document_id);
+		$docDetails = [];
+		foreach($tmpDocDetails as $detail){
+			$detail->view_doc = $this->documents_model->scopePermission($detail->fin_document_id,"VIEW");
+			$docDetails[] = $detail;
+		}
+		$data["doc_details"] = $docDetails;
 		$data["flow_details"] = $this->document_flow_control_model->getRowsByParentId($fin_document_id);
 		$data["custom_details"] = $this->document_custom_permission_model->getRowsByParentId($fin_document_id);
 		$data["permission"] = [
@@ -591,7 +677,7 @@ class Document extends MY_Controller {
 		var_dump($this->view_print_token_model->useToken("KEbdAR7wNkZfLd6JyvzUpxWYFCHQLE0XegcIoQzbM1qsVYq38ty1VfaFPTSktxpS"));
 		//var_dump($this->view_print_token_model->generateToken());
 	}
-	public function delete($id){
+	public function delete($fin_document_id){
 		if(!$this->aauth->is_permit("")){
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";
@@ -599,17 +685,19 @@ class Document extends MY_Controller {
 			return;
 		}
 		
-		$this->load->model("users_model");
-		
-		$this->users_model->delete($id);
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
-		$this->json_output();
+		$this->load->model("documents_model");
 
-
-
-
-
+		if ($this->documents_model->canBeDeleted($fin_document_id)){
+			$this->documents_model->delete($fin_document_id);
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->json_output();
+		}else{
+			$this->ajxResp["status"] = "NOT_PERMIT";
+			$this->ajxResp["message"] = lang("This document can not be deleted !");
+			$this->json_output();
+			return;
+		}
 	}
 
 
@@ -656,4 +744,114 @@ class Document extends MY_Controller {
 		
 	}
 
+
+	public function displayDocument($fin_document_id){
+		$this->load->library("menus");
+		$this->load->model("view_print_token_model");
+		$this->load->model("documents_model");
+		$data['base_url'] =  base_url();
+		
+		
+		
+		$viewDoc = $this->documents_model->scopePermission($fin_document_id,"VIEW");
+		$printDoc = $this->documents_model->scopePermission($fin_document_id,"PRINT");
+
+		if ($viewDoc){
+			$viewToken = $this->view_print_token_model->generateToken($fin_document_id);
+			$data["fin_document_id"] = $fin_document_id;
+			$data["printDoc"] = $printDoc;
+			$data['viewToken'] =  $viewToken;
+
+		}else{
+			show_404();
+		}
+
+		
+		$this->parser->parse('pages/document/viewer',$data,false);
+		return;
+
+		//$this->data['PAGE_CONTENT']= $page_content;
+		//$this->parser->parse('template/main',$this->data);
+
+		$main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('pages/document/viewer',$data,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+
+
+	}
+
+
+	public function search_list(){
+
+		$this->load->library('menus');
+        $this->list['page_name']="Documents";
+        $this->list['list_name']="Document List";
+        $this->list['addnew_ajax_url']=site_url().'document/add';
+        $this->list['pKey']="id";
+		$this->list['arrSearch']=[
+			'a.fst_name' => 'Document Name',
+			'a.fst_search_marks' => 'Search Mark',
+			'a.fst_memo' => 'Memo',
+		];
+		$this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Document','link'=>'#','icon'=>''],
+			['title'=>'Search','link'=> NULL ,'icon'=>''],
+		];
+
+		
+		$this->list['base_url'] =  base_url();
+
+		$main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('pages/document/search',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+		
+	}
+
+
+	public function search_list_data(){
+		$this->load->library("datatables");
+		$this->load->model("documents_model");
+		$this->load->model("view_print_token_model");
+		
+
+		$this->datatables->setTableName("(select * from documents where fdt_published_date <= CURDATE() and fbl_flow_completed = 1) as a inner join users b on a.fin_insert_id = b.fin_user_id");
+		
+		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,b.fst_username,a.fdt_insert_datetime";
+		$this->datatables->setSelectFields($selectFields);
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "a.fst_active !='D'";
+
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
+			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
+
+			$data["view_doc"] = $this->documents_model->scopePermission($data["fin_document_id"],"VIEW");
+			$data["print_doc"] = $this->documents_model->scopePermission($data["fin_document_id"],"PRINT");
+						
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
 }

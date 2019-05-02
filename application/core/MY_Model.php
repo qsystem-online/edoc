@@ -53,6 +53,11 @@ class MY_Model extends CI_Model
 		}
 	}
 
+	public function getDataById($id){
+		$ssql = "select * from ". $this->tableName . " where " . $this->pkey . " = ?";
+		$qr = $this->db->query($ssql,[$id]);
+		return $qr->row();
+	}
 
 	public function getTableName()
 	{

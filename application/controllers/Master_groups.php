@@ -22,8 +22,8 @@ class Master_groups extends MY_Controller {
         $this->list['delete_ajax_url']=site_url().'master_groups/delete/';
         $this->list['edit_ajax_url']=site_url().'master_groups/edit/';
         $this->list['arrSearch']=[
-            'a.fin_group_id' => 'Group ID',
-            'a.fst_group_name' => 'Group Name'
+            'fin_group_id' => 'Group ID',
+            'fst_group_name' => 'Group Name'
 		];
 
 		$this->list['breadcrumbs']=[
@@ -215,8 +215,10 @@ class Master_groups extends MY_Controller {
 		$selectFields = "fin_group_id,fst_group_name,fin_level,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_group_id","fst_group_name"];
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_flow_control_schema_id","fst_name"];
 		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
 
 		// Format Data
 		$datasources = $this->datatables->getData();
