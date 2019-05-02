@@ -123,6 +123,7 @@ class User extends MY_Controller
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fbl_admin" => ($this->input->post("fbl_admin") == null) ? 0 : 1
 		];
 
@@ -210,6 +211,7 @@ class User extends MY_Controller
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fbl_admin" => $this->input->post("fbl_admin")
 		];
 		$objUser = $this->users_model->getDataById($fin_user_id)['user'];
@@ -302,7 +304,9 @@ class User extends MY_Controller
 		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_user_id", "fst_username"];
+		//$searchFields = ["fin_user_id", "fst_username"];
+		$Fields = $this->input->get('optionSearch');
+		$searchFields = [$Fields];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -348,6 +352,16 @@ class User extends MY_Controller
 	{
 		$term = $this->input->get("term");
 		$ssql = "select fin_group_id, fst_group_name from master_groups";
+		$qr = $this->db->query($ssql, ['%' . $term . '%']);
+		$rs = $qr->result();
+
+		$this->json_output($rs);
+	}
+
+	public function get_branch()
+	{
+		$term = $this->input->get("term");
+		$ssql = "select fin_branch_id, fst_branch_name from branch";
 		$qr = $this->db->query($ssql, ['%' . $term . '%']);
 		$rs = $qr->result();
 
@@ -404,6 +418,13 @@ class User extends MY_Controller
 	public function change_password()
 	{
 
+		//$detailsData = array('fst_branch_name' => 'SURABAYA');
+		//$this->session->set_userdata($session_data);
+		//$detailsData = $this->session->userdata('detailsData');
+		//$detailsData['fst_branch_name'] = "SURABAYA";
+		//$this->session->set_userdata('active_branch_id', 2);
+		//print_r($detailsData);
+		//$this->session->userdata('active_user');
 		//$activeUser = $this->session->userdata('active_user');
 		$activeUser = $this->aauth->user();
 		//print_r($activeUser);
@@ -448,5 +469,29 @@ class User extends MY_Controller
 		$this->ajxResp["message"] = "Password updated !";
 		//$this->ajxResp["data"]["insert_id"] = $fin_user_id;
 		$this->json_output();
+	}
+
+	public function change_branch($active_branch_id)
+	{
+		//$this->session->set_userdata('active_branch_id', $active_branch_id);
+		$activeUser = $this->session->userdata('active_user');
+		if ($activeUser->fbl_central) {
+			$this->session->set_userdata('active_branch_id', $active_branch_id);
+		}
+		$this->load->library("menus");
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', $this->data, true);
+		//$page_content = $this->parser->parse('pages/sample/template_sample',[],true);
+		$page_content = "";
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+		//$control_sidebar = $this->parser->parse('inc/control_sidebar',[],true);
+		$control_sidebar = NULL;
+
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
 	}
 }

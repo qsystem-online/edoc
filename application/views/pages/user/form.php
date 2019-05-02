@@ -146,6 +146,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
+							<label for="select-branchname" class="col-md-2 control-label"><?= lang("Branch") ?> :</label>
+							<div class="col-md-4">
+								<select id="select-branchname" class="form-control" name="fin_branch_id"></select>
+								<div id="fst_branch_name_err" class="text-danger"></div>
+							</div>
+						</div>
+						<div class="form-group">
 							<label for="fbl_admin" class="col-sm-2 control-label"><?= lang("Admin") ?> :</label>
 							<div class="checkbox">
 								<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?= lang("Admin") ?></label><br>
@@ -254,9 +261,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			reader.readAsDataURL(this.files[0]);
 		});
 
-		/*$(".datepicker").datepicker({
-			format:"yyyy-mm-dd"
-		});*/
 
 		$("#select-departmentname").select2({
 			width: '100%',
@@ -294,6 +298,30 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						data2.push({
 							"id": value.fin_group_id,
 							"text": value.fst_group_name
+						});
+					});
+					console.log(data2);
+					return {
+						results: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+
+		$("#select-branchname").select2({
+			width: '100%',
+			ajax: {
+				url: '<?= site_url() ?>user/get_branch',
+				dataType: 'json',
+				delay: 250,
+				processResults: function(data) {
+					data2 = [];
+					$.each(data, function(index, value) {
+						data2.push({
+							"id": value.fin_branch_id,
+							"text": value.fst_branch_name
 						});
 					});
 					console.log(data2);
@@ -344,6 +372,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 				var newOption = new Option(resp.user.fst_group_name, resp.user.fin_group_id, true, true);
 				// Append it to the select
 				$('#select-groupname').append(newOption).trigger('change');
+
+
+				var newOption = new Option(resp.user.fst_branch_name, resp.user.fin_branch_id, true, true);
+				// Append it to the select
+				$('#select-branchname').append(newOption).trigger('change');
 
 				//Image Load 
 				$('#imgAvatar').attr("src", resp.user.avatarURL);

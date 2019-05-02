@@ -1,14 +1,17 @@
 <?php
-if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Menus_model extends MY_Model {
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+class Menus_model extends MY_Model
+{
     public $tableName = "menus";
     public $pkey = "fin_id";
 
-    public function __construct(){
-        parent:: __construct();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    public function getRules($mode="ADD",$id=0){
+    public function getRules($mode = "ADD", $id = 0)
+    {
 
         $rules = [];
 
@@ -42,6 +45,15 @@ class Menus_model extends MY_Model {
         $rules[] = [
             'field' => 'fst_type',
             'label' => 'Type',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fst_link',
+            'label' => 'Link',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'

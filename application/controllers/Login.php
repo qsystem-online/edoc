@@ -9,7 +9,7 @@ class Login extends CI_Controller
 		$username = $this->input->post("username");
 		$password = $this->input->post("password");
 		if ($username != "") {
-			$ssql = "select * from users where fst_username = ?";
+			$ssql = "select a.*,b.fin_branch_id AS ActiveBranch ,b.fst_branch_name, b.fbl_central from users a left join branch b on a.fin_branch_id = b.fin_branch_id where fst_username = ?";
 			$query = $this->db->query($ssql, [$username]);
 			$rw = $query->row();
 			$strIvalidLogin = "Invalid Username / Password";
@@ -17,6 +17,7 @@ class Login extends CI_Controller
 			if ($rw) {
 				if (md5($password) == $rw->fst_password) {
 					$this->session->set_userdata("active_user", $rw);
+					$this->session->set_userdata("active_branch_id", $rw->ActiveBranch);
 					$this->session->set_userdata("last_login_session", time());
 					if ($this->session->userdata("last_uri")) {
 						redirect(site_url() . $this->session->userdata("last_uri"), 'refresh');

@@ -110,11 +110,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         $.alert({
                             title: 'Message',
                             content: resp.message,
-                            confirm: function() {
-                                //alert('the user clicked yes');
-                                //window.location.href = "<?= site_url() ?>home";
-                                //return;
-                            }
+                            //confirm: function() {
+                            //alert('the user clicked yes');
+                            //window.location.href = "<?= site_url() ?>/login";
+                            //return;
+                            //}
                         });
                     }
 
@@ -130,6 +130,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         //Clear all previous error
                         $(".text-danger").html("");
+                        //window.location.href = "<?= site_url() ?>/login";
+                        //return;
 
                         // Change to Edit mode
                         //$("#frm-mode").val("EDIT"); //ADD|EDIT
