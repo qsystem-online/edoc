@@ -264,8 +264,10 @@ class Flow_schema extends MY_Controller {
 		$selectFields = "fin_flow_control_schema_id,fin_insert_id,fst_name,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_flow_control_schema_id","fst_name"];
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_flow_control_schema_id","fst_name"];
 		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
 
 		// Format Data
         $datasources = $this->datatables->getData();

@@ -179,4 +179,32 @@ class Documents_model extends MY_Model {
 		}
 		return NULL;
 	}
+
+	public function canBeDeleted($fin_document_id){
+		//apakah terdaftar didokumen detail
+		$ssql = "select * from document_details where fin_document_item_id = ?";
+		$qr = $this->db->query($ssql,[$fin_document_id]);
+		$rw = $qr->row();
+		if ($rw){			
+			return false;
+		}
+		
+		//cek Flow control and  Allready Approved
+		$ssql = "select * from documents where fin_document_item_id = ?";
+		$qr = $this->db->query($ssql,[$fin_document_id]);
+		$rw = $qr->row();
+		if ($rw){			
+			if($rw->fbl_flow_control){
+				// Cek apakah document sudah pernah di approved
+				$ssql = "select * from document_flow_control where fin_document_item_id = ? and fst_control_status = 'AP'";
+				$qr = $this->db->query($ssql,[$fin_document_id]);
+				$rw = $qr->row();
+				if ($rw){			
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
 }

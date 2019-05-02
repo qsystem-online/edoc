@@ -1,14 +1,16 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Home extends MY_Controller {
-	public function index(){
+class Home extends MY_Controller
+{
+	public function index()
+	{
 		$this->load->library("menus");
-		$main_header = $this->parser->parse('inc/main_header',[],true);
-		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', $this->data, true);
 		//$page_content = $this->parser->parse('pages/sample/template_sample',[],true);
 		$page_content = "";
-		$main_footer = $this->parser->parse('inc/main_footer',[],true);
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 		//$control_sidebar = $this->parser->parse('inc/control_sidebar',[],true);
 		$control_sidebar = NULL;
 
@@ -17,7 +19,6 @@ class Home extends MY_Controller {
 		$this->data["PAGE_CONTENT"] = $page_content;
 		$this->data["MAIN_FOOTER"] = $main_footer;
 		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
-		$this->parser->parse('template/main',$this->data);
+		$this->parser->parse('template/main', $this->data);
 	}
-	
 }

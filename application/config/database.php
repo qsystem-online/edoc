@@ -74,10 +74,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'db_edoc',
+	'hostname' => 'localhost', //'qsystem-online.com',
+	'username' => 'root', //'u5538790_edoc',
+	'password' => '', //'passedoc',
+	'database' => 'db_edoc', //'u5538790_edoc',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

@@ -206,7 +206,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<form class="form-horizontal edit-mode ">	
 									<div class="form-group">
 										<div class="col-md-10">				
-											<label for="select-product" class="col-md-6 control-label"><?= lang("Permission For :")?></label>
+											<label for="select-product" class="col-md-3 control-label"><?= lang("Permission For :")?></label>
+											<div class="col-md-3">
+												<select id="scope-custom-branch" class="select2 form-control" style="width:100%"></select>
+											</div>		
 											<div class="col-md-3">
 												<select id="scope-custom-type" class="select2 form-control" style="width:100%">
 													<option value="DEPARTMENT"><?= lang("Department")?></option>
@@ -658,8 +661,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		//$(".select2").select2();
         $(".select2-container").addClass("form-control"); 
 
+		//fill custom branch
+		fill_scope_branch();
+		
 		//Fill custom scope department as default
 		fill_scope_department();
+
 		$('#scope-custom-type').on('select2:select', function (e) {
 			console.log(e.params);
   			if ($('#scope-custom-type').val() == "DEPARTMENT"){
@@ -785,7 +792,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		var url = "{base_url}document/getDocument/" + token;
 		var pdfjsLib = window['pdfjs-dist/build/pdf'];
+		console.log("pdfjsLib");
+		console.log(pdfjsLib);
+
 		pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
+		//pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
 		var loadingTask = pdfjsLib.getDocument(url);
 		loadingTask.promise.then(function(pdf) {
 			docPdf = pdf;
@@ -1189,6 +1201,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#scope-custom-value').empty();
 				$('#scope-custom-value').val(null).trigger('change');
 				$("#scope-custom-value").select2({
+					data: selectData,
+				});
+				console.log(selectData);
+				$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+
+	function fill_scope_branch(){
+		$.ajax({
+			url: '{base_url}department/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+
+				selectData.push({
+					"id" : 0,
+					"text" : "All Branch"
+				});	
+
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_department_id,
+						"text" : value.fst_department_name
+					});	
+				});
+				
+				$('#scope-custom-branch').empty();
+				$('#scope-custom-branch').val(null).trigger('change');
+				$("#scope-custom-branch").select2({
 					data: selectData,
 				});
 				console.log(selectData);
