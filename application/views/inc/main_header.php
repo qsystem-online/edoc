@@ -32,15 +32,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					</a>
 					<ul class="dropdown-menu">
 						<!-- User image -->
-						<li class="user-header">
+						<li class="user-header" style="height:110px">
 							<img src="<?php $rs = $this->session->userdata('active_user');
 										echo base_url() . 'assets/app/users/avatar/avatar_' . $rs->fin_user_id . '.jpg'; ?>" class="user-image" alt="User Image">
 							<?php
 							$active_user->fst_fullname ?> - Web Developer <small>Member since Nov. 2012</small></p>
 						</li>
 						<!-- Menu Body -->
-						<li class="user-body">
-						</li>
+						<li class="user-body" style="display:none"></li>
+
 						<!-- Menu Footer-->
 						<li class="user-footer">
 							<div class="pull-left"><a href="<?= site_url() ?>user/changepassword" class="btn btn-default btn-flat">Change Password</a></div>
@@ -58,20 +58,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		</div>
 	</nav>
 </header>
+<<<<<<< .mine=======>>>>>>> .theirs
+	<script type="text/javascript">
+		$(function() {
+			$(".sidebar-toggle").click(function() {
+				if ($("body").hasClass("sidebar-collapse")) {
+					setValue = 0;
+				} else {
+					setValue = 1;
+				}
 
-<script type="text/javascript">
-	$(function() {
-		$(".sidebar-toggle").click(function() {
-			if ($("body").hasClass("sidebar-collapse")) {
-				setValue = 0;
-			} else {
-				setValue = 1;
-			}
+				$.ajax({
+					url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
+				});
 
-			$.ajax({
-				url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
 			});
-
 		});
-	});
-</script>
+	</script>

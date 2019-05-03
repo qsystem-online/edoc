@@ -33,8 +33,8 @@ class Document extends MY_Controller {
 		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
-			['title' => 'Name', 'width'=>'35%', 'data'=>'fst_name'],
-			['title' => 'memo', 'width'=>'30%', 'data'=>'fst_memo'],
+			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
+			['title' => 'memo', 'width'=>'35%', 'data'=>'fst_memo'],
 			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
 				'render'=>"function(data, type, row) {
 					if (data == 'INT'){
@@ -43,7 +43,8 @@ class Document extends MY_Controller {
 						return 'EXTERNAL';
 					}
 				}",
-			],			
+			],
+			['title' => 'User', 'width'=>'10%', 'data'=>'fst_username',],					
 			['title' => 'Flow', 'width'=>'5%', 'data'=>'fbl_flow_control',
 				'render'=> "function(data, type, row) {						
 					if (data == 1) {
@@ -53,6 +54,7 @@ class Document extends MY_Controller {
 					}
 					return data;
 				}",
+				'className'=>'dt-body-center text-center'
 			],					
 			['title' => 'Action', 'width'=>'15%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
@@ -132,13 +134,129 @@ class Document extends MY_Controller {
 
 	}
 
+	public function approval_list(){
+		$this->load->library('menus');
+        $this->list['page_name']="Documents";
+        $this->list['list_name']="Document List";
+        $this->list['addnew_ajax_url']=site_url().'document/add';
+        $this->list['pKey']="id";
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/approval_list_data';
+        $this->list['delete_ajax_url']=site_url().'document/delete/';
+        $this->list['edit_ajax_url']=site_url().'document/edit/';
+        $this->list['arrSearch']=[
+			'a.fst_name' => 'Document Name',
+			'a.fst_search_marks' => 'Search Mark',
+			'a.fst_memo' => 'Memo',
+		];
+		
+		$this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Document','link'=>'#','icon'=>''],
+			['title'=>'List','link'=> NULL ,'icon'=>''],
+		];
+
+		
+		$this->list['columns']=[
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
+			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
+			['title' => 'memo', 'width'=>'35%', 'data'=>'fst_memo'],
+			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
+				'render'=>"function(data, type, row) {
+					if (data == 'INT'){
+						return 'INTERNAL';
+					}else{
+						return 'EXTERNAL';
+					}
+				}",
+			],
+			['title' => 'Creator', 'width'=>'10%', 'data'=>'fst_username',],					
+			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,
+				'render' => "function(data, type, row) {
+					return \"<div style='font-size:16px'><a class='btn-approval' href='#'><i class='fa fa-pencil' aria-hidden='true'></i></a></div>\";
+				}",
+				'className'=>'dt-body-center text-center'
+			]
+		];
+
+		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('template/standardList',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+	}
+
+	public function approval_list_data(){
+		$this->load->library("datatables");
+
+		$currBranchId = $this->session->userdata("active_branch_id");
+		
+		
+
+		$currUserDeptId = $this->aauth->user()->fin_department_id;
+		$currUserLevel = $this->aauth->user()->fin_level;
+
+
+		$this->datatables->setTableName("
+			(				
+				select b.*,a.fin_id as fin_document_flow_control_id,c.fst_username from document_flow_control a 
+				inner join documents b on a.fin_document_id = b.fin_document_id
+				inner join users c on b.fin_insert_id = c.fin_user_id
+				where a.fin_user_id = " . $this->aauth->user()->fin_user_id . "
+				and a.fst_control_status = 'RA'
+				and a.fst_active = 'A'								
+			) a 
+		");
+		
+		$selectFields = "a.*,'' as action";
+		$this->datatables->setSelectFields($selectFields);
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "a.fst_active !='D'";
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
+			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
+			/*
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='".$data["fin_document_id"]."'><i class='fa fa-pencil' aria-hidden='true'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fin_document_id"]."' data-toggle='confirmation'><i class='fa fa-trash' aria-hidden='true' ></i></a>
+				</div>";
+			*/
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
+
+
 	public function do_approval_flow_control(){
 		$this->load->model("document_flow_control_model");
 		$finId = $this->input->post("fin_id");
 		$flowControl = $this->document_flow_control_model->getDataById($finId);
+
+		if ( $this->input->post("fst_control_status") == NULL ){			
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = lang("Control status harus di isi !");
+			$this->ajxResp["data"] = ["frm_fst_control_status" => lang("Control status harus di isi !")];			
+			$this->json_output();
+			return;
+		}
+
 		if ($flowControl->fst_control_status != "RA"){
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Invalid Request !");
+			$this->ajxResp["message"] = lang("Status not ready to approve !");
 			$this->ajxResp["data"] = ["errors" =>"Status Not Ready To Approve"];			
 			$this->json_output();
 			return;
@@ -162,8 +280,8 @@ class Document extends MY_Controller {
 		$this->db->trans_complete();
 
 		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = lang("Document Approved !");
-		$this->ajxResp["data"] = ["errors" =>"Invalid user to do approval"];			
+		$this->ajxResp["message"] = lang("Document Saved !");
+		$this->ajxResp["data"] = [];			
 		$this->json_output();
 		
 
@@ -412,7 +530,6 @@ class Document extends MY_Controller {
 		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$data = [
-			//"fin_document_id"=>$this->input->post("fst_username"),
 			"fin_document_id"=>$fin_document_id,
 			"fst_name"=>$this->input->post("fst_name"),
 			"fst_source"=>$this->input->post("fst_source"),
@@ -421,7 +538,6 @@ class Document extends MY_Controller {
 			"fst_view_scope"=>$this->input->post("fst_view_scope"),
 			"fst_print_scope"=>$this->input->post("fst_print_scope"),
 			"fbl_flow_control"=> ($this->input->post("fbl_flow_control") == NULL) ? 0 : 1,
-			//"fin_flow_control_schema"=>$this->input->post(""),
 			"fst_search_marks"=>$this->input->post("fst_search_marks"),
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fdt_published_date"=> dBDateFormat($this->input->post("fdt_published_date")),			
@@ -513,8 +629,7 @@ class Document extends MY_Controller {
 
 			$this->document_flow_control_model->deleteNotApprovedByParentId($fin_document_id);
 			$currentSeqNo = $this->document_flow_control_model->getCurrentSeqNo($fin_document_id);
-
-
+			
 			if ($data["fbl_flow_control"] == 1){				
 				$this->form_validation->set_rules($this->document_flow_control_model->getRules("ADD",0));
 				$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -526,29 +641,27 @@ class Document extends MY_Controller {
 					if ($flow_control->fst_control_status  ==  "AP"){
 						continue;
 					}
-
 					$dataFlow = [];
-					if ($flow_control->fin_id != 0){
-						$dataFlow["fin_id"] = $flow_control->fin_id; 
-						$dataFlow["fst_control_status"] = $flow_control->fst_control_status;
-					}else{
-						//"fst_control_status" => $flow_control->fst_control_status,   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision
-						if($currentSeqNo >= $flow_control->fin_seq_no ){
-							$dataFlow["fst_control_status"] = "RA";
-						}else{
-							$dataFlow["fst_control_status"] = "NA";
-						}
-					}
 
 					$dataFlow = [			
 						"fin_document_id"=> $fin_document_id,
 						"fin_seq_no"=> $flow_control->fin_seq_no,
-						"fin_user_id"=> $flow_control->fin_user_id,						
+						"fin_user_id"=> $flow_control->fin_user_id,	
 						"fin_version" => $docVersion,
 						"fin_document_id"=> $fin_document_id,
 						"fst_active" => "A",						
 					];
 
+
+					if ($flow_control->fin_id != 0){
+						$dataFlow["fin_id"] = $flow_control->fin_id; 
+						$dataFlow["fst_control_status"] = $flow_control->fst_control_status;
+					}else{
+						//"fst_control_status" => $flow_control->fst_control_status,   // NA->Need Approval;RA->Ready to Approve;NR->Need Revision						
+						$dataFlow["fst_control_status"]  = $this->document_flow_control_model->getControlStatus($fin_document_id,$flow_control->fin_seq_no);
+					}
+					//var_dump($dataFlow);
+					//die();
 					$this->form_validation->set_data($dataFlow);
 					if ($this->form_validation->run() == FALSE){
 						//print_r($this->form_validation->error_array());
@@ -616,9 +729,25 @@ class Document extends MY_Controller {
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("documents a inner join users b on a.fin_insert_id = b.fin_user_id ");
+
+		$currBranchId = $this->session->userdata("active_branch_id");
 		
-		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,b.fst_username,a.fdt_insert_datetime";
+		
+
+		$currUserDeptId = $this->aauth->user()->fin_department_id;
+		$currUserLevel = $this->aauth->user()->fin_level;
+
+
+		$this->datatables->setTableName("
+			(
+				select a.*,b.fst_username from documents a
+				inner join users b on a.fin_insert_id = b.fin_user_id
+				inner join master_groups c on b.fin_group_id = c.fin_group_id
+				where b.fin_department_id = $currUserDeptId and c.fin_level > $currUserLevel and b.fin_branch_id = $currBranchId
+			) a 
+		");
+		
+		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fdt_insert_datetime";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
@@ -830,9 +959,16 @@ class Document extends MY_Controller {
 		$this->load->model("view_print_token_model");
 		
 
-		$this->datatables->setTableName("(select * from documents where fdt_published_date <= CURDATE() and fbl_flow_completed = 1) as a inner join users b on a.fin_insert_id = b.fin_user_id");
+		$currBranchId = $this->session->userdata("active_branch_id");
+		$this->datatables->setTableName("
+			(
+				select a.*,b.fst_username,b.fin_branch_id from documents a 
+				inner join users b on a.fin_insert_id = b.fin_user_id
+				where a.fdt_published_date <= CURDATE() and a.fbl_flow_completed = 1 and b.fin_branch_id = $currBranchId
+			) as a 
+		");
 		
-		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,b.fst_username,a.fdt_insert_datetime";
+		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fdt_insert_datetime";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
