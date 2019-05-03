@@ -32,22 +32,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					</a>
 					<ul class="dropdown-menu">
 						<!-- User image -->
-						<li class="user-header">
+						<li class="user-header" style="height:110px">
 							<img src="<?php $rs = $this->session->userdata('active_user');
 										echo base_url() . 'assets/app/users/avatar/avatar_' . $rs->fin_user_id . '.jpg'; ?>" class="user-image" alt="User Image">
 							<?php
 							$active_user->fst_fullname ?> - Web Developer <small>Member since Nov. 2012</small></p>
 						</li>
 						<!-- Menu Body -->
-						<li class="user-body">
-							<p><i class="fa fa-circle text-success"></i>
-								<?php
-								$active_user = $this->session->userdata("active_user");
-								echo $active_user->ActiveBranch;
-								?>
-							</p>
-							<a href="<?= site_url() ?>/Change_branch"><i> Change Branch</i></a>
-						</li>
+						<li class="user-body" style="display:none"></li>
 						<!-- Menu Footer-->
 						<li class="user-footer">
 							<div class="pull-left"><a href="<?= site_url() ?>user/changepassword" class="btn btn-default btn-flat">Change Password</a></div>
@@ -65,36 +57,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		</div>
 	</nav>
 </header>
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="display:table">
-		<!-- Modal content-->
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Change Branch</h4>
-			</div>
-
-			<div class="modal-body">
-				<form class="form-horizontal">
-					<div class="form-group">
-						<label for="select-branchname" class="col-md-2 control-label">Branch</label>
-						<div class="col-md-10">
-							<select id="select-branchname" class="form-control"></select>
-						</div>
-					</div>
-
-				</form>
-
-			</div>
-			<div class="modal-footer">
-				<button id="btn-change-branch" type="button" class="btn btn-primary">Change</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-</div>
-
 <script type="text/javascript">
 	$(function() {
 		$(".sidebar-toggle").click(function() {

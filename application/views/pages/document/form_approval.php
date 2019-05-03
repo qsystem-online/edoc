@@ -174,23 +174,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<form id="frmApproval" class="form-horizontal" action="" method="POST">
 
-						<input type="text" id="fin_document_flow_control_id" name="fin_id" value={fin_document_flow_control_id} readonly/>
+						<input type="hidden" id="fin_document_flow_control_id" name="fin_id" value={fin_document_flow_control_id} readonly/>
 						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
 
 						<div class="form-group">							
 							<label for="fbl_flow_control" class="col-sm-2 control-label"><?= lang("Document Flow Control") ?> :</label>
 							<div class="col-sm-10">
-								<select class="form-control" name="fst_control_status">
+								<select id="frm_fst_control_status" class="form-control" name="fst_control_status">								
 									<option value="AP">Approved</option>
 									<option value="NR">Need Revision</option>
 									<option value="RJ">Rejected</option>
 								</select>
+								<div id="frm_fst_control_status_err" class="text-danger"></div>
 							</div>
+
 						</div>
 						<div class="form-group">
 							<label for="fbl_flow_control" class="col-sm-2 control-label"><?= lang("Memo") ?> :</label>
 							<div class="col-sm-10">
-								<textarea class="col-sm-12 form-control" name="fst_memo"></textarea>
+								<textarea id="frm_fst_memo" class="col-sm-12 form-control" name="fst_memo"></textarea>
 							</div>
 						</div>
 						<div class="form-group">							
@@ -305,11 +307,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 			],
 		});
-
-		
-		
-
-
 	});
 </script>
 
@@ -432,6 +429,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url:"{base_url}document/do_approval_flow_control",
 				data:dataPost,
 				type:"POST",
+				success: function (resp) {	
+					if (resp.message != "")	{
+						$.alert({
+							title: 'Message',
+							content: resp.message,
+							buttons: {
+								OK : function () {
+									if (resp.status == "SUCCESS"){
+										window.location ="<?= base_url() ?>document/approval_list";
+									}            						
+        						},
+							}
+						});
+					}
+					if (typeof resp.debug !== "undefined"){
+						$("debug").html(resp.debug);
+					}
+					if(resp.status == "VALIDATION_FORM_FAILED" ){
+						//Show Error
+						errors = resp.data;
+						for (key in errors) {
+							$("#"+key+"_err").html(errors[key]);
+						}
+					}else if(resp.status == "SUCCESS") {
+						data = resp.data;
+						$("#fin_document_id").val(data.insert_id);
+						//Clear all previous error
+						$(".text-danger").html("");
+
+					}
+				},
 			})
 			
 		})
@@ -526,6 +554,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_memo : v.fst_memo
 					}
 					t.row.add(data);
+
+					if (v.fin_id == $("#fin_document_flow_control_id").val()){
+						$("#frm_fst_control_status").val(v.fst_control_status);
+						$("#frm_fst_memo").val(v.fst_memo);
+					}
 				});
 				t.draw();
 				

@@ -116,4 +116,15 @@ class Document_flow_control_model extends MY_Model {
         }
         return 9999;
     }
+
+    public function getControlStatus($fin_document_id,$fin_seq_no){
+        $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fin_seq_no < ? and fst_control_status != 'AP'";
+        $qr = $this->db->query($ssql,[$fin_document_id,$fin_seq_no]);
+        $rw = $qr->row();
+        if($rw){
+            return "NA";
+        }else{
+            return "RA";
+        }
+    }
 }
