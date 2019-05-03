@@ -61,9 +61,10 @@ class Master_groups_model extends MY_Model
         $rules[] = [
             'field' => 'fst_group_name',
             'label' => 'Group Name',
-            'rules' => 'required',
+            'rules' => 'required|min_length[5]',
             'errors' => array(
-                'required' => '%s tidak boleh kosong'
+                'required' => '%s tidak boleh kosong',
+                'min_length' => 'Panjang %s paling sedikit 5 character'
             )
         ];
 

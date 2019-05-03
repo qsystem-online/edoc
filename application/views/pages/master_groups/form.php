@@ -102,12 +102,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							onDestroy: function(){
+							buttons : {
+								OK : function(){
+									if(resp.status == "SUCCESS"){
+										window.location.href = "<?= site_url() ?>master_groups/lizt";
+										return;
+									}
+								},
+							}
+							/*onDestroy: function(){
 								//alert('the user clicked yes');
 								window.location.href = "<?= site_url() ?>master_groups/lizt";
 								return;
-							}
+							}*/
 						});
+					}
+
+					if(typeof resp.debug !== "undefined"){
+						$("debug").html(resp.debug);
 					}
 
 					if(resp.status == "VALIDATION_FORM_FAILED" ){
