@@ -67,9 +67,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
 	function formatSubList(data){
-
 		var result = "";
-		result = "<div><label>Memo : </label>" + data.fst_memo + "</div>";
+		result = "<div><label style='margin-right:10px'>Memo : </label><label style='font-style:italic'>" + data.fst_memo + "</label></div>";
 		return result;
 	}
 
