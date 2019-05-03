@@ -174,7 +174,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					</div>
 					<!-- end box-body -->
 					<div class="box-footer">
-						<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Record</a>
+						<?php $captionAjax = ($mode == "ADD") ? "Save Record" : "Update Record";
+						?>
+						<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?= $captionAjax ?></a>
 					</div>
 					<!-- end box-footer -->
 				</form>
@@ -191,6 +193,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event) {
 			event.preventDefault();
+			$(".text-danger").html("");
+
 			data = new FormData($("#frmUser")[0]);
 
 			mode = $("#frm-mode").val();
@@ -215,13 +219,22 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							onDestroy: function() {
-								//alert('the user clicked yes');
-								window.location.href = "<?= site_url() ?>user/add";
-								return;
+							buttons: {
+								OK: function() {
+									if (resp.status == "SUCCESS") {
+										//location.reload();
+										window.location.href = "<?= site_url() ?>user/lizt";
+										return;
+									}
+								},
 							}
 						});
 					}
+
+					if (typeof resp.debug !== "undefined") {
+						$("debug").html(resp.debug);
+					}
+
 
 					if (resp.status == "VALIDATION_FORM_FAILED") {
 						//Show Error

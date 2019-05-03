@@ -70,9 +70,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fbl_center" class="col-sm-2 control-label"><?= lang("Center") ?> :</label>
+                            <label for="fbl_central" class="col-sm-2 control-label"><?= lang("Central") ?> :</label>
                             <div class="checkbox">
-                                <label><input id="fbl_center" type="checkbox" name="fbl_center" value="1"><?= lang("Center") ?></label><br>
+                                <label><input id="fbl_central" type="checkbox" name="fbl_central" value="1"><?= lang("Central") ?></label><br>
                             </div>
                         </div>
                     </div>
@@ -120,10 +120,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         $.alert({
                             title: 'Message',
                             content: resp.message,
-                            onDestroy: function() {
-                                //alert('the user clicked yes');
-                                window.location.href = "<?= site_url() ?>branch/lizt";
-                                return;
+                            buttons: {
+                                OK: function() {
+                                    if (resp.status == "SUCCESS") {
+                                        //location.reload();
+                                        window.location.href = "<?= site_url() ?>branch/lizt";
+                                        return;
+                                    }
+                                },
                             }
                         });
                     }
