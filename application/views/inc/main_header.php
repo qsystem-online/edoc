@@ -72,35 +72,4 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 		});
 	});
-
-	function changeBranch() {
-
-		$("#myModal").modal({
-			backdrop: 'dinamic',
-		});
-
-		$("#select-branchname").select2({
-			width: '100%',
-			ajax: {
-				url: '<?= site_url() ?>user/get_branch',
-				dataType: 'json',
-				delay: 250,
-				processResults: function(data) {
-					data2 = [];
-					$.each(data, function(index, value) {
-						data2.push({
-							"id": value.fin_branch_id,
-							"text": value.fst_branch_name
-						});
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
-
-	}
 </script>
