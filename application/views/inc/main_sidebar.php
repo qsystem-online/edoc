@@ -20,20 +20,21 @@
 			<?php
 			$active_user = $this->session->userdata("active_user");
 			$branchs = $this->branch_model->getAllList();
+			if ($active_user->fbl_central) {
+				if ($active_user->fin_level == getDbConfig("change_branch_level")) { ?>
+					<select id="active_branch_id" style="color:#b9ecde;width:150px;background:#333">
+						<?php
+						print_r($branchs);
+						$activeBranchId = $this->session->userdata("active_branch_id");
+						foreach ($branchs as $branch) {
+							$isActive = ($branch->fin_branch_id == $activeBranchId) ? "selected" : "";
 
-			if ($active_user->fbl_central) { ?>
-				<select id="active_branch_id" style="color:#000;width:150px">
-					<?php
-					print_r($branchs);
-					$activeBranchId = $this->session->userdata("active_branch_id");
-					foreach ($branchs as $branch) {
-						$isActive = ($branch->fin_branch_id == $activeBranchId) ? "selected" : "";
-
-						echo "<option value=" . $branch->fin_branch_id . " $isActive >" . $branch->fst_branch_name . "</option>";
-					}
-					?>
-				</select>
-			<?php
+							echo "<option value=" . $branch->fin_branch_id . " $isActive >" . $branch->fst_branch_name . "</option>";
+						}
+						?>
+					</select>
+				<?php
+			}
 		}
 		//echo $this->session->userdata("active_branch_id");
 		//echo $active_user->fst_branch_name;

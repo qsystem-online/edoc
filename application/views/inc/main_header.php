@@ -50,6 +50,7 @@
 						</li>
 						<!-- Menu Body -->
 						<li class="user-body" style="display:none"></li>
+
 						<!-- Menu Footer-->
 						<li class="user-footer">
 							<div class="pull-left"><a href="<?= site_url() ?>user/changepassword" class="btn btn-default btn-flat">Change Password</a></div>
@@ -76,10 +77,11 @@
 				setValue = 1;
 			}
 
-			$.ajax({
-				url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
-			});
+				$.ajax({
+					url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
+				});
 
+			});
 		});
 	});
 

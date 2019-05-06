@@ -40,7 +40,8 @@ class Users_model extends MY_Model
 		return $data;
 	}
 
-	public function getRules($mode = "ADD", $id = 0){
+	public function getRules($mode = "ADD", $id = 0)
+	{
 		$rules = [];
 
 		$rules[] = [
