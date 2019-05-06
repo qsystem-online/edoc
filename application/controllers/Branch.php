@@ -113,7 +113,7 @@ class Branch extends MY_Controller
             "fst_branch_address" => $this->input->post("fst_branch_address"),
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
-            "fbl_center" => ($this->input->post("fbl_center") == null) ? 0 : 1,
+            "fbl_central" => ($this->input->post("fbl_central") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -169,7 +169,7 @@ class Branch extends MY_Controller
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
             "fst_active" => 'A',
-            "fbl_center" => $this->input->post("fbl_center")
+            "fbl_central" => $this->input->post("fbl_central")
         ];
 
         $this->db->trans_start();

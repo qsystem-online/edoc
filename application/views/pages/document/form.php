@@ -241,20 +241,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</form>
 								<table id="tbl_custom_scope" class="compat hover stripe" style="width:100%" ></table>
 							</div>
-							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">
-								<div id="canvas-container" style="display:none;text-align:center;width:100%">
-									<div style="margin-bottom:10px">
-										<button id="btnDocFirst" class="doc-view-tool"> << First</button>
-										<button id="btnDocPrev" class="doc-view-tool"> < prev</button>
-										<button id="btnDocNext" class="doc-view-tool">Next > </button>
-										<button id="btnDocLast" class="doc-view-tool">Last >> </button>
-										<button id="btnDocDownload" class="doc-print-tool">Download Document</button>
-									</div>
-									<canvas id="the-canvas" style="border:1px solid #00f;width:100%;"></canvas>
-								</div>
-								<!--
-								<object id="obj-plugin" data="" type="application/pdf"></object>
-								-->								
+							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">											
 								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5"/>
 							</div>
 						</div>
@@ -492,6 +479,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<script type="text/javascript">
 		var tblFlowControl;
+
+		function getControlStatus(fin_document_id,fin_seq_no){
+			if (fin_seq_no == 1){
+				return "RA";
+			}
+			if (fin_document_id == ""){ //New Document
+				controlStatus = (fin_seq_no == 1) ? "RA" : "NA";
+				return controlStatus;
+			}
+			//cek ajax to get control Status		
+		}
+
 		$(function(){
 			// Fill Flow Control select2
 			$.ajax({
@@ -522,12 +521,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#btn-add-flow-control-user").click(function(){
 				selectedUser = $('#fin-flow-control-user').select2('data')[0];				
 				tblFlowControl = $("#tbl_flow_control").DataTable();
+				
+
 				data = {
 					fin_id : 0,
 					fin_user_id : selectedUser.id,
 					fst_username : selectedUser.text,
 					fin_seq_no : $("#fin-flow-control-order").val(),
-					fst_control_status: 'NA',
+					fst_control_status: getControlStatus(  $("#fin_document_id").val() , $("#fin-flow-control-order").val() ),
 					fst_memo:'',
 					fdt_approved_datetime:null
 				}		
@@ -564,6 +565,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									return "Need Revision";
 								case "AP" :
 									return "Approved";
+								case "RJ" :
+									return "Rejected";
+
 							}
 						}
 					},
@@ -571,7 +575,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					{"title" : "<?= lang("approved") ?>","width": "10%",data:"fdt_approved_datetime"},
 					{"title" : "<?= lang("Action") ?>","width": "10%",data:"action",
 						render: function ( data, type, row ) {
-							if (row.fst_control_status != "AP"){
+							if (row.fst_control_status == "NA" || row.fst_control_status == "RA" ){
 								return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
 							}
 							return "";						
@@ -768,145 +772,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript"> //Document Viewer
-	var docPdf = null;
-	var curPage = 1;
+	
+	function showDocument(viewDoc,printDoc,token){
+		//resp.permission.view_doc,resp.permission.print_doc,resp.permission.token
+		$("#plugin").attr("src","{base_url}document/getDocument/" + token + "#toolbar=0&navpanes=0");
 
-
-	function showDocument(fblView,fblPrint,token){
-		//var url = URL.createObjectURL($("#fst_file_name").get(0).files[0]);	
-		$('#canvas-container').show();
-		$("#plugin").hide();
-
-		if (fblView == false){
-			$('.doc-view-tool').hide();	
-			$("#the-canvas").remove();
-		}else{
-			$('.doc-view-tool').show();
-		}
-		if (fblPrint == false){			
-			$('.doc-print-tool').hide();
-		}else{
-			$('.doc-print-tool').show();
-		}
-
-
-		var url = "{base_url}document/getDocument/" + token;
-		var pdfjsLib = window['pdfjs-dist/build/pdf'];
-		console.log("pdfjsLib");
-		console.log(pdfjsLib);
-
-		pdfjsLib.GlobalWorkerOptions.workerSrc = '<?=base_url()?>bower_components/pdfjs/build/pdf.worker.js';
-		//pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-
-		var loadingTask = pdfjsLib.getDocument(url);
-		loadingTask.promise.then(function(pdf) {
-			docPdf = pdf;
-			curPage = 1;
-			renderPage(1);			
-
-		}, function (reason) {
-			// PDF loading error
-			console.error(reason);
-		});
 	}
-
-	function nextDoc(){		
-		if (curPage >= docPdf.numPages) {
-    		return;
-  		}
-		curPage++
-		renderPage(curPage);
-	}
-
-	function prevDoc(){		
-		if (curPage <= 1) {
-    		return;
-  		}
-		curPage--;
-		renderPage(curPage);
-	}
-
-	function firstDoc(){
-		curPage = 1;
-		renderPage(curPage);
-	}
-	function lastDoc(){
-		curPage = docPdf.numPages;
-		renderPage(curPage);
-	}
-
-
-	function renderPage(pageNumber) {
-		// Fetch the first page
-		//var pageNumber = 1;
-		docPdf.getPage(pageNumber).then(function(page) {
-			// Prepare canvas using PDF page dimensions
-			var canvas = $('#the-canvas').get(0); // document.getElementById('the-canvas');
-			var context = canvas.getContext('2d');
-
-			// As the canvas is of a fixed width we need to set the scale of the viewport accordingly
-			//var scale_required = canvas.width / page.getViewport(1).width;
-			var scale_required =2;
-			var viewport = page.getViewport(scale_required);
-
-			canvas.width = viewport.width;
-			canvas.height = viewport.height;
-			
-
-			// Render PDF page into canvas context
-			var renderContext = {
-				canvasContext: context,
-				viewport: viewport
-			};
-			var renderTask = page.render(renderContext);
-			renderTask.promise.then(function () {
-				console.log('Page rendered');
-				//$("#the-canvas").show();
-			});
-		});
-
-		console.log(curPage);
-	}
-
-
 	$(function(){
-		
-		
-		$("#btnDocFirst").click(function(event){
-			event.preventDefault();
-			firstDoc();
-		});
-		$("#btnDocPrev").click(function(event){
-			event.preventDefault();
-			prevDoc();
-		});
-		$("#btnDocNext").click(function(event){
-			event.preventDefault();
-			nextDoc();
-		});
-		$("#btnDocLast").click(function(event){
-			event.preventDefault();
-			lastDoc();
-		});
-		$("#btnDocDownload").click(function(event){
-			event.preventDefault();
-			window.location.replace("{base_url}document/downloadDocument/" + $("#fin_document_id").val());
-		});
-		
-
 		$("#fst_file_name").change(function(event){
 			event.preventDefault();
-
-			$("#canvas-container").hide();
-			$("#plugin").show();
-			
 			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
-
-			//$("#plugin").attr("src","http://localhost/edoc/test/get_file#toolbar=0&navpanes=0");
-			//$("#plugin").attr("src","http://localhost/edoc/assets/sample/test.pdf");
-			//$("#obj-plugin").attr("data",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");			
-			//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';			
-			console.log(url);
 			$('.nav-tabs a[href="#doc-viewer"]').tab('show');
 
 		});
@@ -977,8 +852,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
+							buttons: {
+								OK : function () {
+									if (resp.status == "SUCCESS"){
+            							location.reload();
+									}
+        						},
+							}
 						});
 					}
+
 					if (typeof resp.debug !== "undefined"){
 						$("debug").html(resp.debug);
 					}
@@ -996,8 +879,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$(".text-danger").html("");
 
 					}
-
-
 				},
 				error: function (e) {
 					$("#result").text(e.responseText);

@@ -48,8 +48,8 @@
     if (!function_exists('formatNumber')){
         function formatNumber($number,$digitComma = 0,$commaSeparators=''){
             $commaSeparators = ($commaSeparators == '') ? DECIMAL_SIGN : $commaSeparators;
-            $thousandsSeparators =  ($commaSeparators == ".") ? "," : ".";            
-            echo number_format($number,$digitComma,$commaSeparators,$thousandsSeparators);
+            $thousandsSeparators =  ($commaSeparators == ".") ? "," : ".";                        
+            return number_format($number,$digitComma,$commaSeparators,$thousandsSeparators);
         }
     }
     if (!function_exists('getDbConfig')){

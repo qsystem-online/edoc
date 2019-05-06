@@ -4,25 +4,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Login extends CI_Controller
 {
 	public $data = [];
-	public function index()
-	{
+	public function index(){
+		$this->load->model("users_model");
+
 		$username = $this->input->post("username");
 		$password = $this->input->post("password");
 		if ($username != "") {
-			$ssql = "select a.*,b.fin_branch_id AS ActiveBranch ,b.fst_branch_name, b.fbl_central from users a left join branch b on a.fin_branch_id = b.fin_branch_id where fst_username = ?";
+			$ssql = "select a.*,b.fin_branch_id AS ActiveBranch ,b.fst_branch_name, b.fbl_central, c.fin_group_id,c.fst_group_name,c.fin_level from users a left join branch b on a.fin_branch_id = b.fin_branch_id left join master_groups c on a.fin_group_id = c.fin_group_id where fst_username = ?";
 			$query = $this->db->query($ssql, [$username]);
 			$rw = $query->row();
 			$strIvalidLogin = "Invalid Username / Password";
 
 			if ($rw) {
 				if (md5($password) == $rw->fst_password) {
-					$this->session->set_userdata("active_user", $rw);
+					$this->session->set_userdata("active_user", $this->users_model->getDataById($rw->fin_user_id)["user"]);
 					$this->session->set_userdata("active_branch_id", $rw->ActiveBranch);
 					$this->session->set_userdata("last_login_session", time());
 					if ($this->session->userdata("last_uri")) {
 						redirect(site_url() . $this->session->userdata("last_uri"), 'refresh');
 					} else {
-						redirect(site_url() . 'home', 'refresh');
+						redirect(site_url() . 'dashboard', 'refresh');
 					}
 				} else {
 					$this->data["message"] = $strIvalidLogin;
