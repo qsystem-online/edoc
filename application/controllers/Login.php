@@ -23,7 +23,7 @@ class Login extends CI_Controller
 					if ($this->session->userdata("last_uri")) {
 						redirect(site_url() . $this->session->userdata("last_uri"), 'refresh');
 					} else {
-						redirect(site_url() . 'home', 'refresh');
+						redirect(site_url() . 'dashboard', 'refresh');
 					}
 				} else {
 					$this->data["message"] = $strIvalidLogin;

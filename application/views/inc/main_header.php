@@ -1,6 +1,13 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+	defined('BASEPATH') or exit('No direct script access allowed');
+	$cekAvatar = APPPATH . '../assets/app/users/avatar/avatar_' . $this->aauth->get_user_id() . '.jpg';
+	if (file_exists($cekAvatar)){
+		$avatar = base_url() . 'assets/app/users/avatar/avatar_' . $this->aauth->get_user_id() . '.jpg';
+	}else{
+		$avatar = base_url() . 'assets/app/users/avatar/default.jpg';
+	}
 ?>
+
 <header class="main-header">
 	<!-- Logo -->
 	<a href="/edoc/home" class="logo">
@@ -22,7 +29,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 				<!-- User Account: style can be found in dropdown.less -->
 				<li class="dropdown user user-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<img src="<?=base_url()?>dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+					<img src="<?=$avatar?>" class="user-image" alt="User Image">
 						<span class="hidden-xs"> Halo,
 							<?php
 							$active_user = $this->session->userdata("active_user");
@@ -33,10 +40,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					<ul class="dropdown-menu">
 						<!-- User image -->
 						<li class="user-header" style="height:110px">
-							<img src="<?php $rs = $this->session->userdata('active_user');
-										echo base_url() . 'assets/app/users/avatar/avatar_' . $rs->fin_user_id . '.jpg'; ?>" class="user-image" alt="User Image">
-							<?php
-							$active_user->fst_fullname ?> - Web Developer <small>Member since Nov. 2012</small></p>
+							
+							<img src="<?=$avatar?>" class="user-image" alt="User Image">
+							<?php 
+								$activeUser = $this->aauth->user();								
+								//print_r($activeUser);
+							?>
+							<p><?= $activeUser->fst_department_name ?> <small> <?= $activeUser->fst_group_name ?></small> </p>
 						</li>
 						<!-- Menu Body -->
 						<li class="user-body" style="display:none"></li>
@@ -73,34 +83,4 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
 	});
 
-	function changeBranch() {
-
-		$("#myModal").modal({
-			backdrop: 'dinamic',
-		});
-
-		$("#select-branchname").select2({
-			width: '100%',
-			ajax: {
-				url: '<?= site_url() ?>user/get_branch',
-				dataType: 'json',
-				delay: 250,
-				processResults: function(data) {
-					data2 = [];
-					$.each(data, function(index, value) {
-						data2.push({
-							"id": value.fin_branch_id,
-							"text": value.fst_branch_name
-						});
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
-
-	}
 </script>

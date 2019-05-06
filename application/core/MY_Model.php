@@ -23,11 +23,7 @@ class MY_Model extends CI_Model
 
 		$this->db->insert($this->tableName, $data);
 		$insertId = $this->db->insert_id();
-		$error = $this->db->error();
-		if ($error["code"] != 0) {
-			throw new Exception("Database Error !", 1000);
-			//echo "TEST throw, never call statement";
-		}
+		$this->throwIfDbError();
 
 		return $insertId;
 	}
@@ -40,6 +36,7 @@ class MY_Model extends CI_Model
 		}
 		$this->db->where($this->pkey, $data[$this->pkey]);
 		$this->db->update($this->tableName, $data);
+		$this->throwIfDbError();
 	}
 
 	public function delete($key, $softdelete = TRUE)
@@ -51,6 +48,7 @@ class MY_Model extends CI_Model
 			$this->db->where($this->pkey, $key);
 			$this->db->delete($this->tableName);
 		}
+		$this->throwIfDbError();
 	}
 
 	public function getDataById($id){
@@ -66,5 +64,12 @@ class MY_Model extends CI_Model
 	public function getRules()
 	{
 		return $this->rules;
+	}
+
+	public function throwIfDbError(){
+		$error = $this->db->error();
+		if ($error["code"] != 0) {
+			throw new Exception("Database Error !", 1000);			
+		}
 	}
 }

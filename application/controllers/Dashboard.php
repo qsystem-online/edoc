@@ -24,6 +24,7 @@ class Dashboard extends MY_Controller
         //
         $this->data["ttlDocReadyApprove"] = formatNumber($this->dashboard_model->getTtlDocReadyToApprove());
         $this->data["ttlDocNeedRevision"] = formatNumber($this->dashboard_model->getTtlDocNeedToRevision());
+        $this->data["ttlDocChangeAfterApproved"] = formatNumber($this->dashboard_model->getTtlDocHasRevision());
         
 
         $page_content = $this->parser->parse('pages/dashboard/index', $this->data, true);
