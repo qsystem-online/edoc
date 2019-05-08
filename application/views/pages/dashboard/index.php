@@ -68,7 +68,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="icon">
 				<i class="fa fa-ban"></i>
             </div>
-            <a href="{base_url}document/need_revision_list" class="small-box-footer">More info <i class="fa fa-ban"></i></a>
+            <a href="{base_url}document/rejected_list" class="small-box-footer">More info <i class="fa fa-ban"></i></a>
           </div>
 		</div>
 		

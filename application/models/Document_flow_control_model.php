@@ -40,9 +40,31 @@ class Document_flow_control_model extends MY_Model {
             where a.fin_document_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql,[$parent_id]);
         if($qr){
-            return $qr->result();
+            
+            $rs =  $qr->result();
+            $newRs = [];
+            foreach($rs as $rw){
+                $rw->{"isEditable"} = $this->isEditable($rw->fin_id);
+                $newRs[] = $rw;
+            }
+            return $newRs;
         }
         return [];
+    }
+
+    public function isEditable($fin_doc_flow_id){
+        $ssql = "select * from " . $this->tableName . " where fin_id = ?";
+        $qr = $this->db->query($ssql,[$fin_doc_flow_id]);
+        $rw = $qr->row();
+        if($rw){
+            $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fin_seq_no > ? and fst_control_status not in ('NA','RA') ";
+            $qr = $this->db->query($ssql,[$rw->fin_document_id,$rw->fin_seq_no]);
+            if($qr->row()){
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public function deleteByParentId($fin_document_id){
@@ -177,6 +199,16 @@ class Document_flow_control_model extends MY_Model {
         if ($rw){
             $this->documents_model->renewStatusDocument($rw->fin_document_id);
         }
+    }
+
+    public function renewLogVersion($fin_id){
+        $ssql = "UPDATE document_flow_control a 
+        INNER JOIN documents b ON a.fin_document_id = b.fin_document_id 
+        SET a.fin_version = b.fin_version
+        WHERE a.fin_id = ? AND a.fin_user_id = ?";
+
+        $this->db->query($ssql,[$fin_id,$this->aauth->get_user_id()]);
+
     }
     
 

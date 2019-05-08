@@ -120,6 +120,8 @@ class Document extends MY_Controller {
 
 
 		$flowControl = $this->document_flow_control_model->getDataById($fin_document_flow_control_id);
+		$this->document_flow_control_model->renewLogVersion($fin_document_flow_control_id);
+		
 		if ($flowControl){
 			$fin_document_id = $flowControl->fin_document_id;
 		}else{
@@ -373,6 +375,9 @@ class Document extends MY_Controller {
 		$this->load->model("document_flow_control_model");
 		$finId = $this->input->post("fin_id");
 		$flowControl = $this->document_flow_control_model->getDataById($finId);
+		if (!$this->document_flow_control_model->isEditable($finId)){
+			show_404();
+		}
 
 		if ( $this->input->post("fst_control_status") == NULL ){			
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -538,6 +543,66 @@ class Document extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 
+	}
+
+
+	public function rejected_list(){
+		$this->load->library('menus');
+        $this->list['page_name']="Documents";
+        $this->list['list_name']="Rejected List";
+        $this->list['addnew_ajax_url']=site_url().'document/add';
+        $this->list['pKey']="id";
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/rejected_list_data';
+        $this->list['delete_ajax_url']=site_url().'document/delete/';
+        $this->list['edit_ajax_url']=site_url().'document/edit/';
+        $this->list['arrSearch']=[
+			'a.fst_name' => 'Document Name',
+			'a.fst_search_marks' => 'Search Mark',
+			'a.fst_memo' => 'Memo',
+		];
+		
+		$this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Document','link'=>'#','icon'=>''],
+			['title'=>'List','link'=> NULL ,'icon'=>''],
+		];
+
+		
+		$this->list['columns']=[
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
+			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
+			['title' => 'memo', 'width'=>'35%', 'data'=>'fst_memo'],
+			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
+				'render'=>"function(data, type, row) {
+					if (data == 'INT'){
+						return 'INTERNAL';
+					}else{
+						return 'EXTERNAL';
+					}
+				}",
+			],
+			['title' => 'Creator', 'width'=>'10%', 'data'=>'fst_username',],					
+			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,
+				'render' => "function(data, type, row) {
+					return \"<div style='font-size:16px'><a class='btn-show' href='#'><i class='fa fa-search' aria-hidden='true'></i></a></div>\";
+				}",
+				'className'=>'dt-body-center text-center'
+			]
+		];
+
+		$this->list['script'] = $this->parser->parse('inc/script_rejected_list',[],true);
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('template/standardList',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
 	}
 
 	public function add(){
@@ -1069,7 +1134,7 @@ class Document extends MY_Controller {
 			"edit" => $this->documents_model->editPermission($fin_document_id),
 			"view_doc" => $this->documents_model->scopePermission($fin_document_id,"VIEW"),
 			"print_doc" => $this->documents_model->scopePermission($fin_document_id,"PRINT"),
-			"token" => $this->view_print_token_model->generateToken($fin_document_id)
+			"token" => $this->view_print_token_model->generateToken($fin_document_id),
 		];
 		$this->json_output($data);
 	}
