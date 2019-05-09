@@ -1,32 +1,40 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+	defined('BASEPATH') or exit('No direct script access allowed');
+	$cekAvatar = APPPATH . '../assets/app/users/avatar/avatar_' . $this->aauth->get_user_id() . '.jpg';
+	if (file_exists($cekAvatar)){
+		$avatar = base_url() . 'assets/app/users/avatar/avatar_' . $this->aauth->get_user_id() . '.jpg';
+	}else{
+		$avatar = base_url() . 'assets/app/users/avatar/default.jpg';
+	}
 ?>
+
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
 <!-- sidebar: style can be found in sidebar.less -->
 <section class="sidebar">
 	<!-- Sidebar user panel -->
 	<div class="user-panel">
 		<div class="pull-left image">
-			<img src="<?= base_url() ?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+			<img src="<?=$avatar?>" class="img-circle" alt="User Image">
 		</div>
 		<div class="pull-left info">
 			<?php
 			$active_user = $this->session->userdata("active_user");
 			$branchs = $this->branch_model->getAllList();
+			if ($active_user->fbl_central) {
+				if ($active_user->fin_level == getDbConfig("change_branch_level")) { ?>
+					<select id="active_branch_id" style="color:#b9ecde;width:150px;background:#333">
+						<?php
+						print_r($branchs);
+						$activeBranchId = $this->session->userdata("active_branch_id");
+						foreach ($branchs as $branch) {
+							$isActive = ($branch->fin_branch_id == $activeBranchId) ? "selected" : "";
 
-			if ($active_user->fbl_central) { ?>
-				<select id="active_branch_id" style="color:#000;width:150px">
-					<?php
-					print_r($branchs);
-					$activeBranchId = $this->session->userdata("active_branch_id");
-					foreach ($branchs as $branch) {
-						$isActive = ($branch->fin_branch_id == $activeBranchId) ? "selected" : "";
-
-						echo "<option value=" . $branch->fin_branch_id . " $isActive >" . $branch->fst_branch_name . "</option>";
-					}
-					?>
-				</select>
-			<?php
+							echo "<option value=" . $branch->fin_branch_id . " $isActive >" . $branch->fst_branch_name . "</option>";
+						}
+						?>
+					</select>
+				<?php
+			}
 		}
 		//echo $this->session->userdata("active_branch_id");
 		//echo $active_user->fst_branch_name;

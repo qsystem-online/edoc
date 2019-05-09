@@ -479,6 +479,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<script type="text/javascript">
 		var tblFlowControl;
+
+		function getControlStatus(fin_document_id,fin_seq_no){
+			if (fin_seq_no == 1){
+				return "RA";
+			}
+			if (fin_document_id == ""){ //New Document
+				controlStatus = (fin_seq_no == 1) ? "RA" : "NA";
+				return controlStatus;
+			}
+			//cek ajax to get control Status		
+		}
+
 		$(function(){
 			// Fill Flow Control select2
 			$.ajax({
@@ -509,12 +521,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#btn-add-flow-control-user").click(function(){
 				selectedUser = $('#fin-flow-control-user').select2('data')[0];				
 				tblFlowControl = $("#tbl_flow_control").DataTable();
+				
+
 				data = {
 					fin_id : 0,
 					fin_user_id : selectedUser.id,
 					fst_username : selectedUser.text,
 					fin_seq_no : $("#fin-flow-control-order").val(),
-					fst_control_status: 'NA',
+					fst_control_status: getControlStatus(  $("#fin_document_id").val() , $("#fin-flow-control-order").val() ),
 					fst_memo:'',
 					fdt_approved_datetime:null
 				}		
@@ -551,6 +565,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									return "Need Revision";
 								case "AP" :
 									return "Approved";
+								case "RJ" :
+									return "Rejected";
+
 							}
 						}
 					},
@@ -558,7 +575,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					{"title" : "<?= lang("approved") ?>","width": "10%",data:"fdt_approved_datetime"},
 					{"title" : "<?= lang("Action") ?>","width": "10%",data:"action",
 						render: function ( data, type, row ) {
-							if (row.fst_control_status != "AP"){
+							if (row.fst_control_status == "NA" || row.fst_control_status == "RA" ){
 								return "<a class='btn-delete-flow-detail' href='#'><i class='fa fa-trash'></i></a>";
 							}
 							return "";						

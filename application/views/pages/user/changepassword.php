@@ -91,6 +91,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
+            $(".text-danger").html("");
             data = new FormData($("#frm_changepassword")[0]);
 
             url = "<?= site_url() ?>user/change_password";
@@ -110,11 +111,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         $.alert({
                             title: 'Message',
                             content: resp.message,
-                            //confirm: function() {
-                            //alert('the user clicked yes');
-                            //window.location.href = "<?= site_url() ?>/login";
-                            //return;
-                            //}
+                            buttons: {
+                                OK: function() {
+                                    if (resp.status == "SUCCESS") {
+                                        window.location.href = "<?= site_url() ?>/login";
+                                        return;
+                                    }
+                                },
+                            }
                         });
                     }
 
