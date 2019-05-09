@@ -552,7 +552,7 @@ class Document extends MY_Controller {
         $this->list['list_name']="Rejected List";
         $this->list['addnew_ajax_url']=site_url().'document/add';
         $this->list['pKey']="id";
-		$this->list['fetch_list_data_ajax_url']=site_url().'document/rejected_list_data';
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/changed_approved_list_data';
         $this->list['delete_ajax_url']=site_url().'document/delete/';
         $this->list['edit_ajax_url']=site_url().'document/edit/';
         $this->list['arrSearch']=[
@@ -590,7 +590,7 @@ class Document extends MY_Controller {
 			]
 		];
 
-		$this->list['script'] = $this->parser->parse('inc/script_rejected_list',[],true);
+		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
 
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);

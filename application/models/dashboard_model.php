@@ -46,4 +46,11 @@ class dashboard_model extends CI_Model {
         $row = $query->row();
         return $row->ttl_doc_need_revision;
     }
+
+    public function getTotalRejected(){
+        $ssql = "select count(*) as ttl_rejected from documents where fin_insert_id = ? and fst_active = 'R' and fbl_flow_completed = false";
+        $rs = $this->db->query($ssql,[$this->aauth->get_user_id()]);
+        $rw = $rs->row();
+        return $rw->ttl_rejected;
+    }
 }

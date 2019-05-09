@@ -62,7 +62,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>13,648</h3>
+              <h3>{ttlDocRejected}</h3>
               <p><?= lang("Rejected")?></p>
             </div>
             <div class="icon">

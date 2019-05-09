@@ -25,6 +25,7 @@ class Dashboard extends MY_Controller
         $this->data["ttlDocReadyApprove"] = formatNumber($this->dashboard_model->getTtlDocReadyToApprove());
         $this->data["ttlDocNeedRevision"] = formatNumber($this->dashboard_model->getTtlDocNeedToRevision());
         $this->data["ttlDocChangeAfterApproved"] = formatNumber($this->dashboard_model->getTtlDocHasRevision());
+        $this->data["ttlDocRejected"] = formatNumber($this->dashboard_model->getTotalRejected());
         
 
         $page_content = $this->parser->parse('pages/dashboard/index', $this->data, true);
@@ -38,5 +39,15 @@ class Dashboard extends MY_Controller
         $this->data["CONTROL_SIDEBAR"] = $control_sidebar;
         $this->parser->parse('template/main', $this->data);
         
+    }
+
+    public function test_report(){
+        $this->load->library('pdf');
+        $customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        //$this->pdf->setPaper('A4', 'portrait');
+        $this->pdf->setPaper('A4', 'landscape');
+        $data =[];
+        $this->pdf->load_view('report/laporan_pdf', $data);
     }
 }
