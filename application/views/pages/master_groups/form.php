@@ -110,11 +110,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									}
 								},
 							}
-							/*onDestroy: function(){
-								//alert('the user clicked yes');
-								window.location.href = "<?= site_url() ?>master_groups/lizt";
-								return;
-							}*/
 						});
 					}
 
@@ -139,8 +134,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
 						$('#fst_group_name').prop('readonly', true);
-						//$("#tabs-master_group-detail").show();
-						//console.log(data.data_image);
 					}
 				},
 				error: function (e) {
