@@ -2,7 +2,8 @@ $(function(){
     //init datetime picker
     if (typeof $(".datepicker").datepicker === "function") { 
         $(".datepicker").datepicker({
-            format: DATEPICKER_FORMAT
+            format: DATEPICKER_FORMAT,
+            autoclose: true,
         });
     }
 

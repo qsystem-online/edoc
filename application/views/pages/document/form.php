@@ -686,8 +686,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			info: false,
 			columns:[		
 				{"title" : "<?= lang("ID") ?>","width": "10%",data:"fin_id",visible:true,className:"dt-center"},
+				{"title" : "<?= lang("Branch") ?>","width": "10%",data:"fin_branch_id",visible:true,
+					render: function(data,type,row){
+						return row.fst_branch_name;
+					},
+				},
 				{"title" : "<?= lang("Mode") ?>","width": "20%",data:"fst_mode",visible:true},				
-				{"title" : "<?= lang("User / Department") ?>","width": "35%",data:"fin_user_department_id",visible:true,
+				{"title" : "<?= lang("User / Department") ?>","width": "25%",data:"fin_user_department_id",visible:true,
 					render: function(data, type, row) {											
 						return row.fst_user_department_name;
 					},
@@ -740,6 +745,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data = {
 				fbl_check: 1,
 				fin_id: 0,
+				fin_branch_id: $("#scope-custom-branch").val(),
+				fst_branch_name: $("#scope-custom-branch :selected").text(),
 				fst_mode: $("#scope-custom-type").val(),
 				fin_user_department_id: $("#scope-custom-value").val(),
 				fst_user_department_name: $("#scope-custom-value :selected").text(),

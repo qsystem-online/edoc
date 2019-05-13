@@ -43,11 +43,13 @@ class Dashboard extends MY_Controller
 
     public function test_report(){
         $this->load->library('pdf');
-        $customPaper = array(0,0,381.89,595.28);
+        //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
-        //$this->pdf->setPaper('A4', 'portrait');
-        $this->pdf->setPaper('A4', 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+        //$this->pdf->setPaper('A4', 'landscape');
         $data =[];
         $this->pdf->load_view('report/laporan_pdf', $data);
+        
+        
     }
 }

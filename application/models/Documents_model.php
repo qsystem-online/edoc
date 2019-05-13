@@ -109,7 +109,6 @@ class Documents_model extends MY_Model {
 		$this->load->model("users_model");
 		$activeUserId = $this->aauth->get_user_id();
 
-
 		$fst_scope = ($scopeMode == "VIEW" ) ? "fst_view_scope" : "fst_print_scope";
 
 		//Get Scope
@@ -252,5 +251,10 @@ class Documents_model extends MY_Model {
 			];
 		}
 		parent::update($data);
+	}
+
+	public function completedFlowIfRejected($fin_document_id){
+		$ssql = "update documents set fbl_flow_completed = true where fst_active = 'R' and fin_document_id = ?";
+		$this->db->query($ssql,[$fin_document_id]);
 	}
 }

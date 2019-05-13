@@ -552,7 +552,7 @@ class Document extends MY_Controller {
         $this->list['list_name']="Rejected List";
         $this->list['addnew_ajax_url']=site_url().'document/add';
         $this->list['pKey']="id";
-		$this->list['fetch_list_data_ajax_url']=site_url().'document/changed_approved_list_data';
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/rejected_list_data';
         $this->list['delete_ajax_url']=site_url().'document/delete/';
         $this->list['edit_ajax_url']=site_url().'document/edit/';
         $this->list['arrSearch']=[
@@ -582,12 +582,7 @@ class Document extends MY_Controller {
 				}",
 			],
 			['title' => 'Creator', 'width'=>'10%', 'data'=>'fst_username',],					
-			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,
-				'render' => "function(data, type, row) {
-					return \"<div style='font-size:16px'><a class='btn-show' href='#'><i class='fa fa-search' aria-hidden='true'></i></a></div>\";
-				}",
-				'className'=>'dt-body-center text-center'
-			]
+			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,'className'=>'dt-body-center text-center']
 		];
 
 		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
@@ -605,11 +600,176 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+	public function rejected_list_data(){
+		$this->load->library("datatables");
+
+		//$currBranchId = $this->session->userdata("active_branch_id");
+		//$currUserDeptId = $this->aauth->user()->fin_department_id;
+		//$currUserLevel = $this->aauth->user()->fin_level;
+
+		$activeUserId = $this->aauth->get_user_id();
+
+		$ssql = "
+			 (
+				select a.*,b.fst_username from documents a 
+				inner join users b on a.fin_insert_id = b.fin_user_id 
+				where a.fst_active = 'R' and a.fbl_flow_completed = FALSE and a.fin_insert_id = $activeUserId
+			 ) a 			 
+		";
+
+		$this->datatables->setTableName($ssql);
+
+		
+		$selectFields = "a.*,'' as action";
+		$this->datatables->setSelectFields($selectFields);
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "a.fst_active !='D'";
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
+			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
+			//return \"<div style='font-size:16px'><a class='btn-show' href='#'><i class='fa fa-search' aria-hidden='true'></i></a></div>\";
+			
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-edit' href='" . base_url() . "document/edit/" . $data["fin_document_id"]."' ><i class='fa fa-search' aria-hidden='true'></i></a>
+				</div>";			
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+
+	}
+
+
+	public function approval_history_list(){
+		$this->load->library('menus');
+        $this->list['page_name']="Documents";
+        $this->list['list_name']="Rejected List";
+        //$this->list['addnew_ajax_url']=site_url().'document/add';
+        $this->list['pKey']="id";
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/approval_history_list_data';
+        //$this->list['delete_ajax_url']=site_url().'document/delete/';
+        //$this->list['edit_ajax_url']=site_url().'document/edit/';
+        $this->list['arrSearch']=[
+			'a.fst_name' => 'Document Name',
+			'a.fst_search_marks' => 'Search Mark',
+			'a.fst_memo' => 'Memo',
+		];
+		
+		$this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Document','link'=>'#','icon'=>''],
+			['title'=>'List','link'=> NULL ,'icon'=>''],
+		];
+
+		
+		$this->list['columns']=[
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_flow_control_id'],
+			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
+			['title' => 'memo', 'width'=>'35%', 'data'=>'fst_memo'],
+			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
+				'render'=>"function(data, type, row) {
+					if (data == 'INT'){
+						return 'INTERNAL';
+					}else{
+						return 'EXTERNAL';
+					}
+				}",
+			],
+			['title' => 'Creator', 'width'=>'10%', 'data'=>'fst_username',],					
+			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,'className'=>'dt-body-center text-center']
+		];
+
+		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('pages/flow_schema/approval_history_list',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+	}
+
+	public function approval_history_list_data(){
+		$this->load->library("datatables");
+
+		//$currBranchId = $this->session->userdata("active_branch_id");
+		//$currUserDeptId = $this->aauth->user()->fin_department_id;
+		//$currUserLevel = $this->aauth->user()->fin_level;
+
+		$activeUserId = $this->aauth->get_user_id();
+		$startDate = dBDateFormat($this->input->get("startDate"));
+		$startDate =  ($startDate == "1970-01-01") ? "2000-01-01" : $startDate;
+		
+
+		$endDate = dBDateFormat($this->input->get("endDate"));
+		$endDate = ($endDate == "1970-01-01") ? "3000-01-01" : $endDate;
+		$endDate .= " 23:59:59";
+		
+		$optionStatus = $this->input->get("optionStatus");
+		$optionStatus = ($optionStatus == "") ? "%" : $optionStatus;
+
+
+		$ssql = "
+			 (
+				select a.fin_id as fin_document_flow_control_id,a.fst_control_status,a.fst_memo,a.fdt_approved_datetime,
+				b.fin_document_id,b.fst_name,b.fst_source,b.fst_active,
+				c.fst_username 
+				from document_flow_control a 
+				inner join documents b on a.fin_document_id = b.fin_document_id 
+				inner join users c on a.fin_user_id = c.fin_user_id 
+				where a.fdt_approved_datetime >= " . $this->db->escape($startDate) ."
+				and a.fdt_approved_datetime <= " . $this->db->escape($endDate) ."
+				and a.fst_control_status like " . $this->db->escape($optionStatus) ."
+				and a.fin_user_id = $activeUserId 
+			 ) a 			 
+		";
+
+		$this->datatables->setTableName($ssql);
+
+		
+		$selectFields = "a.*,'' as action";
+		$this->datatables->setSelectFields($selectFields);
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "a.fst_active !='D'";
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$approvedDateTime = strtotime($data["fdt_approved_datetime"]);						
+			$data["fdt_approved_datetime"] = date("d-M-Y H:i:s",$approvedDateTime);
+			//return \"<div style='font-size:16px'><a class='btn-show' href='#'><i class='fa fa-search' aria-hidden='true'></i></a></div>\";
+			
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-view' href='" . base_url() . "document/edit/" . $data["fin_document_id"]."' ><i class='fa fa-search' aria-hidden='true'></i></a>
+				</div>";			
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+
+	}
+
+
 	public function add(){
 		$this->openForm("ADD","");
 	}
 
 	public function Edit($fin_document_id){
+
 		$this->openForm("EDIT",$fin_document_id);
 	}
 
@@ -785,6 +945,7 @@ class Document extends MY_Controller {
 			foreach ($detail_custom_scope as $scope) {
 				$dataTmp = [
 					"fin_document_id"=>$insertId,
+					"fin_branch_id"=>$scope->fin_branch_id,
 					"fst_mode"=> $scope->fst_mode,
 					"fin_user_department_id"=> $scope->fin_user_department_id,
 					"fbl_view" => ($scope->fbl_view == NULL) ? 0 : 1,
@@ -1027,8 +1188,9 @@ class Document extends MY_Controller {
 
 			foreach ($detail_custom_scope as $scope) {
 				$dataScope = [
-					"fin_id"=>$scope->fin_id,
+					"fin_id"=>$scope->fin_id,					
 					"fin_document_id"=>$fin_document_id,
+					"fin_branch_id"=>$scope->fin_branch_id,
 					"fst_mode"=> $scope->fst_mode,
 					"fin_user_department_id"=> $scope->fin_user_department_id,
 					"fbl_view" => ($scope->fbl_view == NULL) ? 0 : 1,
@@ -1119,6 +1281,9 @@ class Document extends MY_Controller {
 		
 
 		$data = [];
+		
+		$this->documents_model->completedFlowIfRejected($fin_document_id);
+
 		$data["header"] = $this->documents_model->getDataById($fin_document_id);
 		
 		$tmpDocDetails = $this->document_details_model->getRowsByParentId($fin_document_id);

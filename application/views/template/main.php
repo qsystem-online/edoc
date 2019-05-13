@@ -18,6 +18,10 @@
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/morris.js/morris.css">
 		<!-- jvectormap -->
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/jvectormap/jquery-jvectormap.css">
+
+		<!-- jquery-ui -->
+		<link rel="stylesheet" href="<?=base_url()?>bower_components/jquery-ui/themes/redmond/jquery-ui.min.css">
+
 		<!-- Date Picker -->
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 		<!-- Daterange picker -->
@@ -37,7 +41,8 @@
 		<!-- Google Font -->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
-		<!-- jQuery 3 -->
+
+		<!-- jQuery 3 -->			
 		<script src="<?=base_url()?>bower_components/jquery/dist/jquery.min.js"></script>				
 		<!-- CONFIG JS -->
 		<script src="<?=base_url()?>assets/system/js/config.js"></script>
