@@ -67,6 +67,7 @@
       color:#5E5B5C;
       table-layout: auto;
       width: 100%;
+      font-size:10pt;
     }
  
     thead th{
@@ -120,11 +121,11 @@
 	  	</thead>
 	  	<tbody>
 	  		<?php $no=0;$no<=100;$no++; ?>
-            <?php foreach($datas as $data): ?>
+        <?php foreach($datas as $data): ?>
 	  		  <tr>
-	  			<td><?php echo $no; ?></td>
-	  			<td><?php echo $data['fin_department_id']; ?></td>
-	  			<td><?php echo $data['fst_department_name']; ?></td>
+            <td><?php echo $no; ?></td>
+            <td><?php echo $data['fin_department_id']; ?></td>
+            <td><?php echo $data['fst_department_name']; ?></td>
 	  		  </tr>
 	  		<?php $no++; ?>
 	  		<?php endforeach; ?>

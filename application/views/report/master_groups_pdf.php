@@ -66,6 +66,7 @@
       color:#5E5B5C;
       table-layout: auto;
       width: 100%;
+      font-size:10pt;
     }
  
     thead th{
