@@ -8,8 +8,6 @@
  * @link        https://github.com/ardianta/codeigniter-dompdf
  */
 use Dompdf\Dompdf;
-
-
 class Pdf extends Dompdf{
     /**
      * @var 
@@ -22,6 +20,8 @@ class Pdf extends Dompdf{
        
 
         $this->filename = "laporan.pdf";
+        $this->filename = "master_groups.pdf";
+        $this->filename = "departments.pdf";
     }
     /**
      * @access    protected
@@ -44,9 +44,6 @@ class Pdf extends Dompdf{
         //echo getcwd() . "/assets/app/users/avatar/avatar_1.jpg";
         //die();
         $this->load_html($html);
-
-        
-        
 
         // Render the PDF
 

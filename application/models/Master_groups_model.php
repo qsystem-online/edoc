@@ -82,4 +82,9 @@ class Master_groups_model extends MY_Model
         $query = $this->db->query($ssql, []);
         return $query->result();
     }
+
+    public function get_master_groups(){
+        $query = $this->db->get('master_groups');
+		return $query->result_array();
+    }
 }
