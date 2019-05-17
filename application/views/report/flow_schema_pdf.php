@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Report Master Groups</title>
+  <title>Report Flow Schema</title>
   <style type="text/css">
 
 @page {
@@ -90,7 +90,7 @@
 <body>
 
     <header>            
-        <img src= "<?= base_url() ?>/assets/app/datas/avatar/avatar_1.jpg" height="60"/>
+        <img src= "<?= base_url() ?>/assets/app/datas/avatar/avatar_2.jpg" height="60"/>
         Our Code World
     </header>
 
@@ -104,8 +104,7 @@
         </script>
     </footer>
 
-  <h2 text-align="center">Table Master Groups</h2>
-  <link href="style.css" type="text/css" rel="stylesheet" />
+  <h2 text-align= "center">Table Flow Schema</h2>
 	<table cellspacing='0'>
 
 	<div id="outtable">
@@ -113,42 +112,19 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="normal">Group ID</th>
-	  			<th class="normal">Group Name</th>
-	  			<th class="normal">Level</th>
+	  			<th class="normal">FC Schema ID</th>
+	  			<th class="normal">FC Schema Name</th>
+	  			<th class="normal">Memo</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>
 	  		<?php $no=0;$no<=100;$no++; ?>
-        <?php foreach($datas as $data): ?>
-        <?php 
-          switch($data["fin_level"]){
-            case 0;
-              $finLevelName = "Top Management";
-              break;
-            case 1;
-              $finLevelName = "Upper Management";
-              break;
-            case 2;
-              $finLevelName = "Middle Management";
-              break;
-            case 3;
-              $finLevelName = "Supervisor";
-              break;
-            case 4;
-              $finLevelName = "Line Workers";
-              break;
-            case 5;
-              $finLevelName = "Public";
-              break;
-          }
-          $data["fin_level"] = $finLevelName;
-        ?>
+            <?php foreach($datas as $data): ?>
 	  		  <tr>
 	  			<td><?php echo $no; ?></td>
-	  			<td><?php echo $data['fin_group_id']; ?></td>
-	  			<td><?php echo $data['fst_group_name']; ?></td>
-	  			<td><?php echo $data['fin_level']; ?></td>
+	  			<td><?php echo $data['fin_flow_control_schema_id']; ?></td>
+	  			<td><?php echo $data['fst_name']; ?></td>
+	  			<td><?php echo $data['fst_memo']; ?></td>
 	  		  </tr>
 	  		<?php $no++; ?>
 	  		<?php endforeach; ?>

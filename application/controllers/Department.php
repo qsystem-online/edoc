@@ -285,9 +285,9 @@ class Department extends MY_Controller
 		//$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("departments_model");
-		$listDepartments = $this->departments_model->get_departments();
+		$listDepartment = $this->departments_model->get_departments();
         $data = [
-			"datas" => $listDepartments
+			"datas" => $listDepartment
 		];
 			
         $this->pdf->load_view('report/departments_pdf', $data);

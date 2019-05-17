@@ -47,4 +47,9 @@ class Flow_control_schema_header_model extends MY_Model {
         $rs = $qr->result();
         return $rs;
     }
+
+    public function get_FlowSchema(){
+        $query = $this->db->get('flow_control_schema_header');
+		return $query->result_array();
+    }
 }

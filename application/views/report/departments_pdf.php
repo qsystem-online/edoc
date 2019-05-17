@@ -43,6 +43,7 @@
 
     h2{
         font-family: arial;
+        text-align: center;
     }
 
     #outtable{
@@ -104,7 +105,7 @@
         </script>
     </footer>
 
-  <center><h2>Table Departments</h2></center>
+  <h2 text-align = "center">Table Departments</h2>
   <link href="style.css" type="text/css" rel="stylesheet" />
 	<table cellspacing='0'>
 
