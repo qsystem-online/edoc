@@ -58,20 +58,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		</div>
 	</nav>
 </header>
-<<<<<<< .mine=======>>>>>>> .theirs
-	<script type="text/javascript">
-		$(function() {
-			$(".sidebar-toggle").click(function() {
-				if ($("body").hasClass("sidebar-collapse")) {
-					setValue = 0;
-				} else {
-					setValue = 1;
-				}
+<script type="text/javascript">
+	$(function() {
+		$(".sidebar-toggle").click(function() {
+			if ($("body").hasClass("sidebar-collapse")) {
+				setValue = 0;
+			} else {
+				setValue = 1;
+			}
 
-				$.ajax({
-					url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
-				});
-
+			$.ajax({
+				url: "<?= site_url() ?>setting/set_sidebar_collapse/" + setValue
 			});
+
 		});
-	</script>
+	});
+</script>
