@@ -558,6 +558,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					if (v.fin_id == $("#fin_document_flow_control_id").val()){
 						$("#frm_fst_control_status").val(v.fst_control_status);
 						$("#frm_fst_memo").val(v.fst_memo);
+						if (v.isEditable == false){
+							$("#btnSubmit").hide();
+							//$("#frm_fst_memo").attr('readonly', true);
+							//$("#frm_fst_control_status").prop('disabled', true);
+						}
 					}
 				});
 				t.draw();

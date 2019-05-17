@@ -40,9 +40,31 @@ class Document_flow_control_model extends MY_Model {
             where a.fin_document_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql,[$parent_id]);
         if($qr){
-            return $qr->result();
+            
+            $rs =  $qr->result();
+            $newRs = [];
+            foreach($rs as $rw){
+                $rw->{"isEditable"} = $this->isEditable($rw->fin_id);
+                $newRs[] = $rw;
+            }
+            return $newRs;
         }
         return [];
+    }
+
+    public function isEditable($fin_doc_flow_id){
+        $ssql = "select * from " . $this->tableName . " where fin_id = ?";
+        $qr = $this->db->query($ssql,[$fin_doc_flow_id]);
+        $rw = $qr->row();
+        if($rw){
+            $ssql = "select * from " . $this->tableName . " where fin_document_id = ? and fin_seq_no > ? and fst_control_status not in ('NA','RA') ";
+            $qr = $this->db->query($ssql,[$rw->fin_document_id,$rw->fin_seq_no]);
+            if($qr->row()){
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public function deleteByParentId($fin_document_id){
@@ -52,15 +74,17 @@ class Document_flow_control_model extends MY_Model {
 
     public function deleteNotApprovedByParentId($fin_document_id){
         $this->db->where("fin_document_id",$fin_document_id);
-        $this->db->where("fst_control_status != ","AP");
+        //$this->db->where("fst_control_status != ","AP");
+        $this->db->where_in('fst_control_status', ["NA","RA"]);
         $this->db->delete($this->tableName);
     }
 
     public function update($data){
-        parent::update($data);
+        parent::update($data);        
         $ssql = "select * from " . $this->tableName . " where fin_id = ?";
         $qr = $this->db->query($ssql,[$data["fin_id"]]);
         $rw = $qr->row();
+        
         if($rw){
             $fin_document_id = $rw->fin_document_id;
             $currSeqNo = $rw->fin_seq_no;
@@ -72,6 +96,7 @@ class Document_flow_control_model extends MY_Model {
                 where b.fst_control_status != 'AP' ";
             $qr = $this->db->query($ssql,[$fin_document_id,$currSeqNo]);
             $rw = $qr->row();
+            
             if (!$rw){
                 //Data Kosong all Approved ; seq_no < from current seq_no
                 //get next seq_no
@@ -86,8 +111,6 @@ class Document_flow_control_model extends MY_Model {
                 }
             }
 
-
-
             // if all flow approved update fbl_flow_complete on document
             $ssql = "select b.* from 
                 (select max(fin_id) as fin_id, fin_user_id from " . $this->tableName . " where fin_document_id = ?  group by fin_user_id) a
@@ -95,6 +118,7 @@ class Document_flow_control_model extends MY_Model {
                 where b.fst_control_status != 'AP' ";
             $qr = $this->db->query($ssql,[$fin_document_id]);
             $rw = $qr->row();
+            
             if (!$rw){
                 // All Document approved
                 $ssql = "update documents set fbl_flow_completed = TRUE where fin_document_id = ?";
@@ -102,7 +126,11 @@ class Document_flow_control_model extends MY_Model {
                 $ssql = "update documents set fbl_flow_completed = FALSE where fin_document_id = ?";
             }
             $this->db->query($ssql,[$fin_document_id]);
+            parent::throwIfDbError();
+            
         }
+
+        
     }
     
 
@@ -127,4 +155,61 @@ class Document_flow_control_model extends MY_Model {
             return "RA";
         }
     }
+
+    public function renewAfterRevision($fin_document_id,$fin_version){       
+        $ssql  = "update " . $this->tableName . " set fin_version = ? where fin_document_id = ? and fst_control_status in ('NA', 'RA')";
+        $this->db->query($ssql,[$fin_version,$fin_document_id]);
+        
+        $error = $this->db->error();
+		if ($error["code"] != 0) {
+			throw new Exception("Database Error !", 1000);
+        }
+        
+
+        $ssql = "insert into " . $this->tableName . "
+            (fin_document_id,fin_seq_no,fin_user_id,fst_control_status,fin_version,fst_active,fdt_insert_datetime,fin_insert_id)             
+            select fin_document_id,fin_seq_no,a.fin_user_id,
+                'RA' as fst_control_status,
+                ". $fin_version ." as fin_version,
+                'A' as fst_active,
+                '". date("Y-m-d H:i:s") ."' as fdt_insert_datetime,
+                ". $this->aauth->get_user_id() ." as fin_insert_id 
+            from " . $this->tableName . " a 
+            inner join (
+                select max(fin_id) as fin_id,fin_user_id from " . $this->tableName . " where fin_document_id = ? group by fin_user_id
+            ) b on a.fin_id = b.fin_id
+            where a.fst_control_status = 'NR'
+            ";
+
+        $this->db->query($ssql,[$fin_document_id]);    
+        //echo $this->db->last_query();
+        //die();
+
+        $error = $this->db->error();
+		if ($error["code"] != 0) {
+			throw new Exception("Database Error !", 1000);
+        }
+    }
+
+    public function renewStatusDocument($fin_id){
+        $this->load->model("documents_model");
+        $ssql = "select * from ". $this->tableName ." where fin_id = ?";
+        $qr = $this->db->query($ssql,[$fin_id]);
+        $rw = $qr->row();
+        if ($rw){
+            $this->documents_model->renewStatusDocument($rw->fin_document_id);
+        }
+    }
+
+    public function renewLogVersion($fin_id){
+        $ssql = "UPDATE document_flow_control a 
+        INNER JOIN documents b ON a.fin_document_id = b.fin_document_id 
+        SET a.fin_version = b.fin_version
+        WHERE a.fin_id = ? AND a.fin_user_id = ?";
+
+        $this->db->query($ssql,[$fin_id,$this->aauth->get_user_id()]);
+
+    }
+    
+
 }

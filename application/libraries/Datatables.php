@@ -128,8 +128,8 @@ class Datatables
 		$ssql = "select " . $this->selectFields . " from " . $this->tableName . " " . $strWhere . " " . $strGroupBy . " " . $strOrder . " limit ? offset ?";
 
 		$qr = $this->db->query($ssql, $params);
-		// echo $this->db->last_query();
-		// die();
+		//echo $this->db->last_query();
+		//die();
 
 		$rs = $qr->result_array();
 

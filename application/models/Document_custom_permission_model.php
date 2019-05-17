@@ -76,11 +76,20 @@ class Document_custom_permission_model extends MY_Model {
     public function isPermit($mode = "USER", $permitionMode = "VIEW",$fin_document_id,$fin_user_department_id){        
         $field = ($permitionMode == "VIEW") ? "fbl_view" : "fbl_print";
         $fstMode = ($mode == "USER") ? "USER" : "DEPARTMENT";
-        $ssql = "select $field from " . $this->tableName . " where fst_mode = ? and fin_user_department_id = ? and fin_document_id = ?";
+        
+        $ssql = "select fin_branch_id,$field from " . $this->tableName . " where fst_mode = ? and fin_user_department_id = ? and fin_document_id = ?";
         $qr = $this->db->query($ssql,[$fstMode,$fin_user_department_id,$fin_document_id]);
 
         $rw = $qr->row();
-        if($rw){                    
+        if($rw){
+            if ($fstMode == "DEPARTEMENT"){
+                if ($rw->fin_branch_id != 0){
+                    if ($rw->fin_branch_id != $this->session->userdata("active_branch_id")){
+                        return false;
+                    }
+                }
+            } 
+
             return $rw->$field;
         }
         return false;

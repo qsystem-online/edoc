@@ -109,7 +109,6 @@ class Documents_model extends MY_Model {
 		$this->load->model("users_model");
 		$activeUserId = $this->aauth->get_user_id();
 
-
 		$fst_scope = ($scopeMode == "VIEW" ) ? "fst_view_scope" : "fst_print_scope";
 
 		//Get Scope
@@ -167,7 +166,7 @@ class Documents_model extends MY_Model {
 		$rw = $qr->row();
 		if ($rw){
 			$uploadPath = getDbConfig("document_folder");
-			$fileName	=  md5('doc_'. $rw->fin_document_id .'_' . $rw->fin_version) . ".pdf"; 
+			$fileName	=  md5('doc_'. $rw->fin_document_id) . ".pdf"; 
 
 			$fileLoc = $uploadPath . $fileName;
 			
@@ -206,5 +205,56 @@ class Documents_model extends MY_Model {
 		}
 		
 		return true;
+	}
+
+	public function renewStatusDocument($fin_document_id){
+		//Flow control rejected
+		$ssql = "select * from document_flow_control where fst_control_status = 'RJ' and fin_document_id = ?";
+		$qr = $this->db->query($ssql,[$fin_document_id]);
+		$rw = $qr->row();
+		if($rw){
+			$data = [
+				"fin_document_id"=>$fin_document_id,
+				"fst_active"=>"R",
+			];			
+			parent::update($data);
+			return "R";
+		}
+
+		//Flow Uncompleted / Completed
+
+		//Status Rejected tidak membuat fbl_completed menjadi true, tapi akan di munculkan di dashboard 
+		//tentang dokumen yg direjected, setelah creator melihat document tsb baru fbl_flow_completednya di buat true
+		//sehingga hilang dari dashboard
+		
+		$ssql = "select * from document_flow_control a
+			inner join (
+				select max(fin_id) as fin_id , fin_user_id from document_flow_control 
+				where fin_document_id = ? group by fin_user_id
+			)  b on a.fin_id = b.fin_id 
+			where a.fst_control_status != 'AP' 
+			and a.fin_document_id = ?";
+
+
+		$qr = $this->db->query($ssql,[$fin_document_id,$fin_document_id]);
+
+		$rw = $qr->row();
+		if($rw){
+			$data = [
+				"fin_document_id"=>$fin_document_id,
+				"fbl_flow_completed"=> FALSE,
+			];			
+		}else{
+			$data = [
+				"fin_document_id"=>$fin_document_id,
+				"fbl_flow_completed"=> true,
+			];
+		}
+		parent::update($data);
+	}
+
+	public function completedFlowIfRejected($fin_document_id){
+		$ssql = "update documents set fbl_flow_completed = true where fst_active = 'R' and fin_document_id = ?";
+		$this->db->query($ssql,[$fin_document_id]);
 	}
 }
