@@ -54,11 +54,11 @@
     }
  
     .short{
-      width: 70px;
+      width: 50px;
     }
  
     .normal{
-      width: 150px;
+      width: auto;
     }
  
     table{

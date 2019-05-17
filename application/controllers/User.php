@@ -497,4 +497,22 @@ class User extends MY_Controller
 		$this->parser->parse('template/main', $this->data);
 		*/
 	}
+
+	public function report_user(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("users_model");
+		$listUser = $this->users_model->get_User();
+        $data = [
+			"datas" => $listUser
+		];
+			
+        $this->pdf->load_view('report/user_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
 }

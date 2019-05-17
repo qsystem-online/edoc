@@ -48,16 +48,17 @@
     #outtable{
       padding: 20px;
       border:2px solid #e3e3e3;
-      width:610px;
+      width: 100%;
+      table-layout: auto;
       border-radius: 10px;
     }
  
     .short{
-      width: 70px;
+      width: 35px;
     }
  
     .normal{
-      width: 150px;
+      width: auto;
     }
  
     table{
@@ -105,6 +106,7 @@
     </footer>
 
   <h2 text-align= "center">Table Flow Schema</h2>
+  <link href="style.css" type="text/css" rel="stylesheet" />
 	<table cellspacing='0'>
 
 	<div id="outtable">
