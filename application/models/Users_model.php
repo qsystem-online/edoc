@@ -150,4 +150,9 @@ class Users_model extends MY_Model
 
 		return $rules;
 	}
+
+	public function get_User(){
+        $query = $this->db->get('users');
+		return $query->result_array();
+    }
 }

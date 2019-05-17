@@ -47,9 +47,8 @@ class Dashboard extends MY_Controller
         //$this->pdf->setPaper($customPaper, 'landscape');
         $this->pdf->setPaper('A4', 'portrait');
         //$this->pdf->setPaper('A4', 'landscape');
-        $data =[];
         $this->pdf->load_view('report/laporan_pdf', $data);
-        
-        
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }
 }

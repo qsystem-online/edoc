@@ -10,14 +10,12 @@
                 left: 0px;
                 right: 0px;
                 height: 50px;
-
                 /** Extra personal styles **/
                 background-color: #03a9f4;
                 color: white;
                 text-align: center;
                 line-height: 35px;
             }
-
             footer {
                 position: fixed; 
                 bottom: 0px; 
