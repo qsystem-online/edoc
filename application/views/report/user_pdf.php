@@ -41,7 +41,7 @@
         margin-bottom: 2cm;
     }
 
-    h2{
+    h3{
         font-family: arial;
         text-align: center;
     }
@@ -101,7 +101,7 @@
 <body>
 
     <header>            
-        <img src= "<?= base_url() ?>/assets/app/datas/avatar/avatar_2.jpg" height="60"/>
+      <img src= "<?= base_url() ?>/assets/app/users/avatar/avatar_1.jpg" height="60"/>
         Our Code World
     </header>
 
@@ -115,7 +115,7 @@
         </script>
     </footer>
 
-  <h2 text-align= "center">Table User</h2>
+  <h3 text-align= "center">Table User</h3>
   <link href="style.css" type="text/css" rel="stylesheet" />
 	<table cellspacing='0'>
 

@@ -513,6 +513,9 @@ class User extends MY_Controller
 			
         $this->pdf->load_view('report/user_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
-        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+		
+		$this->Cell(5,0.7,"Printed On : ".date("D-d/m/Y"),0,0,'C');
+		$this->Cell();
     }
 }
