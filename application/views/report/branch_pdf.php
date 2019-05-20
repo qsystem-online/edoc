@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Report Flow Schema</title>
+  <title>Report Branch</title>
   <style type="text/css">
 
 @page {
@@ -33,6 +33,7 @@
         text-align: center;
         line-height: 35px;
     }
+    
     body{
         margin-top: 2cm;
         margin-left: 2cm;
@@ -60,14 +61,18 @@
     .normal{
       width: auto;
     }
- 
+
+    .uid{
+        width: 75px;
+    }
+
     table{
       border-collapse: collapse;
       font-family: arial;
       color:#5E5B5C;
       table-layout: auto;
       width: 100%;
-      font-size:10pt
+      font-size:10pt;
     }
  
     thead th{
@@ -99,14 +104,14 @@
     <footer>
         Copyright &copy; <?php echo date("Y"); ?>  Page 
         <script type="text/php">
-                $this->get_canvas()->page_script('
-                    $font = $fontMetrics->getFont("Arial", "bold");
-                    $this->get_canvas()->text(770, 580, "Page $PAGE_NUM of $PAGE_COUNT", $font, 10, array(0, 0, 0));
-                ');                
+            $this->get_canvas()->page_script('
+              $font = $fontMetrics->getFont("Arial", "bold");
+              $this->get_canvas()->text(770, 580, "Page $PAGE_NUM of $PAGE_COUNT", $font, 10, array(0, 0, 0));
+            ');                
         </script>
     </footer>
 
-  <h3 text-align= "center">Table Flow Schema</h3>
+  <h3 text-align= "center">Table Branch</h3>
   <link href="style.css" type="text/css" rel="stylesheet" />
 	<table cellspacing='0'>
 
@@ -115,22 +120,24 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="normal">FC Schema ID</th>
-	  			<th class="normal">FC Schema Name</th>
-	  			<th class="normal">Memo</th>
+	  			<th class="uid">Branch ID</th>
+	  			<th class="normal">Branch Name</th>
+	  			<th class="normal">Phone</th>
+			    <th class="normal">Notes</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>
-	  		<?php $no=0;$no<=100;$no++; ?>
+        <?php $no=0;$no<=100;$no++; ?>
         <?php foreach($datas as $data): ?>
-	  		  <tr>
+          <tr>
             <td><?php echo $no; ?></td>
-            <td><?php echo $data['fin_flow_control_schema_id']; ?></td>
-            <td><?php echo $data['fst_name']; ?></td>
-            <td><?php echo $data['fst_memo']; ?></td>
-            </tr>
-	  		<?php $no++; ?>
-	  		<?php endforeach; ?>
+            <td><?php echo $data['fin_branch_id']; ?></td>
+            <td><?php echo $data['fst_branch_name']; ?></td>
+            <td><?php echo $data['fst_branch_phone']; ?></td>
+            <td><?php echo $data['fst_notes']; ?></td>
+          </tr>
+        <?php $no++; ?>
+        <?php endforeach; ?>
 	  	</tbody>
 	  </table>
 	 </div>

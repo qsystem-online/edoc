@@ -24,6 +24,7 @@ class Pdf extends Dompdf{
         $this->filename = "departments.pdf";
         $this->filename = "flow_schema.pdf";
         $this->filename = "user.pdf";
+		$this->filename = "branch.pdf";
     }
     /**
      * @access    protected
