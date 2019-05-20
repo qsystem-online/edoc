@@ -36,8 +36,8 @@
     
     body{
         margin-top: 2cm;
-        margin-left: 1cm;
-        margin-right: 1cm;
+        margin-left: 2cm;
+        margin-right: 2cm;
         margin-bottom: 2cm;
     }
 
@@ -60,14 +60,6 @@
  
     .normal{
       width: auto;
-    }
-
-    .gen{
-        width: 60px;
-    }
-
-    .uid{
-        width: 75px;
     }
 
     table{
@@ -124,9 +116,9 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="uid">User ID</th>
+	  			<th class="normal">User ID</th>
 	  			<th class="normal">Full Name</th>
-	  			<th class="gen">Gender</th>
+	  			<th class="normal">Gender</th>
           <th class="normal">Birthdate</th>
           <th class="normal">Birthplace</th>
 	  		</tr>

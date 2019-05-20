@@ -502,8 +502,8 @@ class User extends MY_Controller
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
-        $this->pdf->setPaper('A4', 'portrait');
-		//$this->pdf->setPaper('A4', 'landscape');
+        //$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("users_model");
 		$listUser = $this->users_model->get_User();
