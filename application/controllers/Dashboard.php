@@ -11,7 +11,8 @@ class Dashboard extends MY_Controller
         $this->load->model('dashboard_model');
     }
 
-    public function index(){
+    public function index()
+    {
         $this->load->library("menus");
 
 
@@ -26,7 +27,7 @@ class Dashboard extends MY_Controller
         $this->data["ttlDocNeedRevision"] = formatNumber($this->dashboard_model->getTtlDocNeedToRevision());
         $this->data["ttlDocChangeAfterApproved"] = formatNumber($this->dashboard_model->getTtlDocHasRevision());
         $this->data["ttlDocRejected"] = formatNumber($this->dashboard_model->getTotalRejected());
-        
+
 
         $page_content = $this->parser->parse('pages/dashboard/index', $this->data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -38,17 +39,17 @@ class Dashboard extends MY_Controller
         $this->data["MAIN_FOOTER"] = $main_footer;
         $this->data["CONTROL_SIDEBAR"] = $control_sidebar;
         $this->parser->parse('template/main', $this->data);
-        
     }
 
-    public function test_report(){
+    public function test_report()
+    {
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
         $this->pdf->setPaper('A4', 'portrait');
         //$this->pdf->setPaper('A4', 'landscape');
-        $this->pdf->load_view('report/laporan_pdf', $data);
-        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
-        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+        $this->pdf->load_view('report/laporan_pdf');
+        $this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
+        $this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
     }
 }
