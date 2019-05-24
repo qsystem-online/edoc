@@ -4,20 +4,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Reference_document extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->model('branch_model');
     }
 
-    public function index()
-    {
+    public function index(){
         $this->show_list();
     }
 
-    public function show_list()
-    {
+    public function show_list(){
         $this->load->library('menus');
         $this->list['page_name'] = "Reference Document";
         $this->list['list_name'] = "Reference List";
@@ -54,35 +51,7 @@ class Reference_document extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function fetch_list_data(){
-        $this->load->library("datatables");
-        $this->datatables->setTableName("(select distinct fst_reff_source_code,fst_reff_no,fst_active from reference_document_list where fst_active = 'A') a");
-
-        $selectFields = "fst_reff_source_code,fst_reff_no,'action' as action";
-        $this->datatables->setSelectFields($selectFields);
-
-        $Fields = $this->input->get('optionSearch');
-        $searchFields = [$Fields];
-        $this->datatables->setSearchFields($searchFields);
-        // Format Data
-        $datasources = $this->datatables->getData();
-        $arrData = $datasources["data"];
-        $arrDataFormated = [];
-        foreach ($arrData as $data) {
-            //action
-            $data["action"]    = "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["fin_branch_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_branch_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
-				</div>";
-
-            $arrDataFormated[] = $data;
-        }
-        $datasources["data"] = $arrDataFormated;
-        $this->json_output($datasources);
-    }
-
-    private function openForm($mode = "ADD", $fin_branch_id = 0)
-    {
+    private function openForm($mode = "ADD", $fin_branch_id = 0){
         $this->load->library("menus");
 
         if ($this->input->post("submit") != "") {
@@ -108,18 +77,15 @@ class Reference_document extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function add()
-    {
+    public function add(){
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_branch_id)
-    {
+    public function Edit($fin_branch_id){
         $this->openForm("EDIT", $fin_branch_id);
     }
 
-    public function ajx_add_save()
-    {
+    public function ajx_add_save(){
         $this->load->model('branch_model');
         $this->form_validation->set_rules($this->branch_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -162,8 +128,7 @@ class Reference_document extends MY_Controller
         $this->json_output();
     }
 
-    public function ajx_edit_save()
-    {
+    public function ajx_edit_save(){
         $this->load->model('branch_model');
         $fin_branch_id = $this->input->post("fin_branch_id");
         $data = $this->branch_model->getDataById($fin_branch_id);
@@ -218,10 +183,35 @@ class Reference_document extends MY_Controller
         $this->json_output();
     }
 
-    
+    public function fetch_list_data(){
+        $this->load->library("datatables");
+        $this->datatables->setTableName("(select distinct fst_reff_source_code,fst_reff_no,fst_active from reference_document_list where fst_active = 'A') a");
 
-    public function fetch_data($fin_branch_id)
-    {
+        $selectFields = "fst_reff_source_code,fst_reff_no,'action' as action";
+        $this->datatables->setSelectFields($selectFields);
+
+        $Fields = $this->input->get('optionSearch');
+        $searchFields = [$Fields];
+        $this->datatables->setSearchFields($searchFields);
+        
+        // Format Data
+        $datasources = $this->datatables->getData();
+        $arrData = $datasources["data"];
+        $arrDataFormated = [];
+        foreach ($arrData as $data) {
+            //action
+            $data["action"]    = "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_branch_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_branch_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+				</div>";
+
+            $arrDataFormated[] = $data;
+        }
+        $datasources["data"] = $arrDataFormated;
+        $this->json_output($datasources);
+    }
+
+    public function fetch_data($fin_branch_id){
         $this->load->model("branch_model");
         $data = $this->branch_model->getDataById($fin_branch_id);
 
@@ -229,8 +219,7 @@ class Reference_document extends MY_Controller
         $this->json_output($data);
     }
 
-    public function delete($id)
-    {
+    public function delete($id){
         if (!$this->aauth->is_permit("")) {
             $this->ajxResp["status"] = "NOT_PERMIT";
             $this->ajxResp["message"] = "You not allowed to do this operation !";

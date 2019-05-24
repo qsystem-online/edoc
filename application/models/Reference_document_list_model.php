@@ -41,4 +41,16 @@ class Reference_document_list_model extends MY_Model {
 
         return $rules;
     }
+
+    public function getDataById($fin_branch_id){
+        $ssql = "select * from " . $this->tableName ." where fin_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_branch_id]);
+        $rwReferenceDoc = $qr->row();
+        
+		$data = [
+            "referenceDoc" => $rwReferenceDoc
+		];
+
+		return $data;
+	}
 }

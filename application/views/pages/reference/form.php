@@ -32,12 +32,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<!-- end box header -->
 
             <!-- form start -->
-            <form id="frmFlowSchema" class="form-horizontal" action="<?=site_url()?>flow_schema/add" method="POST" enctype="multipart/form-data">				
+            <form id="frmReference" class="form-horizontal" action="<?=site_url()?>reference_document/add" method="POST" enctype="multipart/form-data">				
 				<div class="box-body">
                     <input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
 					
 					<div class='form-group'>
-                    	<label for="fin_flow_control_schema_id" class="col-md-2 control-label"><?=lang("Reference Source")?> #</label>
+                    	<label for="fst_reff_source_code" class="col-md-2 control-label"><?=lang("Reference Source")?> #</label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_reff_source_code" placeholder="<?=lang("reff source code")?>" name="fst_reff_source_code" >
 							<div id="fst_reff_source_code_err" class="text-danger"></div>
@@ -75,7 +75,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="myModal" class="amodal afade" role="adialog">
+<div id="myModal" class="modal fade" role="dialog">
 	<div class="modal-dialog" style="display:table;width:80%;min-width:800px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -85,11 +85,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<table id="tblDocList"></table>
+				<form  class="form-horizontal">
+					<table id="tblDocList" style="width:100%"></table>
+				</form>
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-add-schema-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
 			</div>
 		</div>
@@ -101,16 +102,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
     $(function(){
         <?php if($mode == "EDIT"){?>
-			init_form($("#fin_flow_control_schema_id ").val());
+			init_form($("#fin_id ").val());
 		<?php } ?>
 
-		var edited_schema_detail = null;
-		var mode_schema_detail = "ADD";
+		var edited_reference_detail= null;
+		var mode_reference_detail = "ADD";
 
 		availableTags = [
 			"Puchasing",
 			"Sales",
-			"HRD"
+			"HRD",
+			"Accounting"
 		];
 
 		$("#fst_reff_source_code").autocomplete({
@@ -119,10 +121,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         $("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = $("#frmFlowSchema").serializeArray();
+			data = $("#frmReference").serializeArray();
 			//console.log(data);
 			detail = new Array();
-			t = $('#tblFlowSchemaDetail').DataTable();
+			t = $('#tblReferenceDetail').DataTable();
 			datas = t.data();
 			$.each(datas,function(i,v){
 				detail.push(v);
@@ -137,9 +139,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>flow_schema/ajx_add_save";
+				url =  "<?= site_url() ?>reference_document/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>flow_schema/ajx_edit_save";
+				url =  "<?= site_url() ?>reference_document/ajx_edit_save";
 			}
 
             //var formData
@@ -157,7 +159,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>flow_schema/lizt";
+										window.location.href = "<?= site_url() ?>reference_document/lizt";
 										return;
 									}
 								},
@@ -172,13 +174,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#fin_flow_control_schema_id ").val(data.insert_id);
+						$("#fst_reff_source_code ").val(data.insert_id);
 						//Clear all previous error
 						$(".text-danger").html("");
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#fst_name').prop('readonly', true);
-						$("#tabs-schema-detail").show();
+						$("#tabs-reference-detail").show();
 						console.log(data.data_image);
 					}
 				},
@@ -190,71 +192,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             });
         });
 
-		$("#select-username").select2({
-			width: '100%',
-			minimumInputLength: 2,
-			ajax: {
-				url: '<?=site_url()?>flow_schema/get_data_username',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data) {
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fin_user_id,
-							"text" : value.fst_username
-						});	
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
-
-		var selected_username;
 		var arrDetail;
-
-		$('#select-username').on('select2:select', function (e) {
-			//console.log(selected_username);
-			var data = e.params.data;
-			selected_username = data;
-			//console.log(selected_username);
-		});
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
-			mode_schema_detail = "ADD"; // 28/04/2019
+			mode_reference_detail = "ADD";
 			$("#myModal").modal({
 				backdrop:"static",
 			});
 		})
 
-		$("#btn-add-schema-detail").click(function(event){
-			event.preventDefault();
-			selected_username = $("#select-username").select2('data')[0];
-			var seq_no = $("#fin_seq_no").val();
-			//t = $('#tblFlowSchemaDetail').DataTable();
-		
-			data = {
-				//fin_id:$("#fin_id").val(),
-				fin_flow_control_schema_id:$("#fin-detail-id").val(),
-				fin_user_id:selected_username.id,
-				fst_username:selected_username.text,
-				fin_seq_no: $("#fin_seq_no").val(),
-				action: action
-			}
-
-			t = $('#tblFlowSchemaDetail').DataTable();			
-			if(mode_schema_detail =="EDIT"){
-				edited_schema_detail.data(data).draw(false);
-			}else{
-				t.row.add(data).draw(false);	
-			}
-		});
-		
 		$('#tblReferenceDetail').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
@@ -262,7 +209,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
 				{"title" : "fin_id","width": "10%",sortable:false,data:"fin_id",visible:true},
-				{"title" : "Id","width": "10%",sortable:true,data:"fin_document_id",visible:true},
+				{"title" : "ID","width": "10%",sortable:true,data:"fin_document_id",visible:true},
 				{"title" : "Name","width": "30%",sortable:true,data:"fst_name",visible:true},
 				{"title" : "Creator","width": "20%",sortable:true,data:"fin_insert_id",
 					"render" :function(data,type,row){
@@ -299,14 +246,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t = $('#tblReferenceDetail').DataTable();
 				var trRow = $(this).parents('tr');
 
-				mode_schema_detail = "EDIT";
-				edited_schema_detail = t.row(trRow);
-				row = edited_schema_detail.data();	
+				mode_reference_detail = "EDIT";
+				edited_reference_detail = t.row(trRow);
+				row = edited_reference_detail.data();	
 
 				//$("#fin_id").val(row.fin_id); // 28/04/2019
-				$("#fin_flow_control_schema_id").val(row.fin_flow_control_schema_id);
-				$("#select-username").val(row.fin_user_id).change();
-				$("#fin_seq_no").val(row.fin_seq_no);
+				$("#fin_id").val(row.fin_flow_control_schema_id);
 			});
 		});
 
@@ -333,16 +278,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			},
 			order: [[1, 'asc']],
 			columns:[
-				{"title" : "<?= lang("ID") ?>","width": "5%",data:"fin_document_id",visible:true},
-				{"title" : "<?= lang("Document Name") ?>","width": "25%",data:"fst_name",visible:true},
+				{"title" : "<?= lang("ID") ?>","width": "15%",data:"fin_document_id",visible:true},
+				{"title" : "<?= lang("Document Name") ?>","width": "45%",data:"fst_name",visible:true},
 				{"title" : "<?= lang("Source") ?>","width": "10%",data:"fst_source",visible:true},
-				{"title" : "<?= lang("Notes") ?>","width": "20%",data:"fst_memo"},
-				{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
+				{"title" : "<?= lang("Notes") ?>","width": "40%",data:"fst_memo"},
+				{"title" : "<?= lang("Create By") ?>","width": "35%",data:"fin_insert_id",
 					render : function(data,type,row){
 						return row.fst_username;
 					}
 				},
-				{"title" : "<?= lang("Create Date") ?>","width": "15%",data:"fdt_insert_datetime"},
+				{"title" : "<?= lang("Create Date") ?>","width": "35%",data:"fdt_insert_datetime"},
 				{"title" : "<?= lang("Action") ?>","width": "10%",
 					render:function(data,type,row){							
 						return "<a class='btn-add-document-items' href='#'><i class='fa fa-plus'></i></a> <a class='btn-view-document-items' href='#'><i class='fa fa-search' aria-hidden='true'></i></a>";
@@ -366,15 +311,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	// Menampilkan Data Form Edit
-    function init_form(fin_flow_control_schema_id){
+    function init_form(fin_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>flow_schema/fetch_data/" + fin_flow_control_schema_id ;
+		var url = "<?=site_url()?>reference_document/fetch_data/" + fin_id ;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {
 
-				$.each(resp.fcsHeader, function(name, val){
+				$.each(resp.reference, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -388,24 +333,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							$el.val(val);
 							console.log(val);
 					}
-				});
-
-				FlowSchemaItems = resp.fcsItems;
-				$.each(FlowSchemaItems, function(idx, detail){
-					data = {
-						fin_flow_control_schema_id:detail.fin_flow_control_schema_id,
-						fin_user_id:detail.fin_user_id,
-						fst_username:detail.fst_username,
-						fin_seq_no: detail.fin_seq_no,
-						action: action
-					}
-					t = $('#tblFlowSchemaDetail').DataTable();			
-					t.row.add(data).draw(false);	
-					
-					//set Data select2		
-					var newOption = new Option(detail.fst_username, detail.fin_user_id, false, false);
-					$('#select-username').append(newOption);
-				});		
+				});	
 			},
 			error: function (e) {
 				$("#result").text(e.responseText);
@@ -415,8 +343,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </script>
 
-<!-- Select2 -->
-<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
