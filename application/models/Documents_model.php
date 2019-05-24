@@ -64,6 +64,7 @@ class Documents_model extends MY_Model {
 		return NULL;
 	}
 
+
 	public function editPermission($fin_document_id){
 		//return false;
 		$this->load->model("users_model");
@@ -101,9 +102,8 @@ class Documents_model extends MY_Model {
 		}else{
 			return false;
 		}
-		
-
 	}
+
 
 	public function scopePermission($fin_document_id,$scopeMode = "VIEW"){
 		$this->load->model("users_model");
@@ -157,6 +157,7 @@ class Documents_model extends MY_Model {
 		}
 	}
 
+
 	public function getFile($fin_document_id){
 		$this->load->helper('download');
 		$this->load->helper('file');
@@ -178,6 +179,7 @@ class Documents_model extends MY_Model {
 		}
 		return NULL;
 	}
+
 
 	public function canBeDeleted($fin_document_id){
 		//apakah terdaftar didokumen detail
@@ -206,6 +208,7 @@ class Documents_model extends MY_Model {
 		
 		return true;
 	}
+	
 
 	public function renewStatusDocument($fin_document_id){
 		//Flow control rejected
@@ -253,6 +256,7 @@ class Documents_model extends MY_Model {
 		parent::update($data);
 	}
 
+	
 	public function completedFlowIfRejected($fin_document_id){
 		$ssql = "update documents set fbl_flow_completed = true where fst_active = 'R' and fin_document_id = ?";
 		$this->db->query($ssql,[$fin_document_id]);

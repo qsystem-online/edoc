@@ -8,6 +8,7 @@ class Document extends MY_Controller {
 		$this->load->library('form_validation');
 	}
 
+
 	public function index(){
 
 		$this->load->library('menus');
@@ -29,7 +30,6 @@ class Document extends MY_Controller {
 			['title'=>'Document','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
-
 		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
@@ -86,9 +86,9 @@ class Document extends MY_Controller {
 		
 	}
 
+
 	private function openForm($mode = "ADD",$fin_document_id = ""){
-		$this->load->library("menus");
-		
+		$this->load->library("menus");		
 
 		if($this->input->post("submit") != "" ){
 			$this->add_save();
@@ -114,10 +114,10 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+
 	public function approval($fin_document_flow_control_id){		
 		$this->load->library("menus");
 		$this->load->model("document_flow_control_model");
-
 
 		$flowControl = $this->document_flow_control_model->getDataById($fin_document_flow_control_id);
 		$this->document_flow_control_model->renewLogVersion($fin_document_flow_control_id);
@@ -147,8 +147,8 @@ class Document extends MY_Controller {
 		$this->data["MAIN_FOOTER"] = $main_footer;
 		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
 		$this->parser->parse('template/main',$this->data);
-
 	}
+
 
 	public function approval_list(){
 		$this->load->library('menus');
@@ -170,7 +170,6 @@ class Document extends MY_Controller {
 			['title'=>'Document','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
-
 		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
@@ -209,16 +208,13 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+
 	public function approval_list_data(){
 		$this->load->library("datatables");
 
 		$currBranchId = $this->session->userdata("active_branch_id");
-		
-		
-
 		$currUserDeptId = $this->aauth->user()->fin_department_id;
 		$currUserLevel = $this->aauth->user()->fin_level;
-
 
 		$this->datatables->setTableName("
 			(				
@@ -238,6 +234,7 @@ class Document extends MY_Controller {
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -256,6 +253,7 @@ class Document extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
+
 
 	public function need_revision_list(){
 		$this->load->library('menus');
@@ -278,7 +276,6 @@ class Document extends MY_Controller {
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 
-		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
 			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
@@ -316,6 +313,7 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+
 	public function need_revision_list_data(){
 		$this->load->library("datatables");
 
@@ -342,7 +340,6 @@ class Document extends MY_Controller {
 		";
 
 		$this->datatables->setTableName($ssql);
-
 		
 		$selectFields = "a.*,'' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -350,6 +347,7 @@ class Document extends MY_Controller {
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -368,7 +366,6 @@ class Document extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
-
 
 
 	public function do_approval_flow_control(){
@@ -394,6 +391,7 @@ class Document extends MY_Controller {
 			$this->json_output();
 			return;
 		}
+
 		if ($flowControl->fin_user_id != $this->aauth->get_user_id()){
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 			$this->ajxResp["message"] = lang("Invalid Request !");
@@ -427,14 +425,12 @@ class Document extends MY_Controller {
 			}
 		}
 		
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = lang("Document Saved !");
 		$this->ajxResp["data"] = [];			
 		$this->json_output();
-		
-
 	}
+
 
 	public function changed_approved_list(){
 		$this->load->library('menus');
@@ -456,7 +452,6 @@ class Document extends MY_Controller {
 			['title'=>'Document','link'=>'#','icon'=>''],
 			['title'=>'Changed After Approved','link'=> NULL ,'icon'=>''],
 		];
-
 		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
@@ -517,7 +512,6 @@ class Document extends MY_Controller {
 		";
 
 		$this->datatables->setTableName($ssql);
-
 		
 		$selectFields = "a.*,'' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -525,6 +519,7 @@ class Document extends MY_Controller {
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -542,7 +537,6 @@ class Document extends MY_Controller {
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-
 	}
 
 
@@ -566,7 +560,6 @@ class Document extends MY_Controller {
 			['title'=>'Document','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
-
 		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
@@ -600,6 +593,7 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+
 	public function rejected_list_data(){
 		$this->load->library("datatables");
 
@@ -618,7 +612,6 @@ class Document extends MY_Controller {
 		";
 
 		$this->datatables->setTableName($ssql);
-
 		
 		$selectFields = "a.*,'' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -626,6 +619,7 @@ class Document extends MY_Controller {
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -642,7 +636,6 @@ class Document extends MY_Controller {
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-
 	}
 
 
@@ -667,12 +660,11 @@ class Document extends MY_Controller {
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 
-		
 		$this->list['columns']=[
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_flow_control_id'],
 			['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
 			['title' => 'memo', 'width'=>'35%', 'data'=>'fst_memo'],
-			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
+			['title' => 'Source', 'width'=>'10%', 'data'=>'fst_source',
 				'render'=>"function(data, type, row) {
 					if (data == 'INT'){
 						return 'INTERNAL';
@@ -682,7 +674,7 @@ class Document extends MY_Controller {
 				}",
 			],
 			['title' => 'Creator', 'width'=>'10%', 'data'=>'fst_username',],					
-			['title' => 'Action', 'width'=>'15%','data'=>'action','sortable'=>false,'className'=>'dt-body-center text-center']
+			['title' => 'Action', 'width'=>'10%','data'=>'action','sortable'=>false,'className'=>'dt-body-center text-center']
 		];
 
 		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
@@ -700,6 +692,7 @@ class Document extends MY_Controller {
 		$this->parser->parse('template/main',$this->data);
 	}
 
+
 	public function approval_history_list_data(){
 		$this->load->library("datatables");
 
@@ -711,14 +704,12 @@ class Document extends MY_Controller {
 		$startDate = dBDateFormat($this->input->get("startDate"));
 		$startDate =  ($startDate == "1970-01-01") ? "2000-01-01" : $startDate;
 		
-
 		$endDate = dBDateFormat($this->input->get("endDate"));
 		$endDate = ($endDate == "1970-01-01") ? "3000-01-01" : $endDate;
 		$endDate .= " 23:59:59";
 		
 		$optionStatus = $this->input->get("optionStatus");
 		$optionStatus = ($optionStatus == "") ? "%" : $optionStatus;
-
 
 		$ssql = "
 			 (
@@ -737,13 +728,13 @@ class Document extends MY_Controller {
 
 		$this->datatables->setTableName($ssql);
 
-		
 		$selectFields = "a.*,'' as action";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -760,7 +751,6 @@ class Document extends MY_Controller {
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-
 	}
 
 
@@ -768,14 +758,13 @@ class Document extends MY_Controller {
 		$this->openForm("ADD","");
 	}
 
-	public function Edit($fin_document_id){
 
+	public function Edit($fin_document_id){
 		$this->openForm("EDIT",$fin_document_id);
 	}
 
 
 	public function ajx_add_save(){
-
 		//Harus ada File di Upload
 		$realDocumentFileName = "";
 
@@ -813,7 +802,6 @@ class Document extends MY_Controller {
 			"fst_active"=>"A",		
 		];
 
-
 		$this->form_validation->set_data($data);
 		if ($this->form_validation->run() == FALSE){
 			//print_r($this->form_validation->error_array());
@@ -847,8 +835,6 @@ class Document extends MY_Controller {
 				$config['max_size']             = (int) getDbConfig("document_max_size"); //kilobyte
 				$config['max_width']            = 0; //1024; //pixel
 				$config['max_height']           = 0; //768; //pixel
-
-				
 
 				$this->load->library('upload', $config);
 
@@ -895,7 +881,6 @@ class Document extends MY_Controller {
 				$this->document_details_model->insert($dataTmp);				
 			}
 
-
 			//Detail Flow
 			if ($data["fbl_flow_control"] == 1){
 				$this->load->model('document_flow_control_model');
@@ -933,7 +918,6 @@ class Document extends MY_Controller {
 				}			
 			}
 
-			
 			//Detail Custom Scope
 			$this->load->model('document_custom_permission_model');
 			$this->form_validation->reset_validation();
@@ -962,6 +946,7 @@ class Document extends MY_Controller {
 				}
 				$this->document_custom_permission_model->insert($dataTmp);
 			}
+
 		}catch(Exception $e){
 			if ($e->getCode() == 1000){
 				$dbError  = $this->db->error();
@@ -981,6 +966,7 @@ class Document extends MY_Controller {
 		$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();		
 	}
+
 
 	public function ajx_edit_save(){
 		$this->load->model('documents_model');
@@ -1034,7 +1020,7 @@ class Document extends MY_Controller {
 			"fst_active"=>"A",		
 		];
 
-		if ($isFileRevise){ //dokument pdf di rubah
+		if ($isFileRevise){ //dokumen pdf di rubah
 			$data["fst_real_file_name"] = $realDocumentFileName;			
 		}
 
@@ -1118,10 +1104,8 @@ class Document extends MY_Controller {
 				}				
 				$this->document_details_model->insert($dataDocDetail);				
 			}
-
 			
 			//Save Flow Control;
-			
 			$this->document_flow_control_model->deleteNotApprovedByParentId($fin_document_id);
 			$currentSeqNo = $this->document_flow_control_model->getCurrentSeqNo($fin_document_id);
 			
@@ -1148,7 +1132,6 @@ class Document extends MY_Controller {
 						"fst_active" => "A",						
 					];
 
-
 					if ($flow_control->fin_id != 0){
 						$dataFlow["fin_id"] = $flow_control->fin_id; 
 						$dataFlow["fst_control_status"] = $flow_control->fst_control_status;
@@ -1172,7 +1155,6 @@ class Document extends MY_Controller {
 				
 				$this->document_flow_control_model->renewAfterRevision($fin_document_id,$docVersion);				
 				$this->documents_model->renewStatusDocument($fin_document_id);
-				
 			}
 
 			//Detail Custom Scope
@@ -1228,16 +1210,13 @@ class Document extends MY_Controller {
 		}
 	}
 
+
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 
 		$currBranchId = $this->session->userdata("active_branch_id");
-		
-		
-
 		$currUserDeptId = $this->aauth->user()->fin_department_id;
 		$currUserLevel = $this->aauth->user()->fin_level;
-
 
 		$this->datatables->setTableName("
 			(
@@ -1254,6 +1233,7 @@ class Document extends MY_Controller {
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
+
 		// Format Data
 		$datasources = $this->datatables->getData();		
 		$arrData = $datasources["data"];		
@@ -1271,6 +1251,7 @@ class Document extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
+
 	
 	public function fetch_data($fin_document_id){
 		$this->load->model("documents_model");
@@ -1279,7 +1260,6 @@ class Document extends MY_Controller {
 		$this->load->model("document_custom_permission_model");
 		$this->load->model("view_print_token_model");
 		
-
 		$data = [];
 		
 		$this->documents_model->completedFlowIfRejected($fin_document_id);
@@ -1310,6 +1290,8 @@ class Document extends MY_Controller {
 		var_dump($this->view_print_token_model->useToken("KEbdAR7wNkZfLd6JyvzUpxWYFCHQLE0XegcIoQzbM1qsVYq38ty1VfaFPTSktxpS"));
 		//var_dump($this->view_print_token_model->generateToken());
 	}
+
+
 	public function delete($fin_document_id){
 		if(!$this->aauth->is_permit("")){
 			$this->ajxResp["status"] = "NOT_PERMIT";
@@ -1348,14 +1330,13 @@ class Document extends MY_Controller {
 		$document = $this->documents_model->getFile($docId);
 		header("Content-type:application/pdf");
 		header("Content-Disposition:inline;filename=download.pdf");
-
 		
 		echo $document;
 	}
 
+
 	public function downloadDocument($fin_document_id){		
 		$this->load->model("documents_model");
-		
 		
 		$isPermit = $this->documents_model->scopePermission($fin_document_id,"PRINT");
 		if ($isPermit){		
@@ -1374,7 +1355,6 @@ class Document extends MY_Controller {
 			show_404();
 		}
 		*/
-		
 	}
 
 
@@ -1383,8 +1363,6 @@ class Document extends MY_Controller {
 		$this->load->model("view_print_token_model");
 		$this->load->model("documents_model");
 		$data['base_url'] =  base_url();
-		
-		
 		
 		$viewDoc = $this->documents_model->scopePermission($fin_document_id,"VIEW");
 		$printDoc = $this->documents_model->scopePermission($fin_document_id,"PRINT");
@@ -1399,7 +1377,6 @@ class Document extends MY_Controller {
 			show_404();
 		}
 
-		
 		$this->parser->parse('pages/document/viewer',$data,false);
 		return;
 
@@ -1416,13 +1393,10 @@ class Document extends MY_Controller {
         $this->data['PAGE_CONTENT']= $page_content;
         $this->data['MAIN_FOOTER']= $main_footer;        
 		$this->parser->parse('template/main',$this->data);
-
-
 	}
 
 
 	public function search_list(){
-
 		$this->load->library('menus');
         $this->list['page_name']="Documents";
         $this->list['list_name']="Document List";
@@ -1439,7 +1413,6 @@ class Document extends MY_Controller {
 			['title'=>'Search','link'=> NULL ,'icon'=>''],
 		];
 
-		
 		$this->list['base_url'] =  base_url();
 
 		$main_header = $this->parser->parse('inc/main_header',[],true);
@@ -1453,7 +1426,6 @@ class Document extends MY_Controller {
         $this->data['PAGE_CONTENT']= $page_content;
         $this->data['MAIN_FOOTER']= $main_footer;        
 		$this->parser->parse('template/main',$this->data);
-		
 	}
 
 
@@ -1462,7 +1434,6 @@ class Document extends MY_Controller {
 		$this->load->model("documents_model");
 		$this->load->model("view_print_token_model");
 		
-
 		$currBranchId = $this->session->userdata("active_branch_id");
 		$this->datatables->setTableName("
 			(
@@ -1491,6 +1462,7 @@ class Document extends MY_Controller {
 						
 			$arrDataFormated[] = $data;
 		}
+
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
