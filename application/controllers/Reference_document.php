@@ -7,7 +7,8 @@ class Reference_document extends MY_Controller
     public function __construct(){
         parent::__construct();
         $this->load->library('form_validation');
-        $this->load->model('branch_model');
+        $this->load->model('reference_document_list_model');
+        $this->load->model('documents_model');
     }
 
     public function index(){
@@ -17,7 +18,7 @@ class Reference_document extends MY_Controller
     public function show_list(){
         $this->load->library('menus');
         $this->list['page_name'] = "Reference Document";
-        $this->list['list_name'] = "Reference List";
+        $this->list['list_name'] = "Reference Document List";
         $this->list['addnew_ajax_url'] = site_url() . 'reference_document/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'reference_document/fetch_list_data';
@@ -34,9 +35,9 @@ class Reference_document extends MY_Controller
             ['title' => 'Reference Document', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Source Code', 'width' => '20%', 'data' => 'fst_reff_source_code'],
-            ['title' => 'Reff Number', 'width' => '70%', 'data' => 'fst_reff_no'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Source Code', 'width' => '35%', 'data' => 'fst_reff_source_code'],
+            ['title' => 'Reff Number', 'width' => '35%', 'data' => 'fst_reff_no'],
+            ['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -51,7 +52,7 @@ class Reference_document extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $fin_branch_id = 0){
+    private function openForm($mode = "ADD", $fin_id = 0){
         $this->load->library("menus");
 
         if ($this->input->post("submit") != "") {
@@ -63,9 +64,9 @@ class Reference_document extends MY_Controller
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Reference" : "Update Reference";
-        $data["fin_branch_id"] = $fin_branch_id;
+        $data["fin_id"] = $fin_id;
 
-        $page_content = $this->parser->parse('pages/reference/form', $data, true);
+        $page_content = $this->parser->parse('pages/reference_document/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
 
         $control_sidebar = NULL;
@@ -81,13 +82,22 @@ class Reference_document extends MY_Controller
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_branch_id){
-        $this->openForm("EDIT", $fin_branch_id);
+    public function Edit($fin_id){
+        $this->openForm("EDIT", $fin_id);
     }
 
     public function ajx_add_save(){
-        $this->load->model('branch_model');
-        $this->form_validation->set_rules($this->branch_model->getRules("ADD", 0));
+        $this->load->model('documents_model');
+        $details = $this->input->post("detail");
+        $details = json_decode($details);
+        foreach ($details as $items) {
+           $data = [
+               "fin_document_id" => $items->fin_document_id
+           ];
+        }
+
+        $this->load->model('reference_document_list_model');
+        $this->form_validation->set_rules($this->reference_document_list_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -100,16 +110,14 @@ class Reference_document extends MY_Controller
         }
 
         $data = [
-            "fst_branch_name" => $this->input->post("fst_branch_name"),
-            "fst_branch_address" => $this->input->post("fst_branch_address"),
-            "fst_branch_phone" => $this->input->post("fst_branch_phone"),
-            "fst_notes" => $this->input->post("fst_notes"),
-            "fbl_central" => ($this->input->post("fbl_central") == null) ? 0 : 1,
+            "fst_reff_source_code" => $this->input->post("fst_reff_source_code"),
+            "fst_reff_no" => $this->input->post("fst_reff_no"),
+            "fin_document_id" => $items->fin_document_id,
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->branch_model->insert($data);
+        $insertId = $this->reference_document_list_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -121,7 +129,6 @@ class Reference_document extends MY_Controller
         }
 
         $this->db->trans_complete();
-
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
         $this->ajxResp["data"]["insert_id"] = $insertId;
@@ -129,19 +136,28 @@ class Reference_document extends MY_Controller
     }
 
     public function ajx_edit_save(){
-        $this->load->model('branch_model');
-        $fin_branch_id = $this->input->post("fin_branch_id");
-        $data = $this->branch_model->getDataById($fin_branch_id);
-        $branch = $data["branch"];
-        if (!$branch) {
+        $this->load->model('documents_model');
+        $details = $this->input->post("detail");
+        $details = json_decode($details);
+        foreach ($details as $items) {
+           $data = [
+               "fin_document_id" => $items->fin_document_id
+           ];
+        }
+
+        $this->load->model('reference_document_list_model');
+        $fin_id = $this->input->post("fin_id");
+        $data = $this->reference_document_list_model->getDataById($fin_id);
+        $reference_document_list = $data["referenceDoc"];
+        if (!$reference_document_list) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
-            $this->ajxResp["message"] = "Data id $fin_branch_id Not Found ";
+            $this->ajxResp["message"] = "Data id $fin_id Not Found ";
             $this->ajxResp["data"] = [];
             $this->json_output();
             return;
         }
 
-        $this->form_validation->set_rules($this->branch_model->getRules("EDIT", $fin_branch_id));
+        $this->form_validation->set_rules($this->reference_document_list_model->getRules("EDIT", $fin_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -153,18 +169,16 @@ class Reference_document extends MY_Controller
         }
 
         $data = [
-            "fin_branch_id" => $fin_branch_id,
-            "fst_branch_name" => $this->input->post("fst_branch_name"),
-            "fst_branch_address" => $this->input->post("fst_branch_address"),
-            "fst_branch_phone" => $this->input->post("fst_branch_phone"),
-            "fst_notes" => $this->input->post("fst_notes"),
-            "fst_active" => 'A',
-            "fbl_central" => $this->input->post("fbl_central")
+            "fin_id" => $this->input->post("fin_id"),
+            "fst_reff_source_code" => $this->input->post("fst_reff_source_code"),
+            "fst_reff_no" => $this->input->post("fst_reff_no"),
+            "fin_document_id" => $items->fin_document_id,
+            "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
 
-        $this->branch_model->update($data);
+        $this->reference_document_list_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -179,20 +193,21 @@ class Reference_document extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $fin_branch_id;
+        $this->ajxResp["data"]["insert_id"] = $fin_id;
         $this->json_output();
     }
 
     public function fetch_list_data(){
         $this->load->library("datatables");
-        $this->datatables->setTableName("(select distinct fst_reff_source_code,fst_reff_no,fst_active from reference_document_list where fst_active = 'A') a");
+        $this->datatables->setTableName("(select distinct fin_id,fst_reff_source_code,fst_reff_no,fst_active from reference_document_list where fst_active = 'A') a");
 
-        $selectFields = "fst_reff_source_code,fst_reff_no,'action' as action";
+        $selectFields = "fin_id,fst_reff_source_code,fst_reff_no,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
-        $Fields = $this->input->get('optionSearch');
-        $searchFields = [$Fields];
-        $this->datatables->setSearchFields($searchFields);
+        $searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_id","fst_reff_source_code"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
         
         // Format Data
         $datasources = $this->datatables->getData();
@@ -201,8 +216,8 @@ class Reference_document extends MY_Controller
         foreach ($arrData as $data) {
             //action
             $data["action"]    = "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["fin_branch_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_branch_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
             $arrDataFormated[] = $data;
@@ -211,11 +226,11 @@ class Reference_document extends MY_Controller
         $this->json_output($datasources);
     }
 
-    public function fetch_data($fin_branch_id){
-        $this->load->model("branch_model");
-        $data = $this->branch_model->getDataById($fin_branch_id);
-
-        //$this->load->library("datatables");		
+    public function fetch_data($fin_id){
+        $this->load->model("reference_document_list_model");
+        $data = $this->reference_document_list_model->getDataById($fin_id);
+    
+        $this->load->model("documents_model");
         $this->json_output($data);
     }
 
@@ -227,9 +242,9 @@ class Reference_document extends MY_Controller
             return;
         }
 
-        $this->load->model("branch_model");
+        $this->load->model("reference_document_list_model");
 
-        $this->departments_model->delete($id);
+        $this->reference_document_list_model->delete($id);
         $this->ajxResp["status"] = "DELETED";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();

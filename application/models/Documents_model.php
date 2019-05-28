@@ -21,33 +21,6 @@ class Documents_model extends MY_Model {
 			)
 		];
 
-		$rules[] = [
-			'field' => 'fst_source',
-			'label' => 'Source',
-			'rules' => 'required',
-			'errors' => array(
-				'required' => '%s tidak boleh kosong'
-			)
-		];
-
-		$rules[] = [
-			'field' => 'fst_print_scope',
-			'label' => 'Print Scope',
-			'rules' => 'required',
-			'errors' => array(
-				'required' => '%s tidak boleh kosong'
-			)
-		];
-
-		$rules[] = [
-			'field' => 'fbl_flow_control',
-			'label' => 'Flow Control',
-			'rules' => 'required',
-			'errors' => array(
-				'required' => '%s tidak boleh kosong'
-			)
-		];
-
 		return $rules;
 	}
 

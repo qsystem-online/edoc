@@ -1,15 +1,28 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <style type="text/css">
-	.border-0{
+	.border-0 {
 		border: 0px;
 	}
-	td{
-		padding: 2px; !important 		
+
+	td {
+		padding: 2px;
+		 !important
+	}
+
+	.nav-tabs-custom>.nav-tabs>li.active>a {
+		font-weight: bold;
+		border-left-color: #3c8dbc;
+		border-right-color: #3c8dbc;
+		border-style: fixed;
+	}
+
+	.nav-tabs-custom>.nav-tabs {
+		border-bottom-color: #3c8dbc;
+		border-bottom-style: fixed;
 	}
 </style>
 
@@ -35,8 +48,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <form id="frmReference" class="form-horizontal" action="<?=site_url()?>reference_document/add" method="POST" enctype="multipart/form-data">				
 				<div class="box-body">
                     <input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
-					
-					<div class='form-group'>
+					<input type="hidden" id="frm-mode" value="<?=$mode?>">
+
+					<div class="form-group hidden">
+                    	<label for="fin_id" class="col-md-2 control-label"><?=lang("ID")?> #</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fin_id" placeholder="<?=lang("Autonumber")?>" name="fin_id" value="<?=$fin_id?>" readonly>
+							<div id="fin_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
                     	<label for="fst_reff_source_code" class="col-md-2 control-label"><?=lang("Reference Source")?> #</label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_reff_source_code" placeholder="<?=lang("reff source code")?>" name="fst_reff_source_code" >
@@ -102,11 +124,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
     $(function(){
         <?php if($mode == "EDIT"){?>
-			init_form($("#fin_id ").val());
+			init_form($("#fin_id").val());
 		<?php } ?>
-
-		var edited_reference_detail= null;
-		var mode_reference_detail = "ADD";
 
 		availableTags = [
 			"Puchasing",
@@ -119,11 +138,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			source: availableTags
 		});
 
+		var edited_reference_detail= null;
+		var mode_reference_detail = "ADD";
+
         $("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmReference").serializeArray();
 			//console.log(data);
 			detail = new Array();
+
 			t = $('#tblReferenceDetail').DataTable();
 			datas = t.data();
 			$.each(datas,function(i,v){
@@ -159,13 +182,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>reference_document/lizt";
+										window.location.href = "<?= site_url() ?>reference_document/show_list";
 										return;
 									}
 								},
 							}
 						});
 					}
+
                     if(resp.status == "VALIDATION_FORM_FAILED" ){
 						//Show Error
 						errors = resp.data;
@@ -173,15 +197,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							$("#"+key+"_err").html(errors[key]);
 						}
 					}else if(resp.status == "SUCCESS") {
+						//redirect to list
 						data = resp.data;
-						$("#fst_reff_source_code ").val(data.insert_id);
+						$("#fin_id ").val(data.insert_id);
+
 						//Clear all previous error
 						$(".text-danger").html("");
+
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#fst_name').prop('readonly', true);
+						$('#fst_reff_source_code').prop('readonly', true);
 						$("#tabs-reference-detail").show();
 						console.log(data.data_image);
+						
 					}
 				},
                 error: function (e) {
@@ -205,15 +233,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$('#tblReferenceDetail').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
-			
 		}).DataTable({
 			columns:[
-				{"title" : "fin_id","width": "10%",sortable:false,data:"fin_id",visible:true},
 				{"title" : "ID","width": "10%",sortable:true,data:"fin_document_id",visible:true},
 				{"title" : "Name","width": "30%",sortable:true,data:"fst_name",visible:true},
 				{"title" : "Creator","width": "20%",sortable:true,data:"fin_insert_id",
 					"render" :function(data,type,row){
-						return row.fst_username;
+						return row.fin_insert_id;
 					}
 				},
 				{"title" : "action","width": "10%",sortable:false,data:"action",className:'dt-center'},
@@ -250,8 +276,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				edited_reference_detail = t.row(trRow);
 				row = edited_reference_detail.data();	
 
-				//$("#fin_id").val(row.fin_id); // 28/04/2019
-				$("#fin_id").val(row.fin_flow_control_schema_id);
+				$("#fin_id").val(row.fin_id);
 			});
 		});
 
@@ -284,7 +309,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "<?= lang("Notes") ?>","width": "40%",data:"fst_memo"},
 				{"title" : "<?= lang("Create By") ?>","width": "35%",data:"fin_insert_id",
 					render : function(data,type,row){
-						return row.fst_username;
+						return row.fin_insert_id;
 					}
 				},
 				{"title" : "<?= lang("Create Date") ?>","width": "35%",data:"fdt_insert_datetime"},
@@ -319,7 +344,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			url: url,
 			success: function (resp) {
 
-				$.each(resp.reference, function(name, val){
+				$.each(resp.referenceDoc, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -333,11 +358,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							$el.val(val);
 							console.log(val);
 					}
-				});	
+				});
+
+				Documents = resp.documents;
+				$.each(Documents, function(idx, detail){
+					data = {
+						fin_document_id:detail.fin_document_id,
+						fst_name:detail.fst_name,
+						fin_insert_id:detail.fin_insert_id,
+						action: action
+					}
+					t = $('#tblReferenceDetail').DataTable();			
+					t.row.add(data).draw(false);	
+				});
 			},
 			error: function (e) {
 				$("#result").text(e.responseText);
-				console.log("ERROR : ", e);
+				//console.log("ERROR : ", e);
 			}
 		});
 	}
