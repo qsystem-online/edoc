@@ -331,7 +331,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								return "EXTERNAL";
 							}
 						}
-					
 					},
 					{"title" : "<?= lang("Notes") ?>","width": "25%",data:"fst_memo"},
 					{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
@@ -521,7 +520,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#btn-add-flow-control-user").click(function(){
 				selectedUser = $('#fin-flow-control-user').select2('data')[0];				
 				tblFlowControl = $("#tbl_flow_control").DataTable();
-				
 
 				data = {
 					fin_id : 0,
@@ -774,7 +772,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				console.log($(".scope-control").val());
 			});
 		});
-
     });
 </script>
 
@@ -790,14 +787,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			$("#plugin").attr("src",URL.createObjectURL($("#fst_file_name").get(0).files[0]) + "#toolbar=0&navpanes=0");
 			$('.nav-tabs a[href="#doc-viewer"]').tab('show');
-
 		});
 	});
 </script>
 
 <script type="text/javascript"> // Main
 	$(function(){	
-		
 
 		$("#fdt_published_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 
@@ -884,7 +879,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$("#fin_document_id").val(data.insert_id);
 						//Clear all previous error
 						$(".text-danger").html("");
-
 					}
 				},
 				error: function (e) {
@@ -893,14 +887,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
-
 		});
 
 		$("#btnNewDoc").click(function(event){
 			event.preventDefault();
 			t= $("#tbl_custom_scope").DataTable();
 			console.log(t.rows().data());
-
 
 			//window.location.replace("{base_url}document/add");
 		});
@@ -935,7 +927,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				
 
 				$.each(resp.header, function(name, val){
 					var $el = $('[name="'+name+'"]'),
@@ -1037,7 +1028,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}else{
 					$(".edit-mode").hide();
 				}
-
 			},
 
 			error: function (e) {

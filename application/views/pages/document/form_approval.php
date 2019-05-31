@@ -119,7 +119,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<label id="fst_memo" class="control-label"><?= lang("Notes / Memo")?> </label>
 										</div>
 									</div>
-									
 
 									<div class="form-group">
 										<label for="fdt_published_date" class="col-sm-2 control-label"><?= lang("Publish Date")?> :</label>
@@ -230,8 +229,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}else{
 							return "EXTERNAL";
 						}
-					}
-				
+					}				
 				},
 				{"title" : "<?= lang("Notes") ?>","width": "25%",data:"fst_memo"},
 				{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
@@ -303,8 +301,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "<?= lang("Memo") ?>","width": "45%",data:"fst_memo"},
 				{"title" : "<?= lang("approved") ?>","width": "10%",data:"fdt_approved_datetime",
 					"className":"dt-body-right text-right"
-				},
-				
+				},				
 			],
 		});
 	});
@@ -323,7 +320,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     $(function(){
 		//$(".select2").select2();
         $(".select2-container").addClass("form-control"); 
-
 		
 		$("#tbl_custom_scope").DataTable({
 			searching: false,
@@ -518,7 +514,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-
 				$("#fdt_published_date").html(dateFormat(resp.header.fdt_published_date));
 				$('#fbl_flow_control').html(resp.header.fbl_flow_control == 1 ? "TRUE" : "FALSE");
 				
@@ -588,14 +583,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#docViewer").attr("src","{base_url}document/displayDocument/{fin_document_id}");
 				}
 				
-
 				//Hiden Button Save when no edit permition
 				if (resp.permission.edit == true){
 					$(".edit-mode").show();
 				}else{
 					$(".edit-mode").hide();
 				}
-
 			},
 
 			error: function (e) {
@@ -604,6 +597,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
-
 
 </script>

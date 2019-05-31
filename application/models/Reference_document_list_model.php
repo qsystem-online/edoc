@@ -30,15 +30,23 @@ class Reference_document_list_model extends MY_Model {
             )
         ];
 
-        $rules[] = [
-            'field' => 'fin_document_id',
-            'label' => 'Document ID',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
-            )
-        ];
-
         return $rules;
     }
+
+    public function getDataById($fin_id){
+        $ssql = "select * from ". $this->tableName . " where fin_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_id]);
+        $rwReferenceDoc = $qr->row();
+
+        $ssql = "select a.*,b.fst_name from reference_document_list a inner join documents b on a.fin_document_id = b.fin_document_id where a.fin_id = ? and a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_id]);
+        $rsDocuments = $qr->result();
+
+		$data = [
+            "referenceDoc" => $rwReferenceDoc,
+            "documents" => $rsDocuments
+		];
+
+		return $data;
+	}
 }

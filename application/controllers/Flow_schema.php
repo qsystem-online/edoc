@@ -33,7 +33,7 @@ class Flow_schema extends MY_Controller {
 			['title' => 'Flow Control Schema ID', 'width'=>'20%', 'data'=>'fin_flow_control_schema_id'],
             ['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
             ['title' => 'Memo', 'width'=>'20%', 'data'=>'fst_memo'],
-			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
+			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);

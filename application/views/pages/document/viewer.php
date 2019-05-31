@@ -40,7 +40,6 @@
             var curPage = 1;
             var scale_required = 1;
 
-
             function showDocument(fblView,fblPrint,token){
                 
                 var url = "{base_url}document/getDocument/" + token;
@@ -127,6 +126,7 @@
                 scale_required = scale_required + 0.25;
                 renderPage(curPage);
             }
+
             function zoomOut(){
                 if (scale_required <= 0.25){
                     return;
@@ -135,8 +135,7 @@
                 renderPage(curPage);
             }
 
-            $(function(){
-                
+            $(function(){               
                 showDocument(true,false,"{viewToken}");
 
                 $("#btnDocFirst").click(function(event){
@@ -167,8 +166,7 @@
                 $("#btnDocDownload").click(function(event){
                     event.preventDefault();
                     window.location.replace("{base_url}document/downloadDocument/{fin_document_id}");
-                });
-            
+                });            
             });
 
         </script>

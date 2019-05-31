@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>			
 			<!-- /.box-header -->
 			<div class="box-body">
-				<div align="right">
+				<div text-align="right">
 					<span>Search on:</span>
 					<span>
                         <select id="selectSearch" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">                            
@@ -72,7 +72,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		return result;
 	}
 
-
 	$(function(){	     
 		$('#tblList').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
@@ -95,8 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}else{
 							return "EXTERNAL";
 						}
-					}
-				
+					}				
 				},
 				{"title" : "<?= lang("Create By") ?>","width": "15%",data:"fin_insert_id",
 					render : function(data,type,row){
@@ -155,6 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var win = window.open(url, '_blank');
   			win.focus();
 		});
+
 		$('#tblList').on("click",".btn-download-document", function (event) {
 			event.preventDefault();
 			var t = $('#tblList').DataTable();
@@ -164,11 +163,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var win = window.open(url, '_blank');
   			win.focus();			
 		});
-
-
-
-
 	});
+	
 </script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
