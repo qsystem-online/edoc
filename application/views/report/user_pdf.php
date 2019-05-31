@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Report User</title>
   <style type="text/css">
@@ -33,32 +34,17 @@
       text-align: center;
       line-height: 35px;
     }
-<<<<<<< .mine
 
     body {
       margin-top: 2cm;
-      margin-left: 1cm;
-      margin-right: 1cm;
+      margin-right: 2cm;
       margin-bottom: 2cm;
-=======
-    
-    body{
-        margin-top: 2cm;
-        margin-left: 2cm;
-        margin-right: 2cm;
-        margin-bottom: 2cm;
->>>>>>> .theirs
+    }
     }
 
-<<<<<<< .mine
-    h2 {
-      font-family: arial;
-      text-align: center;
-=======
-    h3{
-        font-family: arial;
-        text-align: center;
->>>>>>> .theirs
+    font-family: arial;
+    font-family: arial;
+    text-align: center;
     }
 
     #outtable {
@@ -77,16 +63,6 @@
       width: auto;
     }
 
-<<<<<<< .mine
-    .gen {
-      width: 60px;
-    }
-
-    .uid {
-      width: 75px;
-    }
-
-=======
 
 
 
@@ -95,7 +71,6 @@
 
 
 
->>>>>>> .theirs
     table {
       border-collapse: collapse;
       font-family: arial;
@@ -127,17 +102,10 @@
 
 <body>
 
-<<<<<<< .mine
   <header>
-    <img src="<?= base_url() ?>/assets/app/datas/avatar/avatar_2.jpg" height="60" />
     Our Code World
   </header>
-=======
-    <header>            
-      <img src= "<?= base_url() ?>/assets/app/users/avatar/avatar_1.jpg" height="60"/>
-        Our Code World
-    </header>
->>>>>>> .theirs
+
 
   <footer>
     Copyright &copy; <?php echo date("Y"); ?> Page
@@ -149,47 +117,26 @@
             </script>
   </footer>
 
-<<<<<<< .mine
-  <h2 text-align="center">Table User</h2>
-=======
-  <h3 text-align= "center">Table User</h3>
->>>>>>> .theirs
+  <link href="style.css" type="text/css" rel="stylesheet" />
   <link href="style.css" type="text/css" rel="stylesheet" />
   <table cellspacing='0'>
 
-<<<<<<< .mine
-    <div id="outtable">
-      <table>
-        <thead>
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-	<div id="outtable">
-	  <table>
-	  	<thead>
-	  		<tr>
-	  			<th class="short">#</th>
-	  			<th class="normal">User ID</th>
-	  			<th class="normal">Full Name</th>
-	  			<th class="normal">Gender</th>
+    <table>
+      <thead>
+        <tr>
+          <th class="short">#</th>
+          <th class="normal">User ID</th>
+          <th class="normal">Full Name</th>
+          <th class="normal">Gender</th>
           <th class="normal">Birthdate</th>
           <th class="normal">Birthplace</th>
-	  		</tr>
-	  	</thead>
-	  	<tbody>
-        <?php $no=0;$no<=100;$no++; ?>
-        <?php foreach($datas as $data): ?>
->>>>>>> .theirs
+        </tr>
+      </thead>
+      <tbody>
+        <?php $no = 0;
+        $no <= 100;
+        $no++; ?>
+        <?php foreach ($datas as $data) : ?>
           <tr>
             <th class="short">#</th>
             <th class="uid">User ID</th>
@@ -198,7 +145,7 @@
             <th class="normal">Birthdate</th>
             <th class="normal">Birthplace</th>
           </tr>
-        </thead>
+          </thead>
         <tbody>
           <?php $no = 0;
           $no <= 100;
@@ -216,7 +163,5 @@
           <?php endforeach; ?>
         </tbody>
       </table>
-    </div>
-</body>
-
-</html>
+      </div>
+  </body>
