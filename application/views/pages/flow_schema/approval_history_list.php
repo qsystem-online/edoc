@@ -31,14 +31,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<!-- /.box-header -->
 			<div class="box-body">
 				<form class="form-inline">
-					<div class="form-group col-sm-5">
-						<label for="start-from"><?= lang("Start From")?>: &nbsp;</label>
+					<div class="form-group col-sm-3">
+						<label for="start-from"><?= lang("From")?>: &nbsp;</label>
 						<input type="text" class="form-control datepicker filterData" id="start-date">
-						<label for="end-to" style="margin-left:20px"><?= lang("Until")?>: &nbsp;</label>
+						<!--<label for="end-to" style="margin-left:20px"><?= lang("Until")?>: &nbsp;</label>
+						<input type="text" class="form-control datepicker filterData" id="end-date">-->
+					</div>
+					
+					<div class="form-group col-sm-3">
+						<label for="end-to" style=""><?= lang("Until")?>: &nbsp;</label>
 						<input type="text" class="form-control datepicker filterData" id="end-date">
 					</div>
 					
-					<div class="form-group col-sm-4" style= "">
+					<div class="form-group col-sm-3" style= "">
 						<label for="end-to"><?= lang("Status")?>: &nbsp;</label>							
 						<select id="selectStatus" class="form-control filterData" name="selectStatus" style="width: 148px;padding:8px;margin-left:6px;margin-bottom:6px">                            
 							<option value="">ALL</option>
@@ -53,8 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group col-sm-3 text-right" style="padding-right:0px">
-						
-							
+													
 							<span>Search on:</span>
 							<span>
 								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
@@ -66,7 +70,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									?>
 								</select>
 							</span>
-
 						
 					</div>
 					

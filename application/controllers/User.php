@@ -475,10 +475,44 @@ class User extends MY_Controller
 	{
 		//$this->session->set_userdata('active_branch_id', $active_branch_id);
 		$activeUser = $this->session->userdata('active_user');
-		if ($activeUser->fbl_central && $activeUser->fin_level <= getDbConfig("change_branch_level") ) {
+		if ($activeUser->fbl_central) {
 			$this->session->set_userdata('active_branch_id', $active_branch_id);
-		}		
+		}
+		//$this->load->library("menus");
+		//$main_header = $this->parser->parse('inc/main_header', [], true);
+		//$main_sidebar = $this->parser->parse('inc/main_sidebar', $this->data, true);
+		//$page_content = $this->parser->parse('pages/sample/template_sample',[],true);
+		//$page_content = "";
+		//$main_footer = $this->parser->parse('inc/main_footer', [], true);
+		//$control_sidebar = $this->parser->parse('inc/control_sidebar',[],true);
+		//$control_sidebar = NULL;
 		$reqURL = $_SERVER["HTTP_REFERER"];
 		redirect($reqURL);
+		/*
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
+		*/
 	}
+
+	public function report_user(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        //$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("users_model");
+		$listUser = $this->users_model->get_User();
+        $data = [
+			"datas" => $listUser
+		];
+			
+        $this->pdf->load_view('report/user_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
 }

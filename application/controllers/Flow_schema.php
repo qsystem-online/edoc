@@ -33,7 +33,7 @@ class Flow_schema extends MY_Controller {
 			['title' => 'Flow Control Schema ID', 'width'=>'20%', 'data'=>'fin_flow_control_schema_id'],
             ['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
             ['title' => 'Memo', 'width'=>'20%', 'data'=>'fst_memo'],
-			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
+			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
@@ -331,5 +331,23 @@ class Flow_schema extends MY_Controller {
         $result = $this->flow_control_schema_items_model->getFlowDetail($fin_flow_control_schema_id);
         $this->ajxResp["data"] = $result;
         $this->json_output();
+	}
+	
+	public function report_flow_schema(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("flow_control_schema_header_model");
+		$listFlowSchema = $this->flow_control_schema_header_model->get_FlowSchema();
+        $data = [
+			"datas" => $listFlowSchema
+		];
+			
+        $this->pdf->load_view('report/flow_schema_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }
 }

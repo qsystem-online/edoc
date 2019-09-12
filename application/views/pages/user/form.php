@@ -136,12 +136,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 							<label for="select-departmentname" class="col-md-2 control-label"><?= lang("Department") ?> :</label>
 							<div class="col-md-4">
 								<select id="select-departmentname" class="form-control" name="fin_department_id"></select>
-								<div id="fst_department_name_err" class="text-danger"></div>
+								<div id="fin_department_id_err" class="text-danger"></div>
 							</div>
 							<label for="select-groupname" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
 							<div class="col-md-4">
 								<select id="select-groupname" class="form-control" name="fin_group_id"></select>
-								<div id="fst_group_name_err" class="text-danger"></div>
+								<div id="fin_group_id_err" class="text-danger"></div>
 							</div>
 						</div>
 
@@ -149,7 +149,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 							<label for="select-branchname" class="col-md-2 control-label"><?= lang("Branch") ?> :</label>
 							<div class="col-md-4">
 								<select id="select-branchname" class="form-control" name="fin_branch_id"></select>
-								<div id="fst_branch_name_err" class="text-danger"></div>
+								<div id="fin_branch_id_err" class="text-danger"></div>
 							</div>
 						</div>
 						<div class="form-group">

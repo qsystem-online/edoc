@@ -46,4 +46,9 @@ class Departments_model extends MY_Model {
 		return $rs;
 
     }
+
+    public function get_departments(){
+        $query = $this->db->get('departments');
+		return $query->result_array();
+    }
 }

@@ -49,4 +49,9 @@ class Branch_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+	
+	public function get_Branch(){
+        $query = $this->db->get('branch');
+		return $query->result_array();
+    }
 }

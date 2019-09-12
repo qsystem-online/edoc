@@ -85,14 +85,33 @@ class Users_model extends MY_Model
 			)
 		];
 
-		/*$rules[] = [
-			'field' => 'fbl_admin',
-			'label' => 'Admin',
+		$rules[] = [
+			'field' => 'fin_branch_id',
+			'label' => 'Branch',
 			'rules' => 'required',
-			'errors' =>array(
-				'required' => '%s tidak boleh kosong'
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
 			)
-		];*/
+		];
+
+		$rules[] = [
+			'field' => 'fin_department_id',
+			'label' => 'Department',
+			'rules' => 'required',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+			)
+		];
+
+		$rules[] = [
+			'field' => 'fin_group_id',
+			'label' => 'Group',
+			'rules' => 'required',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+			)
+		];
+
 
 		return $rules;
 	}
@@ -149,5 +168,11 @@ class Users_model extends MY_Model
 
 
 		return $rules;
+	}
+
+	public function get_User()
+	{
+		$query = $this->db->get('users');
+		return $query->result_array();
 	}
 }
