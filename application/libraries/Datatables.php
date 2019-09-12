@@ -19,7 +19,7 @@ class Datatables
 	public function __construct()
 	{
 		$this->CI = &get_instance();
-		$this->db = $this->CI->load->database('default', TRUE);
+		$this->db = $this->CI->db;//$this->CI->load->database('default', TRUE);
 	}
 
 
