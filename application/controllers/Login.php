@@ -12,6 +12,8 @@ class Login extends CI_Controller
 		if ($username != "") {
 			$ssql = "select a.*,b.fin_branch_id AS ActiveBranch ,b.fst_branch_name, b.fbl_central, c.fin_group_id,c.fst_group_name,c.fin_level from users a left join branch b on a.fin_branch_id = b.fin_branch_id left join master_groups c on a.fin_group_id = c.fin_group_id where fst_username = ?";
 			$query = $this->db->query($ssql, [$username]);
+			//echo $this->db->last_query();
+			//die();
 			$rw = $query->row();
 			$strIvalidLogin = "Invalid Username / Password";
 

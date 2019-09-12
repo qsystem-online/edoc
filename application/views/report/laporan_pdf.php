@@ -39,7 +39,7 @@
         </style>
     </head>
     <body>
-        <header>            
+        <header>
             <img src= "<?= base_url() ?>/assets/app/users/avatar/avatar_1.jpg" height="60"/>
             Our Code World
         </header>
