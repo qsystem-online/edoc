@@ -921,7 +921,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function init_form(){
 		//alert("Init Form");
-
 		var url = "{base_url}document/fetch_data/" + $("#fin_document_id").val();
 		$.ajax({
 			type: "GET",
@@ -1010,10 +1009,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_mode:v.fst_mode,
 						fin_user_department_id: v.fin_user_department_id,
 						fst_user_department_name:v.fst_user_department_name,
+						fin_branch_id: v.fin_branch_id,
+						fst_branch_name: v.fst_branch_name,
 						fbl_view:v.fbl_view,
 						fbl_print:v.fbl_print
 
 					}
+					
 					t.row.add(data);
 				});
 				t.draw();
