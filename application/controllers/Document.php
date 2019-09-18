@@ -1302,14 +1302,15 @@ class Document extends MY_Controller {
 		
 		$this->load->model("documents_model");
 
-		if ($this->documents_model->canBeDeleted($fin_document_id)){
+		$canDelete =$this->documents_model->canBeDeleted($fin_document_id);
+		if ($canDelete["status"] == "SUCCESS"){
 			$this->documents_model->delete($fin_document_id);
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "";
 			$this->json_output();
 		}else{
 			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = lang("This document can not be deleted !");
+			$this->ajxResp["message"] = lang($canDelete["message"]);
 			$this->json_output();
 			return;
 		}

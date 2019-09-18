@@ -686,6 +686,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "<?= lang("ID") ?>","width": "10%",data:"fin_id",visible:true,className:"dt-center"},
 				{"title" : "<?= lang("Branch") ?>","width": "10%",data:"fin_branch_id",visible:true,
 					render: function(data,type,row){
+						if (row.fin_branch_id ==0 ){
+							return "All Branches";
+						}
 						return row.fst_branch_name;
 					},
 				},
@@ -921,7 +924,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function init_form(){
 		//alert("Init Form");
-
 		var url = "{base_url}document/fetch_data/" + $("#fin_document_id").val();
 		$.ajax({
 			type: "GET",
@@ -1010,10 +1012,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_mode:v.fst_mode,
 						fin_user_department_id: v.fin_user_department_id,
 						fst_user_department_name:v.fst_user_department_name,
+						fin_branch_id: v.fin_branch_id,
+						fst_branch_name: v.fst_branch_name,
 						fbl_view:v.fbl_view,
 						fbl_print:v.fbl_print
 
 					}
+					
 					t.row.add(data);
 				});
 				t.draw();
@@ -1089,7 +1094,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function fill_scope_branch(){
 		$.ajax({
-			url: '{base_url}department/getAllList',
+			url: '{base_url}branch/getAllList',
 			dataType : "json",
 			method :"GET",
 			success:function(resp){
@@ -1103,8 +1108,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$.each(respData,function(index,value){
 					selectData.push({
-						"id" : value.fin_department_id,
-						"text" : value.fst_department_name
+						"id" : value.fin_branch_id,
+						"text" : value.fst_branch_name
 					});	
 				});
 				

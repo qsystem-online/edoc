@@ -1,6 +1,6 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class dashboard_model extends CI_Model {
+class Dashboard_model extends CI_Model {
     //Get Doc Flow Control Need Approval
     public function getTtlDocReadyToApprove(){
         $tbl = "";
