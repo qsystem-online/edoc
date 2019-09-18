@@ -155,14 +155,67 @@ class Documents_model extends MY_Model {
 
 
 	public function canBeDeleted($fin_document_id){
-		//apakah terdaftar didokumen detail
-		$ssql = "select * from document_details where fin_document_item_id = ?";
+		//apakah terdaftar didokumen detail (dokumen lain menjadikan dokumen ini sebagai referensi)
+		$ssql = "select b.* from document_details a 
+			inner join documents b on a.fin_document_id = b.fin_document_id
+			where fin_document_item_id = ?";
+
 		$qr = $this->db->query($ssql,[$fin_document_id]);
 		$rw = $qr->row();
-		if ($rw){			
-			return false;
+		if ($rw){	
+			$result = [
+				"status"=>"FAILED",
+				"message"=>"Document is used by another document, " . $rw->fst_name ."(".$rw->fin_document_id.")"
+			];	
+			return $result;
 		}
 		
+
+		//cek if owner or department same with owner and level more high		
+		$activeUser = $this->aauth->user();
+		$ssql = "select * from documents where fin_document_id = ?";
+		$qr = $this->db->query($ssql,[$fin_document_id]);
+		$rw = $qr->row();
+		if (!$rw){
+			show_404();
+			die();
+		}
+
+		if($rw->fin_insert_id == $activeUser->fin_user_id){
+			$result = [
+				"status"=>"SUCCESS",
+				"message"=>""
+			];	
+			return $result;
+		}else{
+			$this->load->model("master_groups_model");
+			$this->load->model("users_model");
+
+			$dept = $activeUser->fin_department_id;
+			$group = $this->master_groups_model->getDataById($activeUser->fin_group_id);
+			$level = $group->fin_level;
+
+			$owner = $this->users_model->getDataById($rw->fin_insert_id);
+			$deptOwner = $owner->fin_department_id;
+			$levelOwner = $this->master_groups_model->getDataById($owner->fin_group_id);
+
+			if ($dept == $deptOwner && $level < $levelOwner){
+				$result = [
+					"status"=>"SUCCESS",
+					"message"=>""
+				];	
+				return $result;
+			}else{
+				$result = [
+					"status"=>"FAILED",
+					"message"=>"Only owner can delete this document !"
+				];	
+				return $result;
+			}
+		}
+
+
+		/*
 		//cek Flow control and  Allready Approved
 		$ssql = "select * from documents where fin_document_id = ?";
 		$qr = $this->db->query($ssql,[$fin_document_id]);
@@ -173,13 +226,23 @@ class Documents_model extends MY_Model {
 				$ssql = "select * from document_flow_control where fin_document_id = ? and fst_control_status = 'AP'";
 				$qr = $this->db->query($ssql,[$fin_document_id]);
 				$rw = $qr->row();
-				if ($rw){			
-					return false;
+				if ($rw){	
+					$result = [
+						"status"=>"FAILED",
+						"message"=>"Document is already approved"
+					];	
+					return $result;							
 				}
 			}
 		}
-		
-		return true;
+		*/
+
+
+		$result = [
+			"status"=>"SUCCESS",
+			"message"=>""
+		];
+		return $result;
 	}
 	
 
