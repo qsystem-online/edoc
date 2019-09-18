@@ -100,7 +100,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				rootSelector: '.btn-delete',
 				// other options
 			});	
-
 			$(".btn-delete").click(function(event){
 				var trRow = $(this).parents('tr');
 				$.ajax({
@@ -115,17 +114,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				})
 			});
-
 			$(".btn-edit").click(function(event){
 				id = $(this).data("<?=$pKey?>");
 				window.location.replace("<?=$edit_ajax_url?>" + id);
 			});
-
 		});
-
-
-
-
 	});
 </script>
 <?php
