@@ -14,7 +14,8 @@
 		<!-- mini logo for sidebar mini 50x50 pixels -->
 		<!-- <span class="alogo-mini"><b>Q</b>doc</span> -->
 		<!-- logo for regular state and mobile devices -->
-		<span class="alogo-lg"><b>Q</b>doc</span>
+		<!-- <span class="alogo-lg"><b>Q</b>doc</span> -->
+		<img src="<?=site_url()?>assets/app/res/logo.png" style="width:150px"/>
 	</a>
 
 	<!-- Header Navbar: style can be found in header.less -->
