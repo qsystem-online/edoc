@@ -53,6 +53,8 @@ class Dashboard_model extends CI_Model {
             left join documents b on a.fin_document_id = b.fin_document_id 
             where a.fst_control_status = 'RJ' and b.fst_active = 'A' and b.fin_insert_id = ?";
         $query = $this->db->query($ssql,$this->aauth->get_user_id());
+        echo $this->db->last_query();
+        die();
         $row = $query->row();
         return $row->ttl_rejected;
     }
