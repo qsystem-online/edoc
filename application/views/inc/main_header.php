@@ -12,9 +12,10 @@
 	<!-- Logo -->
 	<a href="/edoc/home" class="logo">
 		<!-- mini logo for sidebar mini 50x50 pixels -->
-		<span class="logo-mini"><b>A</b>LT</span>
+		<!-- <span class="alogo-mini"><b>Q</b>doc</span> -->
 		<!-- logo for regular state and mobile devices -->
-		<span class="logo-lg"><b>Admin</b>LTE</span>
+		<!-- <span class="alogo-lg"><b>Q</b>doc</span> -->
+		<img src="<?=site_url()?>assets/app/res/logo.png" style="width:150px"/>
 	</a>
 
 	<!-- Header Navbar: style can be found in header.less -->
