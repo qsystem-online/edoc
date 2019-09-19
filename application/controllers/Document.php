@@ -605,9 +605,10 @@ class Document extends MY_Controller {
 
 		$ssql = "
 			 (
-				select a.*,b.fst_username from documents a 
-				inner join users b on a.fin_insert_id = b.fin_user_id 
-				where a.fst_active = 'R' and a.fbl_flow_completed = FALSE and a.fin_insert_id = $activeUserId
+				SELECT a.*,b.fst_username,c.fst_control_status FROM documents a 
+				INNER JOIN users b ON a.fin_insert_id = b.fin_user_id 
+				INNER JOIN document_flow_control c ON a.fin_document_id = c.fin_document_id
+				WHERE a.fst_active = 'A' AND a.fbl_flow_completed = FALSE AND a.fin_insert_id = $activeUserId AND c.fst_control_status = 'RJ'
 			 ) a 			 
 		";
 

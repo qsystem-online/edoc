@@ -66,9 +66,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
               <p><?= lang("Rejected")?></p>
             </div>
             <div class="icon">
-				<i class="fa fa-ban"></i>
+				      <i class="fa fa-ban"></i>
             </div>
-            <a href="{base_url}document/rejected_list" class="small-box-footer">More info <i class="fa fa-ban"></i></a>
+            <a href="{base_url}document/rejected_list" class="small-box-footer">More info <i class="fa fa-ban" aria-hidden="true"></i></a>
           </div>
 		</div>
 		

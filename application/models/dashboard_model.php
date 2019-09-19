@@ -48,11 +48,12 @@ class Dashboard_model extends CI_Model {
     }
 
     public function getTotalRejected(){
+        $tbl = "";
         $ssql = "select count(*) as ttl_rejected from document_flow_control a
             left join documents b on a.fin_document_id = b.fin_document_id 
             where a.fst_control_status = 'RJ' and b.fst_active = 'A'";
-        $qr = $this->db->query($ssql,[$this->aauth->get_user_id()]);
-        $rw = $qr->row();
-        return $rw->ttl_rejected;
+        $query = $this->db->query($ssql,$this->aauth->get_user_id());
+        $row = $query->row();
+        return $row->ttl_rejected;
     }
 }
