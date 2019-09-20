@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/datatables.bootstrap.min.css">
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <style type="text/css">
 	.border-0{
