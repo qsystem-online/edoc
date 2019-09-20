@@ -384,7 +384,7 @@ class Document extends MY_Controller {
 			return;
 		}
 
-		if ($flowControl->fst_control_status != "RA"){
+		if ($flowControl->fst_control_status == "NA"){
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 			$this->ajxResp["message"] = lang("Status not ready to approve !");
 			$this->ajxResp["data"] = ["errors" =>"Status Not Ready To Approve"];			
@@ -1253,6 +1253,53 @@ class Document extends MY_Controller {
 		$this->json_output($datasources);
 	}
 
+	public function fetch_list_pending_data(){
+		$this->load->library("datatables");
+
+		$currBranchId = $this->session->userdata("active_branch_id");
+		$currUserDeptId = $this->aauth->user()->fin_department_id;
+		$currUserLevel = $this->aauth->user()->fin_level;
+
+		$this->datatables->setTableName("
+			(
+				select  
+					a.fin_id as fin_document_flow_control_id,b.fin_document_id,b.fst_name as document_name,b.fst_source,b.fst_memo,b.fbl_flow_control,
+					b.fin_insert_id,c.fst_fullname as owner_name,b.fst_active,b.fdt_insert_datetime
+				from document_flow_control a 
+				inner join documents b on a.fin_document_id = b.fin_document_id
+				inner join users c on b.fin_insert_id = c.fin_user_id
+				where a.fin_user_id = ". $this->aauth->get_user_id() . "
+			) a 
+		");
+		
+		//$selectFields = "b.fin_document_id,b.fst_name as document_name,a.fst_source,b.fst_memo,b.fbl_flow_control,b.fin_insert_id,c.fst_name as owner_name,b.fst_active,b.fdt_insert_datetime";
+		$selectFields = "a.*";
+
+		$this->datatables->setSelectFields($selectFields);
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "a.fst_active !='D'";
+
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
+			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
+			$data["action"] ="";
+			/*
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='".$data["fin_document_id"]."'><i class='fa fa-pencil' aria-hidden='true'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fin_document_id"]."' data-toggle='confirmation'><i class='fa fa-trash' aria-hidden='true' ></i></a>
+				</div>";
+			*/
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
 	
 	public function fetch_data($fin_document_id){
 		$this->load->model("documents_model");
@@ -1467,5 +1514,88 @@ class Document extends MY_Controller {
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
+	}
+
+	public function pending_document(){
+
+		$this->load->library('menus');
+        $this->list['page_name']="Documents Pending";
+        $this->list['list_name']="Document Pending List";
+        $this->list['addnew_ajax_url']=site_url().'document/add';
+        $this->list['pKey']="id";
+		$this->list['fetch_list_data_ajax_url']=site_url().'document/fetch_list_pending_data';
+        $this->list['delete_ajax_url']=site_url().'document/delete/';
+        $this->list['edit_ajax_url']=site_url().'document/approval/';
+        $this->list['arrSearch']=[
+			'a.fst_name' => 'Document Name',
+			'a.fst_search_marks' => 'Search Mark',
+			'a.fst_memo' => 'Memo',
+		];
+		
+		$this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Document','link'=>'#','icon'=>''],
+			['title'=>'List','link'=> NULL ,'icon'=>''],
+		];
+		
+		$this->list['columns']=[
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
+			['title' => 'Name', 'width'=>'15%', 'data'=>'document_name'],
+			['title' => 'memo', 'width'=>'30%', 'data'=>'fst_memo'],
+			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
+				'render'=>"function(data, type, row) {
+					if (data == 'INT'){
+						return 'INTERNAL';
+					}else{
+						return 'EXTERNAL';
+					}
+				}",
+			],
+			['title' => 'Creator', 'width'=>'10%', 'data'=>'owner_name',],
+			['title' => 'Flow', 'width'=>'5%', 'data'=>'fbl_flow_control',
+				'render'=> "function(data, type, row) {						
+					if (data == 1) {
+						return \"<input type='checkbox' class='editor-active' onclick='return false' checked>\";
+					} else {
+						return \"<input type='checkbox' class='editor-active' onclick='return false'>\";
+					}
+					return data;
+				}",
+				'className'=>'dt-body-center text-center'
+			],
+			['title' => 'Status', 'width'=>'10%', 'data'=>'fst_active',
+				'render'=> "function(data, type, row) {						
+					if (data == 'A') {
+						return \"ACTIVE\";
+					} else if (data == 'S') {
+						return \"SUSPEND\";
+					} else if (data == 'D') {
+						return \"DELETED\";
+					} else if (data == 'R') {
+						return \"REJECTED\";
+					}
+					return data;
+				}",
+			],
+			['title' => 'Action', 'width'=>'15%','sortable'=>false, 'className'=>'dt-body-center text-center', 'data'=>'action',			
+				'render'=> "function(data, type, row) {		
+					return \"<div style='font-size:16px'><a class='btn-edit' href='#' data-id='\"  + row.fin_document_flow_control_id + \"'><i class='fa fa-pencil' aria-hidden='true'></i></a></div>\"
+					
+				}"
+			]
+		];
+		////return \"<div style='font-size:16px'><a class='btn-edit' href='#'><i class='fa fa-pencil' aria-hidden='true'></i></a></div>\";
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('template/standardList',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+		
 	}
 }

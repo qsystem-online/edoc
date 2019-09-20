@@ -295,6 +295,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								return "Need Revision";
 							case "AP" :
 								return "Approved";
+							case "RJ" :
+							return "Rejected";
 						}
 					}
 				},
@@ -548,6 +550,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fdt_approved_datetime :v.fdt_approved_datetime,
 						fst_memo : v.fst_memo
 					}
+					console.log(data);
 					t.row.add(data);
 
 					if (v.fin_id == $("#fin_document_flow_control_id").val()){
