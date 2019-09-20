@@ -916,12 +916,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#btnNewDoc").click(function(event){
-			event.preventDefault();
-			t= $("#tbl_custom_scope").DataTable();
-			console.log(t.rows().data());
-
-			//window.location.replace("{base_url}document/add");
+		$("#btnNewDoc").click(function(event){		
+			window.location.replace("{base_url}document/add");
 		});
 
 		// Document Flow Control Checked
