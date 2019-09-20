@@ -32,7 +32,7 @@
                 <?php } ?>
             </div>
             <div id="pageInfo"> <b>Pages: 1 / 1</b></div>
-            <canvas id="the-canvas" ></canvas>
+            <canvas id="the-canvas"></canvas>
         </div>
 
         <script type="text/javascript"> //Document Viewer
@@ -135,7 +135,19 @@
                 renderPage(curPage);
             }
 
-            $(function(){               
+            $(function(){     
+
+                var canvas = document.getElementById("the-canvas");
+                var ctx = canvas.getContext("2d");
+                var text = "Document loading, Please waittt ...!";
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#0033DD";
+                ctx.font = "italic bold 14px Arial";
+                ctx.fillText(text, 20, canvas.height/2);
+
+
+
                 showDocument(true,false,"{viewToken}");
 
                 $("#btnDocFirst").click(function(event){
