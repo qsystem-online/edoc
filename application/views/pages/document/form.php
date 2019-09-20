@@ -483,11 +483,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			if (fin_seq_no == 1){
 				return "RA";
 			}
+
 			if (fin_document_id == ""){ //New Document
 				controlStatus = (fin_seq_no == 1) ? "RA" : "NA";
 				return controlStatus;
 			}
+			
 			//cek ajax to get control Status		
+			t = $("#tbl_flow_control").DataTable();
+			data = t.rows().data();
+			console.log(data);
+			var readyToApproveLevel = 0;
+			$.each(data,function (i,row){
+				if (row.fst_control_status == "RA"){
+					readyToApproveLevel = parseInt(row.fin_seq_no);
+				}
+			});
+
+			if (readyToApproveLevel == 0 ){
+				return "RA";
+			}
+
+			if (readyToApproveLevel >= parseInt(fin_seq_no) ){
+				return "RA";
+			}else{
+				return "NA";
+			}
+
+
 		}
 
 		$(function(){
@@ -529,7 +552,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fst_control_status: getControlStatus(  $("#fin_document_id").val() , $("#fin-flow-control-order").val() ),
 					fst_memo:'',
 					fdt_approved_datetime:null
-				}		
+				}
 				tblFlowControl.row.add(data).order([2,'asc'],[1,'asc']).draw();
 			});
 
