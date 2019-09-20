@@ -24,7 +24,7 @@ class Users_model extends MY_Model
 		$rwUser = $qr->row();
 		if ($rwUser) {
 			if (file_exists(FCPATH . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg')) {
-				$avatarURL = site_url() . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg';
+				$avatarURL = site_url() . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg?' . date("dmYhis");
 			} else {
 
 				$avatarURL = site_url() . 'assets/app/users/avatar/default.jpg';
