@@ -312,8 +312,8 @@ class Flow_schema extends MY_Controller {
 
 	public function get_data_username(){
 		$term = $this->input->get("term");
-		$ssql = "select fin_user_id, fst_username from users where fst_username like ? order by fst_username";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$ssql = "select fin_user_id, fst_username,fst_fullname from users where (fst_username like ? || fst_fullname like ?)  order by fst_username";
+		$qr = $this->db->query($ssql,['%'.$term.'%','%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->json_output($rs);

@@ -217,7 +217,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.fin_user_id,
-							"text" : value.fst_username
+							"text" : value.fst_username + " - " + value.fst_fullname
 						});	
 					});
 					console.log(data2);

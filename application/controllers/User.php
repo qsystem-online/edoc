@@ -41,7 +41,7 @@ class User extends MY_Controller
 			['title' => 'Full Name', 'width' => '25%', 'data' => 'fst_fullname'],
 			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
 			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
-			['title' => 'Birthplace', 'width' => '15%', 'data' => 'fst_birthplace'],
+			['title' => 'Department', 'width' => '15%', 'data' => 'fst_department_name'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
 		];
 
@@ -299,10 +299,13 @@ class User extends MY_Controller
 	public function fetch_list_data()
 	{
 		$this->load->library("datatables");
-		$this->datatables->setTableName("users");
+		
 
-		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
+		$selectFields = "a.fin_user_id,a.fst_fullname,a.fst_gender,a.fdt_birthdate,a.fst_birthplace,a.fst_department_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
+
+		//$this->datatables->setTableName("users");
+		$this->datatables->setTableName("(SELECT a.*,b.fst_department_name FROM users a INNER JOIN departments b ON a.fin_department_id = b.fin_department_id) a");
 
 		//$searchFields = ["fin_user_id", "fst_username"];
 		$Fields = $this->input->get('optionSearch');
