@@ -118,8 +118,10 @@ class Users_model extends MY_Model
 
 	public function getAllList()
 	{
-		$ssql = "select fin_user_id,fst_username from " . $this->tableName . " where fst_active = 'A' order by fst_username";
-		$qr = $this->db->query($ssql, []);
+		$ssql = "select fin_user_id,fst_username,fst_fullname,b.fst_department_name from " . $this->tableName . "  a 
+			inner join departments b on a.fin_department_id  = b.fin_department_id 
+			where a.fst_active = 'A' and fin_branch_id = ? order by fst_username";
+		$qr = $this->db->query($ssql, [$this->aauth->branch_id]);
 		$rs = $qr->result();
 		return $rs;
 	}

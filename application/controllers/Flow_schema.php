@@ -289,7 +289,7 @@ class Flow_schema extends MY_Controller {
     public function fetch_data($fin_flow_control_schema_id){
 		$this->load->model("flow_control_schema_header_model");
 		$data = $this->flow_control_schema_header_model->getDataById($fin_flow_control_schema_id);
-
+		$data["status"] = "SUCCESS";
 		// Detail Schema
 		$this->load->model("flow_control_schema_items_model");		
 		$this->json_output($data);
@@ -312,8 +312,14 @@ class Flow_schema extends MY_Controller {
 
 	public function get_data_username(){
 		$term = $this->input->get("term");
-		$ssql = "select fin_user_id, fst_username,fst_fullname from users where (fst_username like ? || fst_fullname like ?)  order by fst_username";
-		$qr = $this->db->query($ssql,['%'.$term.'%','%'.$term.'%']);
+		$ssql = "select fin_user_id, fst_username,fst_fullname,fst_department_name from users a 
+			inner join departments b on a.fin_department_id = b.fin_department_id 
+			where (fst_username like ? || fst_fullname like ?) 
+			and fin_branch_id = ? 
+			and a.fst_active = 'A'
+			order by fst_username";
+
+		$qr = $this->db->query($ssql,['%'.$term.'%','%'.$term.'%',$this->aauth->branch_id]);
 		$rs = $qr->result();
 		
 		$this->json_output($rs);

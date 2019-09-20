@@ -4,11 +4,15 @@ class Aauth
 {
 	public $CI;
 	private $user;
+	public $branch_id;
+
+
 	public function __construct()
 	{
 		$this->CI = &get_instance();
 		$this->CI->load->library("session");
 		$this->user = $this->CI->session->userdata("active_user");
+		$this->branch_id = $this->CI->session->userdata("active_branch_id");		
 	}
 
 	public function user()
@@ -56,9 +60,6 @@ class Aauth
 			return false;
 		}
 	}
-
-
-
 
 	public function is_permit($permission_name, $notRecordDefault = true, $user = null)
 	{

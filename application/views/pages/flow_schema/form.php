@@ -204,10 +204,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
             });
         });
-
+		/*
 		$("#select-username").select2({
 			width: '100%',
-			minimumInputLength: 2,
+			//minimumInputLength: 2,
 			ajax: {
 				url: '<?=site_url()?>flow_schema/get_data_username',
 				dataType: 'json',
@@ -217,10 +217,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.fin_user_id,
-							"text" : value.fst_username + " - " + value.fst_fullname
+							"text" : value.fst_fullname + ' - ' +  value.fst_department_name
 						});	
 					});
-					console.log(data2);
 					return {
 						results: data2
 					};
@@ -228,16 +227,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+		*/
+
 
 		var selected_username;
 		var arrDetail;
 
+		fill_selec2_users("select-username");
+
+		
 		$('#select-username').on('select2:select', function (e) {
 			//console.log(selected_username);
 			var data = e.params.data;
 			selected_username = data;
 			//console.log(selected_username);
 		});
+		
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
@@ -325,6 +330,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
     });
+
+
+	function fill_selec2_users(element_id){
+		$.ajax({
+			url: '<?=site_url()?>user/getAllList',
+			dataType : "json",
+			method :"GET",
+			success:function(resp){
+				respData = resp.data;
+				selectData = [];
+				$.each(respData,function(index,value){
+					selectData.push({
+						"id" : value.fin_user_id,
+						//"text" : "<span style='display:inline-block;width:100px'>" + value.fst_username + "</span><span style='display:inline-block;width:200px'>" + value.fst_fullname + "</span>" 
+						"text" :  value.fst_fullname + " - " + value.fst_department_name
+					});	
+				});
+				$('#' + element_id).empty();
+				$('#' + element_id).val(null).trigger('change');
+				$("#" + element_id).select2({
+					width: '100%',
+					data: selectData,
+				});
+				//$("#" + element_id).select2();
+				//$(".select2-container").addClass("form-control"); 
+			}
+		})
+	}
+
+
 
 
 	// Menampilkan Data Form Edit

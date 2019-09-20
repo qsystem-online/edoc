@@ -1053,7 +1053,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$.each(respData,function(index,value){
 					selectData.push({
 						"id" : value.fin_user_id,
-						"text" : value.fst_username
+						//"text" : "<span style='display:inline-block;width:100px'>" + value.fst_username + "</span><span style='display:inline-block;width:200px'>" + value.fst_fullname + "</span>" 
+						"text" :  value.fst_fullname + " - " + value.fst_department_name
 					});	
 				});
 				$('#' + element_id).empty();
