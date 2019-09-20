@@ -866,6 +866,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>document/ajx_edit_save";
 			}
 
+			App.blockUIOnAjaxRequest("<h5>Save Document....</h5>");
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',

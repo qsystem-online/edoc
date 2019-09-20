@@ -168,6 +168,8 @@
 		<script src="<?=base_url()?>bower_components/numeral/numeral.min.js"></script>
 		<!-- iCheck 1.0.1 -->
 		<script src="<?=base_url()?>plugins/iCheck/icheck.min.js"></script>
+		<!-- BlockUI -->
+		<script src="<?=base_url()?>bower_components/jquery.blockUI.js"></script>		
 		<!-- Deafult App -->
 		<script src="<?=base_url()?>dist/js/app.js"></script>	
 	</body>
