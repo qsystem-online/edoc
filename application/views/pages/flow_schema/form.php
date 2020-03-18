@@ -281,12 +281,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			order: [],
 			columns:[
 				//{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
-				{"title" : "fin_flow_control_schema_id","width": "0%",sortable:false,data:"fin_flow_control_schema_id",visible:false},
+				//{"title" : "fin_flow_control_schema_id","width": "0%",sortable:false,data:"fin_flow_control_schema_id",visible:false},
 				{"title" : "fin_user_id","width": "0%",sortable:false,data:"fin_user_id",visible:false},
 				{"title" : "<?=lang("User Name")?>","width": "20%",sortable:false,data:"fst_username"},
 				{"title" : "<?=lang("Sequence No.")?>","width": "15%",sortable:false,data:"fin_seq_no"},
 				{"title" : "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
-						action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+						action = "<a class='btn-delete edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
 						return action;
                     },
 					"sortable":false,"className":"dt-body-center text-center"}
@@ -300,6 +300,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('draw',function(){
 			$('.btn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
+				title:"<?= lang("Hapus data ini ?") ?>",
 				rootSelector: '.btn-delete',
 				// other options
 			});	
