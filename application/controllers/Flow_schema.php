@@ -30,9 +30,9 @@ class Flow_schema extends MY_Controller {
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
-			['title' => 'Flow Control Schema ID', 'width'=>'20%', 'data'=>'fin_flow_control_schema_id'],
+			['title' => 'Flow Control Schema ID', 'width'=>'15%', 'data'=>'fin_flow_control_schema_id'],
             ['title' => 'Name', 'width'=>'20%', 'data'=>'fst_name'],
-            ['title' => 'Memo', 'width'=>'20%', 'data'=>'fst_memo'],
+            ['title' => 'Memo', 'width'=>'35%', 'data'=>'fst_memo'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -277,7 +277,6 @@ class Flow_schema extends MY_Controller {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fin_flow_control_schema_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_flow_control_schema_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;

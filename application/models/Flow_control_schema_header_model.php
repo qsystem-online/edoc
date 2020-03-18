@@ -13,7 +13,8 @@ class Flow_control_schema_header_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
         $rwFlowSchemaHeader = $qr->row();
         
-        $ssql = "select a.*,b.fst_username from flow_control_schema_items a inner join users b on a.fin_user_id = b.fin_user_id where a.fin_flow_control_schema_id = ? and a.fst_active = 'A'";
+        $ssql = "select a.*,b.fst_username from flow_control_schema_items a 
+        left join users b on a.fin_user_id = b.fin_user_id where a.fin_flow_control_schema_id = ? and a.fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$fin_flow_control_schema_id]);
 		$rsFlowSchemaItems = $qr->result();
 

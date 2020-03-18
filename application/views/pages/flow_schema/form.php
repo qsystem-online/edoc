@@ -11,6 +11,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
+	.nav-tabs-custom>.nav-tabs{
+        border-bottom-color: #3c8dbc;        
+        border-bottom-style:fixed;
+    }
+	.form-group{
+		margin-bottom: 5px;
+	}
 </style>
 
 <section class="content-header">
@@ -27,95 +34,110 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title title"><?=$title?></h3>
+					<h3 class="box-title title pull-left"><?=$title?></h3>
+					<div class="btn-group btn-group-sm pull-right">
+						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>
+					</div>
+				</div>
+				<!-- end box header -->
+
+				<!-- form start -->
+				<form id="frmFlowSchema" class="form-horizontal" action="<?=site_url()?>flow_schema/add" method="POST" enctype="multipart/form-data">				
+					<div class="box-body">
+						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
+						<input type="hidden" id="frm-mode" value="<?=$mode?>">
+
+						<div class='form-group'>
+						<label for="fin_flow_control_schema_id" class="col-md-2 control-label"><?=lang("FC Schema ID")?> #</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fin_flow_control_schema_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_flow_control_schema_id" value="<?=$fin_flow_control_schema_id?>" readonly>
+								<div id="fin_flow_control_schema_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?></label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fst_name" placeholder="<?=lang("Name")?>" name="fst_name">
+								<div id="fst_name_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="fst_memo" class="col-md-2 control-label"><?=lang("Memo")?></label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo">
+								<div id="fst_memo_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-md-12" style='text-align:right'>
+								<button id="btn-add-detail" class="btn btn-default btn-sm">
+									<i class="fa fa-plus" aria-hidden="true"></i>
+									<?=lang("Add Detail")?>
+								</button>
+							</div>
+						</div>
+
+						<table id="tblFlowSchemaDetail" class="table table-bordered table-hover table-striped" style="width:100%;"></table>
+					</div>
+					<!-- end box body -->
+
+					<div class="box-footer text-right">
+						<!--<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save")?> Ajax</a>-->
+					</div>
+					<!-- end box-footer -->	
+				</form>
 			</div>
-			<!-- end box header -->
-
-            <!-- form start -->
-            <form id="frmFlowSchema" class="form-horizontal" action="<?=site_url()?>flow_schema/add" method="POST" enctype="multipart/form-data">				
-				<div class="box-body">
-                    <input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">
-                    <input type="hidden" id="frm-mode" value="<?=$mode?>">
-
-                    <div class='form-group'>
-                    <label for="fin_flow_control_schema_id" class="col-md-2 control-label"><?=lang("FC Schema ID")?> #</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_flow_control_schema_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_flow_control_schema_id" value="<?=$fin_flow_control_schema_id?>" readonly>
-							<div id="fin_flow_control_schema_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-                    <div class="form-group">
-						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_name" placeholder="<?=lang("Name")?>" name="fst_name">
-							<div id="fst_name_err" class="text-danger"></div>
-						</div>
-					</div>
-
-                    <div class="form-group">
-						<label for="fst_memo" class="col-md-2 control-label"><?=lang("Memo")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo">
-							<div id="fst_memo_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-md-12" style='text-align:right'>
-							<button id="btn-add-detail" class="btn btn-default btn-sm">
-								<i class="fa fa-plus" aria-hidden="true"></i>
-								<?=lang("Add Detail")?>
-							</button>
-						</div>
-					</div>
-
-					<table id="tblFlowSchemaDetail" class="table table-bordered table-hover table-striped"></table>
-				</div>
-                <!-- end box body -->
-
-                <div class="box-footer text-right">
-					<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save")?> Ajax</a>
-				</div>
-				<!-- end box-footer -->	
-            </form>
         </div>
     </div>
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="myModal" class="modal fade" role="dialog" >
-	<div class="modal-dialog" style="display:table">
+<div id="mdlFlowSchemaDetail" class="modal fade in" role="dialog" style="display: none">
+	<div class="modal-dialog" style="display:table;width:45%;min-width:400px;max-width:100%">
 		<!-- modal content -->
-		<div class="modal-content">
-			<div class="modal-header">
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius:15px;border-top-right-radius:15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><?=lang("Add Flow Control Schema Detail")?></h4>
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">
-				<input type='hidden' id='fin-detail-id'/>			
-					<div class="form-group">
-						<label for="select-username" class="col-md-2 control-label"><?=lang("User Name")?></label>
-						<div class="col-md-10">
-							<select id="select-username" class="form-control"></select>
-							<div id="fst_username_err" class="text-danger"></div>
+				<div class="row">
+					<div class="col-md-12">
+						<div style="border:1px inset #f0f0f0;border-radius:15px;padding:5px">
+                            <fieldset style="padding:10px">
+								<form  class="form-horizontal">			
+									<div class="form-group">
+										<label for="select-username" class="col-md-3 control-label"><?=lang("User Name")?></label>
+										<div class="col-md-9">
+											<select id="select-username" class="form-control" name="fst_username">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_username_err" class="text-danger"></div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="fin_seq_no" class="col-md-3 control-label"><?=lang("Seq No.")?></label>
+										<div class="col-md-9">
+											<input type="text" class="form-control" id="fin_seq_no">
+											<div id="fin_seq_no_err" class="text-danger"></div>
+										</div>
+									</div>
+								</form>
+								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+									<button id="btn-add-schema-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:10%"><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:10%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+							</fieldset>
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="fin_seq_no" class="col-md-2 control-label"><?=lang("Seq No.")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_seq_no">
-							<div id="fin_seq_no_err" class="text-danger"></div>
-						</div>
-					</div>
-				</form>
-			</div>
-
-			<div class="modal-footer">
-				<button id="btn-add-schema-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -156,11 +178,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{
 				url =  "<?= site_url() ?>flow_schema/ajx_edit_save";
 			}
+			console.log(data)
 
             //var formData
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
             $.ajax({
                 type: "POST",
-				enctype: 'multipart/form-data',
+				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
 				timeout: 600000,
@@ -172,7 +196,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>flow_schema/lizt";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},
@@ -193,8 +217,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#fst_name').prop('readonly', true);
-						$("#tabs-schema-detail").show();
-						console.log(data.data_image);
 					}
 				},
                 error: function (e) {
@@ -204,50 +226,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
             });
         });
-		/*
-		$("#select-username").select2({
-			width: '100%',
-			//minimumInputLength: 2,
-			ajax: {
-				url: '<?=site_url()?>flow_schema/get_data_username',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data) {
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fin_user_id,
-							"text" : value.fst_fullname + ' - ' +  value.fst_department_name
-						});	
-					});
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
-		*/
-
 
 		var selected_username;
 		var arrDetail;
 
 		fill_selec2_users("select-username");
 
-		
 		$('#select-username').on('select2:select', function (e) {
 			//console.log(selected_username);
 			var data = e.params.data;
 			selected_username = data;
 			//console.log(selected_username);
 		});
-		
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
 			mode_schema_detail = "ADD"; // 28/04/2019
-			$("#myModal").modal({
+			$("#mdlFlowSchemaDetail").modal({
 				backdrop:"static",
 			});
 
@@ -283,13 +278,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
+			order: [],
 			columns:[
 				//{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
 				{"title" : "fin_flow_control_schema_id","width": "0%",sortable:false,data:"fin_flow_control_schema_id",visible:false},
 				{"title" : "fin_user_id","width": "0%",sortable:false,data:"fin_user_id",visible:false},
-				{"title" : "User Name","width": "20%",sortable:false,data:"fst_username"},
-				{"title" : "Sequence No.","width": "15%",sortable:false,data:"fin_seq_no"},
-				{"title" : "action","width": "10%",sortable:false,data:"action",className:'dt-center'},
+				{"title" : "<?=lang("User Name")?>","width": "20%",sortable:false,data:"fst_username"},
+				{"title" : "<?=lang("Sequence No.")?>","width": "15%",sortable:false,data:"fin_seq_no"},
+				{"title" : "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
+						action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+						return action;
+                    },
+					"sortable":false,"className":"dt-body-center text-center"}
 			],
 			processing: true,
 			serverSide: false,
@@ -312,7 +312,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$(".btn-edit").click(function(event){
 				event.preventDefault();
-				$("#myModal").modal({
+				$("#mdlFlowSchemaDetail").modal({
 					backdrop:"static",
 				});
 
@@ -328,6 +328,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#select-username").val(row.fin_user_id).change();
 				$("#fin_seq_no").val(row.fin_seq_no);
 			});
+		});
+
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>flow_schema/add");
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting...</h5>");
+			$.ajax({
+				url:"<?=site_url()?>flow_schema/delete/" + $("#fin_flow_control_schema_id").val(),
+			}).done(function(resp){
+				consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "") {
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons: {
+							OK : function(){
+								if(resp.status == "SUCCESS"){
+									window.location.href = "<?=site_url()?>flow_schema/lizt";
+								}
+							},
+						}
+					});
+				}
+
+				if (resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_flow_control_schema_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					//Change to Edit mode
+					$("#frm-mode").val("EDIT"); //ADD/EDIT
+					$('#fst_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>flow_schema/lizt");
 		});
     });
 
@@ -356,7 +406,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//$("#" + element_id).select2();
 				//$(".select2-container").addClass("form-control"); 
 			}
-		})
+		});
 	}
 
 
@@ -388,16 +438,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				FlowSchemaItems = resp.fcsItems;
-				$.each(FlowSchemaItems, function(idx, detail){
-					data = {
+				$.each(FlowSchemaItems, function(name, detail){
+					console.log(detail);
+					//event.preventDefault();
+					t = $('#tblFlowSchemaDetail').DataTable();
+					t.row.add({
 						fin_flow_control_schema_id:detail.fin_flow_control_schema_id,
 						fin_user_id:detail.fin_user_id,
 						fst_username:detail.fst_username,
 						fin_seq_no: detail.fin_seq_no,
 						action: action
-					}
-					t = $('#tblFlowSchemaDetail').DataTable();			
-					t.row.add(data).draw(false);	
+					}).draw(false);	
 					
 					//set Data select2		
 					var newOption = new Option(detail.fst_username, detail.fin_user_id, false, false);
