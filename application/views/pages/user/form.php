@@ -7,8 +7,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	.border-0 {
 		border: 0px;
 	}
-	td {
+	.td {
 		padding: 2px; !important
+	}
+	.form-group {
+		margin-bottom: 10px;
 	}
 	.nav-tabs-custom>.nav-tabs>li.active>a {
 		font-weight: bold;
@@ -173,7 +176,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					<div class="box-footer">
 						<div class="button form-group">
 							<div class="col-md-2 text-left">
-								<a id="btnList" href="#" class="btn btn-primary"><?=lang("Back")?></a>
+								<a id="btnList" href="#" class="btn btn-primary"><?=lang("Back to List")?></a>
 							</div>
 							<div class="col-md-10 text-right">
 								<?php

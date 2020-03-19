@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-style:fixed;
     }
 	.form-group{
-		margin-bottom: 5px;
+		margin-bottom: 10px;
 	}
 </style>
 

@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-style:fixed;
     }
 	.form-group{
-		margin-bottom: 5px;
+		margin-bottom: 10px;
 	}
 </style>
 
@@ -87,8 +87,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<!-- end box body -->
 
-					<div class="box-footer text-right">
-						<!--<a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save")?> Ajax</a>-->
+					<div class="box-footer">
+						
 					</div>
 					<!-- end box-footer -->	
 				</form>
