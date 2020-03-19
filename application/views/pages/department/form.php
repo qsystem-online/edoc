@@ -12,16 +12,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		padding: 2px; !important 		
 	}
 
-    .nav-tabs-custom>.nav-tabs>li.active>a{
-        font-weight:bold;
-        border-left-color: #3c8dbc;
-        border-right-color: #3c8dbc;
-        border-style:fixed;
-    }
     .nav-tabs-custom>.nav-tabs{
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
+	.form-group{
+		margin-bottom: 5px;
+	}
 </style>
 
 <section class="content-header">
@@ -38,7 +35,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title title"><?=$title?></h3>
+				<h3 class="box-title title pull-left"><?=$title?></h3>
+					<div class="btn-group btn-group-sm pull-right">
+						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>
+					</div>
 			</div>
             <!-- end box header -->
 
@@ -49,16 +52,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="fin_department_id" class="col-sm-2 control-label"><?=lang("Department ID")?></label>
-						<div class="col-sm-10">
+                    <label for="fin_department_id" class="col-sm-3 control-label"><?=lang("Department ID")?></label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fin_department_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_department_id" value="<?=$fin_department_id?>" readonly>
 							<div id="fin_department_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_department_name" class="col-sm-2 control-label"><?=lang("Department Name")?> *</label>
-						<div class="col-sm-10">
+                    <label for="fst_department_name" class="col-sm-3 control-label"><?=lang("Department Name")?> *</label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fst_department_name" placeholder="<?=lang("Department Name")?>" name="fst_department_name">
 							<div id="fst_department_name_err" class="text-danger"></div>
 						</div>
@@ -67,7 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- end box body -->
 
                 <div class="box-footer">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
+                    <!--<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>-->
                 </div>
                 <!-- end box-footer -->
             </form>
@@ -110,7 +113,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>department/lizt";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},
@@ -133,7 +136,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-
 						$('#fst_department_name').prop('readonly', true);
 					}
 				},
@@ -143,7 +145,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
+		});
 
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>department/add");
+		});
+
+		$("#btnDelete").confirmation({
+			title: "<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			S.ajax({
+				url:"<?=site_url()?>department/delete/" + $("#fin_department_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != ""){
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons: {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?=site_url()?>department/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_department_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_department_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>department/lizt");
 		});
 	});
 

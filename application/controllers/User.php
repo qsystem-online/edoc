@@ -42,7 +42,7 @@ class User extends MY_Controller
 			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
 			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
 			['title' => 'Department', 'width' => '15%', 'data' => 'fst_department_name'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -61,6 +61,8 @@ class User extends MY_Controller
 	public function openForm($mode = "ADD", $fin_user_id = 0)
 	{
 		$this->load->library("menus");
+		$this->load->model("master_groups_model");
+		$this->load->model("users_model");
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -68,10 +70,13 @@ class User extends MY_Controller
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-
+		
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add User" : "Update User";
 		$data["fin_user_id"] = $fin_user_id;
+		$data["arrUser_R"] = $this->users_model->getUserList_R();
+		$data["arrBranch"] = $this->branch_model->getAllList();
+		$data["arrGroup"] = $this->master_groups_model->getAllList();
 
 		$page_content = $this->parser->parse('pages/user/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);

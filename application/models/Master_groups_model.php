@@ -76,6 +76,14 @@ class Master_groups_model extends MY_Model
 		parent::delete($key,$softdelete);
     }*/
 
+    public function getAllList()
+    {
+        $ssql = "select fin_group_id,fst_group_name from " . $this->tableName . " where fst_active = 'A'";
+        $qr = $this->db->query($ssql, []);
+        $rs = $qr->result();
+        return $rs;
+    }
+
     public function get_list_group()
     {
         $ssql = "select fin_group_id,fst_group_name from master_groups where fst_active = 'A' order by fst_group_name";

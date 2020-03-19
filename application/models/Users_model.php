@@ -172,6 +172,14 @@ class Users_model extends MY_Model
 		return $rules;
 	}
 
+	public function getUserList_R()
+	{
+		$ssql = "select fin_user_id,fst_username from " . $this->tableName . " where fst_active != 'D' order by fin_user_id";
+		$qr = $this->db->query($ssql, []);
+		$rs = $qr->result();
+		return $rs;
+	}
+
 	public function get_User()
 	{
 		$query = $this->db->get('users');
