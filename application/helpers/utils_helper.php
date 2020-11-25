@@ -11,6 +11,10 @@
     }
     if (!function_exists('dBDateFormat')){
         function dBDateFormat($strDate,$inputFormat=''){
+            if ($strDate == null){
+                return null;
+            }
+            
             $inputFormat = ($inputFormat == '' ) ? DATEPICKER_FORMAT_ALIAS : $inputFormat;
 
             $date = DateTime::createFromFormat($inputFormat, $strDate);

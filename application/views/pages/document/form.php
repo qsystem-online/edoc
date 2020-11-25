@@ -137,7 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					
 
 					<div class="form-group">
-						<label for="fdt_published_date" class="col-sm-2 control-label"><?= lang("Publish Date")?> *</label>
+					<label for="fdt_published_date" class="col-sm-2 control-label"><?= lang("Publish Date")?> *</label>
 						<div class="col-sm-3">
 							<div class="input-group date">
 								<div class="input-group-addon">
@@ -148,7 +148,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fdt_published_date_err" class="text-danger"></div>
 							<!-- /.input group -->
 						</div>
+						<label for="fdt_expired_date" class="col-sm-2 control-label"><?= lang("Expired Date")?> *</label>
+						<div class="col-sm-3">
+							<div class="input-group date">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control pull-right datepicker" id="fdt_expired_date" name="fdt_expired_date"/>								
+							</div>
+							<div id="fdt_expired_date_err" class="text-danger"></div>
+							<!-- /.input group -->
+						</div>
+						
 					</div>
+
 
 					<div class="form-group">
 						<label for="fst_file_name" class="col-sm-2 control-label"><?= lang("File Document")?></label>
@@ -972,6 +985,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fst_print_scope").trigger('change');
 				$("#fin_confidential_lvl").trigger('change');
 				$("#fdt_published_date").datepicker('update', dateFormat(resp.header.fdt_published_date));
+				$("#fdt_expired_date").datepicker('update', dateFormat(resp.header.fdt_expired_date));
 
 				if (resp.header.fbl_flow_control == 1){
 					//alert("check");
