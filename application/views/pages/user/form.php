@@ -408,6 +408,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					}
 				});
 
+				//fbl_admin
+				if (resp.user.fbl_admin == 0){
+					$("#fbl_admin").prop('checked',false);
+				}else{
+					$("#fbl_admin").prop('checked',true);
+				}
+
 				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
 
 				// menampilkan data di select2, menu edit/update
