@@ -66,6 +66,27 @@ class Aauth
 		if ($permission_name == "dashboard_v2") {
 			return false;
 		}
+		if ($user == null){
+			$user = $this->user();
+		}
+
+		//var_dump($user);
+
+		if (!$user->fbl_admin){
+			if ($permission_name == "department"){
+				return false;
+			}
+			if ($permission_name == "group"){
+				return false;
+			}
+			if ($permission_name == "user"){
+				return false;
+			}
+			if ($permission_name == "user_user"){
+				return false;
+			}		
+		}
+		
 		return true;
 	}
 }

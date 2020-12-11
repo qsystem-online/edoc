@@ -408,7 +408,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					}
 				});
 
-				//fbl_admin
 				if (resp.user.fbl_admin == 0){
 					$("#fbl_admin").prop('checked',false);
 				}else{
