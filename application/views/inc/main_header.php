@@ -35,6 +35,7 @@
 							<?php
 							$active_user = $this->session->userdata("active_user");
 							echo $active_user->fst_fullname;
+							echo " [" . $active_user->fst_department_name . "]";
 							?>
 						</span>
 					</a>

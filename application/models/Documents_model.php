@@ -8,6 +8,8 @@ class Documents_model extends MY_Model {
 		parent:: __construct();
 	}
 
+
+
 	public function getRules($mode="ADD",$id=0){
 
 		$rules = [];
@@ -37,6 +39,36 @@ class Documents_model extends MY_Model {
 		return NULL;
 	}
 
+	public function getDocumentNo($docGroupId){
+		$ssql = "SELECT * FROM document_groups where fin_id = ? and fst_active = 'A'";
+		$qr =$this->db->query($ssql,[$docGroupId]);
+		$rw = $qr->row();
+		$groupCode = $rw->fst_group_code;
+
+		//MTPJKT/21/02/00001
+		$branch = $this->aauth->getActiveBranch();
+		if ($branch == null){
+			return  "";
+		}
+		$prefix = $groupCode . $branch->fst_branch_code . "/" . date("y") . "/" . date("M"). "/";
+		$ssql ="SELECT * FROM documents where fst_document_no like ? order by fst_document_no desc limit 1";
+		$qr = $this->db->query($ssql,[$prefix . "%"]);
+		$lastRw = $qr->row();
+		if ($lastRw == null){
+			return $prefix . "00001";
+		}
+
+		$tmp = explode("/",$lastRw->fst_document_no);
+		$lastNo = $tmp[sizeof($tmp) -1];
+		$lastNo = (int) $lastNo;
+		$newNo = "0000".$lastNo + 1;
+		$newNo = substr($newNo,strlen($newNo)-5);
+		return $prefix . $newNo;
+
+		
+
+
+	}
 
 	public function editPermission($fin_document_id){
 		//return false;

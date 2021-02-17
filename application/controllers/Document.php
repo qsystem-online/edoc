@@ -6,11 +6,12 @@ class Document extends MY_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
+		$this->load->model('documents_model');
+		$this->load->model('document_groups_model');
 	}
 
 
-	public function index(){
-
+	public function index(){		
 		$this->load->library('menus');
         $this->list['page_name']="Documents";
         $this->list['list_name']="Document List";
@@ -779,13 +780,15 @@ class Document extends MY_Controller {
 			return;
 		}
 
-		$this->load->model('documents_model');
+		
 		$this->form_validation->reset_validation();
 		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		$data = [
 			//"fin_document_id"=>$this->input->post("fst_username"),
+			"fin_document_group_id"=>$this->input->post("fin_document_group_id"),
+			"fst_document_no"=> $this->documents_model->getDocumentNo($this->input->post("fin_document_group_id")),
 			"fst_name"=>$this->input->post("fst_name"),
 			"fst_source"=>$this->input->post("fst_source"),
 			"fst_created_via"=>"MANUAL",
@@ -828,6 +831,7 @@ class Document extends MY_Controller {
 			//size in byte
 			*/
 			if(!empty($_FILES['fst_file_name']['tmp_name'])) {
+				//$config['upload_path']          = getDbConfig("document_folder_developer");
 				$config['upload_path']          = getDbConfig("document_folder");
 				$config['file_name']			=  md5('doc_'. $insertId);  //'doc_'. $insertId .'_0'. '.pdf' ;
 				//$config['encrypt_name'] 		= TRUE;
@@ -1006,8 +1010,17 @@ class Document extends MY_Controller {
 		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
+		$noDoc = "";
+		if ($existingDoc->fin_document_group_id  == $this->input->post("fin_document_group_id")){
+			$noDoc= $existingDoc->fst_document_no;
+		}else{
+			$noDoc= $this->documents_model->getDocumentNo($this->input->post("fin_document_group_id"));
+		}
+		
 		$data = [
 			"fin_document_id"=>$fin_document_id,
+			"fin_document_group_id"=>$this->input->post("fin_document_group_id"),
+			"fst_document_no"=> $noDoc,
 			"fst_name"=>$this->input->post("fst_name"),
 			"fst_source"=>$this->input->post("fst_source"),
 			"fst_created_via"=>"MANUAL",
@@ -1736,6 +1749,15 @@ class Document extends MY_Controller {
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
+	}
+
+	public function ajxGetNoDoc($docGroupId){
+		$no =  $this->documents_model->getDocumentNo($docGroupId);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$no
+		]);
 	}
 
 }

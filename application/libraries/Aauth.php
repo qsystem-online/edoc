@@ -41,6 +41,12 @@ class Aauth
 		return true;
 	}
 
+	public function getActiveBranch(){
+		$ssql = "SELECT * FROM branch where fin_branch_id = ? and fst_active  ='A'";
+		$qr = $this->CI->db->query($ssql,[$this->branch_id]);
+
+		return $qr->row();
+	}
 
 	public function renew_session_timeout()
 	{
@@ -83,6 +89,9 @@ class Aauth
 				return false;
 			}
 			if ($permission_name == "user_user"){
+				return false;
+			}	
+			if ($permission_name == "flow_schema"){
 				return false;
 			}		
 		}

@@ -72,6 +72,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+						<label for="fst_document_no" class="col-sm-2 control-label"><?=lang("Document No")?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="fst_document_no" placeholder="<?=lang("(Autonumber)")?>" name="fst_document_no" value="" readonly>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fin_document_group_id" class="col-sm-2 control-label"><?=lang("Document Group")?></label>
+						<div class="col-sm-10">
+							<select class="form-control" id="fin_document_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_group_id">
+								<?php
+									$groupList = $this->document_groups_model->getAllList();
+									foreach($groupList as $docGroup){
+										echo "<option value='$docGroup->fin_id'>$docGroup->fst_group_code - $docGroup->fst_group_name</option>";
+									}
+								?>
+							</select>
+						</div>
+					</div>
+					
+
+					<div class="form-group">
 						<label for="fst_name" class="col-sm-2 control-label"><?= lang("Name") ?> * </label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fst_name" placeholder="<?= lang("Document Name")?>" name="fst_name" value="">
@@ -81,9 +103,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="form-group">
 						<label for="fst_source" class="col-sm-2 control-label"><?=lang("Document Source")?></label>
 						<div class="col-sm-3">
-							<select class="select2 form-control" id="fst_source" name="fst_source">
-								<option value='INT'><?= lang("Internal")?></option>
-								<option value='EXT'><?= lang("External")?></option>
+							<select class="form-control" id="fst_source" name="fst_source">
+								<option value='INT' selected><?= lang("Internal")?></option>
+								<!-- <option value='EXT'><= lang("External")?></option> -->
 							</select>
 						</div>
 
@@ -1159,4 +1181,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		})
 	}
 	
+</script>
+
+<script type="text/javascript" info="Main-event"> // Main
+	$(function(){
+		$("#fin_document_group_id").val(null);
+
+		$("#fin_document_group_id").change(function(e){
+			//Get Document No
+			$.ajax({
+				url:"{base_url}document/ajxGetNoDoc/" +$ ("#fin_document_group_id").val(),
+				method:"GET",
+			}).done(function(resp){
+				if (resp.status =="SUCCESS"){
+					$("#fst_document_no").val(resp.data);
+				}				
+			})
+		});
+	});
 </script>
