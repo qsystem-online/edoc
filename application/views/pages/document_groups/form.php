@@ -206,7 +206,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				if(resp.status == "SUCCESS"){
 					var data = resp.data;
 					$("#fin_id").val(data.fin_id);
+					$("#fst_group_code").val(data.fst_group_code);
 					$("#fst_group_name").val(data.fst_group_name);
+					$("#fst_desc").val(data.fst_desc);
 				}
 			},
 

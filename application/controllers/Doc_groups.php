@@ -37,6 +37,7 @@ class Doc_groups extends MY_Controller
 		];
 		$this->list['columns'] = [
 			['title' => 'ID', 'width' => '10%', 'data' => 'fin_id'],
+			['title' => 'code', 'width' => '25%', 'data' => 'fst_group_code'],
             ['title' => 'Group', 'width' => '25%', 'data' => 'fst_group_name'],
             ['title' => 'Description', 'width' => '55%', 'data' => 'fst_desc'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
@@ -191,7 +192,7 @@ class Doc_groups extends MY_Controller
 		$this->load->library("datatables");
 		$this->datatables->setTableName("document_groups");
 		
-		$selectFields = "fin_id,fst_group_name,fst_desc,'action' as action";
+		$selectFields = "fin_id,fst_group_code,fst_group_name,fst_desc,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 		
 		$searchFields =[];
