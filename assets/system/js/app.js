@@ -99,7 +99,16 @@ var App = {
             $.unblockUI();
             $(document).unbind('ajaxStart');
         });
-    }
+	},
+	
+	addOptionIfNotExist:function(option,selectId){
+		value = $(option).val();		
+		if (! $("#" + selectId + " option[value='"+ value +"']").length){
+			$("#" + selectId).append(option);
+		}else{
+			$("#" + selectId + " option[value='"+ value +"']").prop("selected",true);
+		}
+	},
 
 
 }

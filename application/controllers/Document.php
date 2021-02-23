@@ -57,6 +57,8 @@ class Document extends MY_Controller {
 				}",
 				'className'=>'dt-body-center text-center'
 			],
+			['title' => 'In/Out', 'width'=>'5%', 'data'=>'fst_io_status','className'=>'dt-body-center text-center'],
+			
 			['title' => 'Status', 'width'=>'10%', 'data'=>'fst_active',
 				'render'=> "function(data, type, row) {						
 					if (data == 'A') {
@@ -1243,7 +1245,7 @@ class Document extends MY_Controller {
 			) a 
 		");
 		
-		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime";
+		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime,a.fst_io_status";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
@@ -1320,6 +1322,7 @@ class Document extends MY_Controller {
 		$this->load->model("documents_model");
 		$this->load->model("document_details_model");
 		$this->load->model("document_flow_control_model");
+		$this->load->model("document_inout_model");
 		$this->load->model("document_custom_permission_model");
 		$this->load->model("view_print_token_model");
 		
@@ -1338,6 +1341,7 @@ class Document extends MY_Controller {
 		$data["doc_details"] = $docDetails;
 		$data["flow_details"] = $this->document_flow_control_model->getRowsByParentId($fin_document_id);
 		$data["custom_details"] = $this->document_custom_permission_model->getRowsByParentId($fin_document_id);
+		$data["io_details"] =  $this->document_inout_model->getList($fin_document_id);
 		$data["permission"] = [
 			"edit" => $this->documents_model->editPermission($fin_document_id),
 			"view_doc" => $this->documents_model->scopePermission($fin_document_id,"VIEW"),

@@ -100,6 +100,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fst_name_err" class="text-danger"></div>
 						</div>
 					</div>
+
                     <div class="form-group">
 						<label for="fst_source" class="col-sm-2 control-label"><?=lang("Document Source")?></label>
 						<div class="col-sm-3">
@@ -122,6 +123,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 					</div>
+
                     <div class="form-group">
 						<label for="fst_view_scope" class="col-sm-2 control-label"><?=lang("View Scope")?></label>
 						<div class="col-sm-3">
@@ -159,7 +161,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					
 
 					<div class="form-group">
-					<label for="fdt_published_date" class="col-sm-2 control-label"><?= lang("Publish Date")?> *</label>
+						<label for="fdt_published_date" class="col-sm-2 control-label"><?= lang("Publish Date")?> *</label>
 						<div class="col-sm-3">
 							<div class="input-group date">
 								<div class="input-group-addon">
@@ -192,6 +194,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fst_file_name_err" class="text-danger"></div>
 						</div>
 					</div>
+
 					<div class="form-group">						
 						<div class="col-sm-10 col-sm-offset-2">							
 							<input type="checkbox" class="minimal form-control icheck" id="fbl_flow_control" name="fbl_flow_control"> &nbsp;
@@ -205,6 +208,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<li class="active"><a href="#doc_list" data-toggle="tab" aria-expanded="true"><?= lang("Document List")?></a></li>
                             <li class="" id="list_flow" style="display:none;"><a href="#tab_flow" data-toggle="tab" aria-expanded="false"><?= lang("Flow Control")?></a></li>
 							<li class="" id="list_scope" style="display:none;"><a href="#tab_custom-scope" data-toggle="tab" aria-expanded="false"><?= lang("Custom Scope")?></a></li>
+							<li class="" id="doc_io"><a href="#tab_doc_io" data-toggle="tab" aria-expanded="false"><?= lang("Document In Out")?></a></li>
 							<li class="doc-viewer" id="tab-doc" ><a href="#doc-viewer" data-toggle="tab" aria-expanded="false"><?= lang("Document Viewer")?></a></li>
 						</ul>
 						<div class="tab-content">							
@@ -276,6 +280,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</form>
 								<table id="tbl_custom_scope" class="compat hover stripe" style="width:100%" ></table>
 							</div>
+
+							<div class="tab-pane" id="tab_doc_io">							
+								<table id="tbl_doc_io" class="table table-bordered table-hover" style="width:100%" ></table>
+							</div>
+
 							<div class="tab-pane doc-viewer" id="doc-viewer" style="text-align:center">											
 								<embed id="plugin" src="" type="application/pdf" style="width:100%;height:25vw" internalinstanceid="5"/>
 							</div>
@@ -715,6 +724,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
 
+<script type="text/javascript">
+	var tblDocIO;
+</script>
 
 <script type="text/javascript"> //Custom Scope
     $(function(){
@@ -836,6 +848,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     });
 </script>
 
+<script type="text/javascript" info="document_io">
+	$(function(){
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href") // activated tab
+			if (target == "#tab_doc_io"){
+				tblDocIO.columns.adjust().draw();		
+			}
+		});
+
+		tblDocIO = $("#tbl_doc_io").DataTable({
+			searching: false,
+			paging:   false,
+			info: false,
+			columns:[		
+				{"title" : "id","width": "0%",data:"fin_id",visible:false,className:"dt-center"},
+				{"title" : "Date","width": "20%",data:"fdt_io_datetime",visible:true,className:"text-right"},				  
+				{"title" : "By","width": "70%",data:"fst_fullname",visible:true,
+					render:function(data,type,row){
+						var sstr = data ;
+						sstr += "<br> <i>Notes:" + row.fst_notes + "</i>";
+						return sstr;
+					}
+				},
+				{"title" : "In / Out","width": "10%",data:"fst_io_status"},
+				
+				
+			],
+		});
+	});
+</script>
 <script type="text/javascript"> //Document Viewer
 	
 	function showDocument(viewDoc,printDoc,token){
@@ -1028,8 +1070,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 				//Fill Document Detail
 				t = $("#tbl_doc_items").DataTable();
-				$.each(resp.doc_details,function(i,v){
-					
+				$.each(resp.doc_details,function(i,v){					
 					data = {
 						fin_id: v.fin_id,
 						fin_document_id : v.fin_document_id,
@@ -1042,7 +1083,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					};
 					
 					t.row.add(data).draw();
-				})
+				});
 				
 				//Fill Document Flow
 				t = $("#tbl_flow_control").DataTable();
@@ -1079,6 +1120,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 				t.draw();
 				
+				//Fill History IO
+				$.each(resp.io_details,function(i,v){					
+					data = {
+						fin_id: v.fin_id,
+						fst_io_status:v.fst_io_status,
+						fst_fullname: v.fst_fullname,
+						fst_notes : v.fst_notes,
+						fdt_io_datetime : v.fdt_io_datetime
+					};					
+					tblDocIO.row.add(data).draw();
+				});
+
+
 				// Show document 
 				showDocument(resp.permission.view_doc,resp.permission.print_doc,resp.permission.token);
 

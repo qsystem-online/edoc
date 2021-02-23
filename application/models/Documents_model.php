@@ -329,4 +329,12 @@ class Documents_model extends MY_Model {
 		$ssql = "update documents set fbl_flow_completed = true where fst_active = 'R' and fin_document_id = ?";
 		$this->db->query($ssql,[$fin_document_id]);
 	}
+
+	public function getDocumentList($keyword){
+		$ssql = "SELECT fin_document_id,fst_document_no,fst_name,fst_io_status FROM documents WHERE MATCH(fst_search_marks,fst_memo,fst_document_no,fst_name) AGAINST (? IN BOOLEAN MODE)";
+		$qr = $this->db->query($ssql,[$keyword]);
+		$rs = $qr->result();
+		return $rs;
+
+	}
 }
