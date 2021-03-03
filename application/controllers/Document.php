@@ -1232,23 +1232,90 @@ class Document extends MY_Controller {
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 
-		$currBranchId = $this->session->userdata("active_branch_id");
-		$currUserDeptId = $this->aauth->user()->fin_department_id;
-		$currUserLevel = $this->aauth->user()->fin_level;
+		$currBranchId = (int) $this->session->userdata("active_branch_id");
+		$currUserDeptId = (int) $this->aauth->user()->fin_department_id;
+		$currUserLevel = (int) $this->aauth->user()->fin_level;
+		$currUserId = (int) $this->aauth->user()->fin_user_id;
 
+		$this->db->query("DROP TABLE IF EXISTS temp_documents",[]);		
+		$this->db->query("
+			CREATE TEMPORARY TABLE IF NOT EXISTS temp_documents AS (
+				SELECT a.* FROM documents a 
+				INNER JOIN users b ON a.fin_insert_id = b.fin_user_id 
+				INNER JOIN master_groups c ON b.fin_group_id = c.fin_group_id 
+				WHERE b.fin_department_id = ?
+			)"
+			,[$currUserDeptId]
+		);
+		$this->db->query("
+			INSERT INTO temp_documents 
+				SELECT b.* FROM document_custom_permission a 
+				INNER JOIN documents b on a.fin_document_id = b.fin_document_id
+				WHERE a.fin_user_department_id = ? 
+				AND a.fst_mode ='DEPARTMENT'
+				AND a.fst_active = 'A'
+				AND b.fst_active = 'A' 
+				AND a.fin_document_id not in (select fin_document_id from temp_documents);
+			"
+			,[$currUserDeptId]
+		);
+
+		$this->db->query("
+			INSERT INTO temp_documents 
+				SELECT b.* FROM document_custom_permission a 
+				INNER JOIN documents b on a.fin_document_id = b.fin_document_id
+				WHERE a.fin_user_department_id = ? 
+				AND a.fst_mode ='USER'
+				AND a.fst_active = 'A'
+				AND b.fst_active = 'A' 
+				AND a.fin_document_id not in (select fin_document_id from temp_documents);
+			"
+			,[$currUserId]
+		);
+
+
+
+		//$ssql = "SELECT * FROM temp_documents";
+		//$qr = $this->db->query($ssql,[]);
+		
+
+		$this->datatables->setTableName("
+			(
+				SELECT a.*,b.fst_username FROM temp_documents a
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id
+				INNER JOIN master_groups c on b.fin_group_id = c.fin_group_id
+				WHERE c.fin_level > $currUserLevel 
+				AND b.fin_branch_id = $currBranchId
+			) a"
+		);
+
+
+		/*
 		$this->datatables->setTableName("
 			(
 				select a.*,b.fst_username from documents a
 				inner join users b on a.fin_insert_id = b.fin_user_id
 				inner join master_groups c on b.fin_group_id = c.fin_group_id
-				where b.fin_department_id = $currUserDeptId and c.fin_level > $currUserLevel and b.fin_branch_id = $currBranchId
+				LEFT JOIN document_custom_permission d on 
+					a.fin_document_id = d.fin_document_id 
+					and d.fin_user_department_id = b.fin_department_id 
+					and d.fbl_view = 1
+				where 
+				(
+					b.fin_department_id = $currUserDeptId 
+					OR
+					d.fin_user_department_id = $currUserDeptId 
+				)
+				and c.fin_level > $currUserLevel 
+				and b.fin_branch_id = $currBranchId
 			) a 
 		");
+		*/
 		
 		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime,a.fst_io_status";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
 

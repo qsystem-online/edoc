@@ -30,7 +30,7 @@ class Document_io extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'document_io/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'document_io/edit/';
 		$this->list['arrSearch'] = [
-			'document' => 'Document',
+			'fst_document_name' => 'Document',
 		];
 
 		$this->list['breadcrumbs'] = [
