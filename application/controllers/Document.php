@@ -1247,6 +1247,26 @@ class Document extends MY_Controller {
 			)"
 			,[$currUserDeptId]
 		);
+
+		$this->db->query("
+			INSERT INTO temp_documents 
+				SELECT b.* FROM document_custom_permission a 
+				INNER JOIN documents b on a.fin_document_id = b.fin_document_id
+				WHERE 
+				(
+					a.fin_user_department_id = ? AND a.fst_mode ='DEPARTMENT'
+					OR
+					a.fin_user_department_id = ? AND a.fst_mode ='USER'
+				)
+				AND a.fst_active = 'A'
+				AND b.fst_active = 'A' 
+				AND a.fin_document_id not in (select fin_document_id from temp_documents);
+			"
+			,[$currUserDeptId,$currUserId]
+		);
+
+
+		/*
 		$this->db->query("
 			INSERT INTO temp_documents 
 				SELECT b.* FROM document_custom_permission a 
@@ -1272,7 +1292,7 @@ class Document extends MY_Controller {
 			"
 			,[$currUserId]
 		);
-
+		*/
 
 
 		//$ssql = "SELECT * FROM temp_documents";

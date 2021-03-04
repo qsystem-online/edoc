@@ -9,6 +9,7 @@ class Doc_groups extends MY_Controller
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('document_groups_model');
+		$this->load->model('departments_model');
 	}
 
 	public function index()
@@ -109,7 +110,8 @@ class Doc_groups extends MY_Controller
 
 		$data = [
 			"fst_group_code" => $this->input->post("fst_group_code"),
-            "fst_group_name" => $this->input->post("fst_group_name"),
+			"fst_group_name" => $this->input->post("fst_group_name"),
+			"fst_list_department_id" => implode(",",$this->input->post("fst_list_department_id")),
             "fst_desc" => $this->input->post("fst_desc"),
 			"fst_active" => 'A'
 		];
@@ -161,7 +163,8 @@ class Doc_groups extends MY_Controller
 		$data = [
 			"fin_id" => $finId,
 			"fst_group_code" => $this->input->post("fst_group_code"),
-            "fst_group_name" => $this->input->post("fst_group_name"),
+			"fst_group_name" => $this->input->post("fst_group_name"),
+			"fst_list_department_id" => implode(",",$this->input->post("fst_list_department_id")),
             "fst_desc" => $this->input->post("fst_desc"),
 			"fst_active" => 'A'
 		];

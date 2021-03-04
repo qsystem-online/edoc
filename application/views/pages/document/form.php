@@ -83,7 +83,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-10">
 							<select class="form-control" id="fin_document_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_document_group_id">
 								<?php
-									$groupList = $this->document_groups_model->getAllList();
+									$groupList = $this->document_groups_model->getAllListByDept();
+									
 									foreach($groupList as $docGroup){
 										echo "<option value='$docGroup->fin_id'>$docGroup->fst_group_code - $docGroup->fst_group_name</option>";
 									}

@@ -73,6 +73,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fst_group_name_err" class="text-danger"></div>
 						</div>
 					</div>
+
+					<div class="form-group">
+                    	<label for="fst_desc" class="col-sm-3 control-label"><?=lang("Department")?> *</label>
+						<div class="col-sm-9">
+							<select class="form-control select2" id="fst_list_department_id" name="fst_list_department_id[]" style="width:100%" multiple="multiple">
+							<?php
+								$deptList = $this->departments_model->getAllList();
+								foreach($deptList as $dept){
+									echo "<option value='$dept->fin_department_id'>$dept->fst_department_name</option>";
+								}
+							?>
+							</select>
+							<div id="fst_list_department_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
 					<div class="form-group">
                     	<label for="fst_desc" class="col-sm-3 control-label"><?=lang("Description")?> *</label>
 						<div class="col-sm-9">
@@ -194,6 +210,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>doc_groups");
 		});
+
+		//App.fixedSelect2();
 	});
 
 	function init_form(finId){
@@ -206,8 +224,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				if(resp.status == "SUCCESS"){
 					var data = resp.data;
 					$("#fin_id").val(data.fin_id);
-					$("#fst_group_code").val(data.fst_group_code);
+					$("#fst_group_code").val(data.fst_group_code);					
 					$("#fst_group_name").val(data.fst_group_name);
+
+					//var res = str.split(" ");
+
+					var fstListDept = data.fst_list_department_id;
+					arrFstListDept = fstListDept.split(",");
+					console.log(arrFstListDept);
+					//$("#fst_list_department_id").select2('val', arrFstListDept);
+					$("#fst_list_department_id").val(arrFstListDept).trigger("change");
+					/*
+					$.each(arrFstListDept,function(i,v){
+						$("#fst_list_department_id").select2('val', v);
+					});
+					*/
+					
+
 					$("#fst_desc").val(data.fst_desc);
 				}
 			},

@@ -55,13 +55,28 @@ class Document_groups_model extends MY_Model
 		parent::delete($key,$softdelete);
     }*/
 
-    public function getAllList()
-    {
+    public function getAllList(){
         $ssql = "select fin_id,fst_group_code,fst_group_name from " . $this->tableName . " where fst_active = 'A'";
         $qr = $this->db->query($ssql,[]);        
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getAllListByDept($finDeptId = null){
+
+        //$finDeptId = $this->aauth->user();
+        if ($finDeptId == null){
+            $user = $this->aauth->user();
+            $finDeptId = $user->fin_department_id;
+        }
+        
+        $ssql = "select fin_id,fst_group_code,fst_group_name from " . $this->tableName . " where fst_active = 'A' and find_in_set($finDeptId,fst_list_department_id) > 0";
+        $qr = $this->db->query($ssql,[]);        
+        $rs = $qr->result();
+        return $rs;
+    }
+
+
 
     public function get_list_group()
     {
