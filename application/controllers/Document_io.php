@@ -90,6 +90,87 @@ class Document_io extends MY_Controller
 		$this->json_output($datasources);
 	}
 
+	public function list_out()
+	{
+		$this->load->library('menus');
+		$this->list['page_name'] = "Document Out";
+		$this->list['list_name'] = "Document Out List";
+		$this->list['addnew_ajax_url'] = site_url() . 'document_io/add';
+		$this->list['pKey'] = "id";
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'document_io/fetch_list_out_data';
+		$this->list['delete_ajax_url'] = site_url() . 'document_io/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'document_io/edit/';
+		$this->list['arrSearch'] = [
+			'fst_document_name' => 'Document',
+		];
+
+		$this->list['breadcrumbs'] = [
+			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+			['title' => 'Document In Out', 'link' => '#', 'icon' => ''],
+			['title' => 'List', 'link' => NULL, 'icon' => ''],
+		];
+		$this->list['columns'] = [
+			['title' => 'ID', 'width' => '5%', 'data' => 'fin_document_id'],
+			['title' => 'Document', 'width' => '70%', 'data' => 'fst_document_name',
+				'render'=>"function(data,type,row){
+					var sstr=data;
+					sstr += '<br>';
+					sstr += row.fst_notes;
+					return sstr;
+				}"
+			],
+			['title' => 'IO Datetime', 'width' => '15%', 'data' => 'fdt_io_datetime'],
+			['title' => 'IO User', 'width' => '10%', 'data' => 'fst_by_user'],
+		];
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		$page_content = $this->parser->parse('template/standardList', $this->list, true);
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+		$control_sidebar = null;
+		$this->data['ACCESS_RIGHT'] = "A-C-R-U-D-P";
+		$this->data['MAIN_HEADER'] = $main_header;
+		$this->data['MAIN_SIDEBAR'] = $main_sidebar;
+		$this->data['PAGE_CONTENT'] = $page_content;
+		$this->data['MAIN_FOOTER'] = $main_footer;
+		$this->parser->parse('template/main', $this->data);
+	}
+
+	public function fetch_list_out_data(){
+		$this->load->library("datatables");
+		$this->datatables->setTableName("(
+			SELECT a.*,c.fdt_io_datetime,c.fin_by_id,c.fst_notes,d.fst_fullname as fst_by_user FROM documents a 
+			INNER JOIN (
+				SELECT fin_document_id,MAX(fin_id) AS fin_last_id FROM document_inout WHERE fst_active ='A' GROUP BY fin_document_id
+			) b ON a.fin_document_id = b.fin_document_id 
+			INNER JOIN document_inout c ON b.fin_last_id = c.fin_id
+			INNER JOIN users d ON c.fin_by_id = d.fin_user_id
+			WHERE a.fst_io_status = 'OUT' 
+		) a");
+		
+		$selectFields = "a.*";
+		$this->datatables->setSelectFields($selectFields);
+		
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname","fst_birthplace"];
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
+		
+		// Format Data
+		$datasources = $this->datatables->getData();
+		$arrData = $datasources["data"];
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			//action
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_id"] . "'><i class='fa fa-pencil'></i></a>
+				</div>";
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
+	
+
 	public function fetch_data($id)
 	{
 		$data = $this->document_inout_model->getDataById($id);
@@ -106,6 +187,20 @@ class Document_io extends MY_Controller
 
 	public function Edit($id){
 		$this->openForm("EDIT", $id);
+	}
+
+	public function Print($id){
+		$ssql ="SELECT a.*,b.fst_fullname AS fst_user_name,c.fst_name AS fst_document_name FROM document_inout a 
+			INNER JOIN users b ON a.fin_by_id = b.fin_user_id
+			INNER JOIN documents c ON a.fin_document_id = c.fin_document_id
+			WHERE a.fin_id  = ?";
+
+		$qr = $this->db->query($ssql,[$id]);
+		
+		//$data["data"] = $qr->row_array();
+		$data = $qr->row_array();
+		$this->parser->parse('pages/document_io/print', $data);
+
 	}
 
 	private function openForm($mode = "ADD", $id = 0)

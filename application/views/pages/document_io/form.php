@@ -40,6 +40,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="btn-group btn-group-sm pull-right">
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<?php if ($mode == "EDIT"){ ?>
+							<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<?php } ?>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>
 					</div>
@@ -165,6 +168,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="event">
 	$(function(){
 
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>document_io/add");
+		});
+
+
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = new FormData($("#frm")[0]);
@@ -221,11 +230,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#btnNew").click(function(e){
+		$("#btnPrint").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>document_io/add");
+			var left = (screen.width - 800) / 2;
+			url = "<?=site_url()?>document_io/print/" + $("#fin_id").val();
+			window.open(url,"_blank","width=1000,height=550,menubar=0,toolbar=0,top=50,left="+left);
+			return;	
 		});
 
+		
+
+		
 		$("#btnDelete").confirmation({
 			title: "<?=lang("Hapus data ini ?")?>",
 			rootSelector: '#btnDelete',

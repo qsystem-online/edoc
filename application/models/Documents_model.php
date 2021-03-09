@@ -61,7 +61,8 @@ class Documents_model extends MY_Model {
 		$tmp = explode("/",$lastRw->fst_document_no);
 		$lastNo = $tmp[sizeof($tmp) -1];
 		$lastNo = (int) $lastNo;
-		$newNo = "0000".$lastNo + 1;
+		$lastNo += 1;
+		$newNo = '0000' . $lastNo;
 		$newNo = substr($newNo,strlen($newNo)-5);
 		return $prefix . $newNo;
 

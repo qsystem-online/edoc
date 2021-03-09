@@ -93,7 +93,10 @@ class Aauth
 			}	
 			if ($permission_name == "flow_schema"){
 				return false;
-			}		
+			}	
+			if ($permission_name == "document_groups"){
+				return false;
+			}	
 		}
 		
 		return true;
