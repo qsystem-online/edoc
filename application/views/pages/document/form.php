@@ -119,7 +119,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <option value='2'><?= lang("Middle Management")?></option>
                                 <option value='3'><?= lang("Supervisors")?></option>
                                 <option value='4'><?= lang("Line Workers")?></option>
-                                <option value='5'><?= lang("Public")?></option>
+                                <option value='5' selected><?= lang("Public")?></option>
 							</select>
 						</div>
 
