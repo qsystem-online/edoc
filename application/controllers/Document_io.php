@@ -111,7 +111,7 @@ class Document_io extends MY_Controller
 		];
 		$this->list['columns'] = [
 			['title' => 'ID', 'width' => '5%', 'data' => 'fin_document_id'],
-			['title' => 'Document', 'width' => '70%', 'data' => 'fst_document_name',
+			['title' => 'Document', 'width' => '70%', 'data' => 'fst_name',
 				'render'=>"function(data,type,row){
 					var sstr=data;
 					sstr += '<br>';
@@ -162,7 +162,7 @@ class Document_io extends MY_Controller
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["fin_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_document_id"] . "'><i class='fa fa-pencil'></i></a>
 				</div>";
 			$arrDataFormated[] = $data;
 		}

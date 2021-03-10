@@ -114,7 +114,11 @@ class Documents_model extends MY_Model {
 	public function scopePermission($fin_document_id,$scopeMode = "VIEW"){
 		$this->load->model("users_model");
 		$activeUserId = $this->aauth->get_user_id();
-
+		$userActive = $this->users_model->getDataById($activeUserId)["user"];
+		if ($userActive->fbl_admin ==1){
+			return true;
+		}		
+		
 		$fst_scope = ($scopeMode == "VIEW" ) ? "fst_view_scope" : "fst_print_scope";
 
 		//Get Scope
@@ -124,43 +128,41 @@ class Documents_model extends MY_Model {
 			where a.fin_document_id = ?";
 
 		$qr = $this->db->query($ssql,[$fin_document_id]);
-		//echo $this->db->last_query();
-		if ($qr){
-			$rwDoc = $qr->row();            
-			if ($rwDoc->fin_user_id == $activeUserId){
-				return true;
-			}
-			$userActive = $this->users_model->getDataById($activeUserId)["user"];
-
-
-			//PRV, GBL, CST
-			if($rwDoc->$fst_scope == "PRV"){ // only user same department can view document
-				if ($rwDoc->fin_department_id  != $userActive->fin_department_id){
-					return false;
-				}
-			}
-
-			if ($rwDoc->$fst_scope == "CST"){
-				$this->load->model("document_custom_permission_model");
-				if ($this->document_custom_permission_model->isPermit("USER",$scopeMode,$fin_document_id,$userActive->fin_user_id)){
-					return true;
-				}
-
-				if (! $this->document_custom_permission_model->isPermit("DEPARTMENT",$scopeMode,$fin_document_id,$userActive->fin_department_id)){
-					return false;
-				}               
-			}
-			// Cek Level
-			if ($rwDoc->fin_confidential_lvl >= $userActive->fin_level  ){
-				return true;
-			}else{
+		
+		$rwDoc = $qr->row();    
+		
+		if ($rwDoc->fin_user_id == $activeUserId){
+			return true;
+		}
+		
+		
+		
+		//PRV, GBL, CST
+		if($rwDoc->$fst_scope == "PRV"){ // only user same department can view document
+			if ($rwDoc->fin_department_id  != $userActive->fin_department_id){
 				return false;
 			}
-
-			return false;
-		}else{
-			show_404();
 		}
+
+		if ($rwDoc->$fst_scope == "CST"){
+			$this->load->model("document_custom_permission_model");
+			if ($this->document_custom_permission_model->isPermit("USER",$scopeMode,$fin_document_id,$userActive->fin_user_id)){
+				return true;
+			}
+
+			if (! $this->document_custom_permission_model->isPermit("DEPARTMENT",$scopeMode,$fin_document_id,$userActive->fin_department_id)){
+				return false;
+			}               
+		}
+		// Cek Level
+		if ($rwDoc->fin_confidential_lvl >= $userActive->fin_level  ){
+			return true;
+		}else{
+			return false;
+		}
+
+		return false;
+	
 	}
 
 

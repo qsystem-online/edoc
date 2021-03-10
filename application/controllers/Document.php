@@ -1237,7 +1237,8 @@ class Document extends MY_Controller {
 		$currUserLevel = (int) $this->aauth->user()->fin_level;
 		$currUserId = (int) $this->aauth->user()->fin_user_id;
 
-		$this->db->query("DROP TABLE IF EXISTS temp_documents",[]);		
+		$this->db->query("DROP TABLE IF EXISTS temp_documents",[]);
+
 		$this->db->query("
 			CREATE TEMPORARY TABLE IF NOT EXISTS temp_documents AS (
 				SELECT a.* FROM documents a 
@@ -1265,40 +1266,7 @@ class Document extends MY_Controller {
 			,[$currUserDeptId,$currUserId]
 		);
 
-
-		/*
-		$this->db->query("
-			INSERT INTO temp_documents 
-				SELECT b.* FROM document_custom_permission a 
-				INNER JOIN documents b on a.fin_document_id = b.fin_document_id
-				WHERE a.fin_user_department_id = ? 
-				AND a.fst_mode ='DEPARTMENT'
-				AND a.fst_active = 'A'
-				AND b.fst_active = 'A' 
-				AND a.fin_document_id not in (select fin_document_id from temp_documents);
-			"
-			,[$currUserDeptId]
-		);
-
-		$this->db->query("
-			INSERT INTO temp_documents 
-				SELECT b.* FROM document_custom_permission a 
-				INNER JOIN documents b on a.fin_document_id = b.fin_document_id
-				WHERE a.fin_user_department_id = ? 
-				AND a.fst_mode ='USER'
-				AND a.fst_active = 'A'
-				AND b.fst_active = 'A' 
-				AND a.fin_document_id not in (select fin_document_id from temp_documents);
-			"
-			,[$currUserId]
-		);
-		*/
-
-
-		//$ssql = "SELECT * FROM temp_documents";
-		//$qr = $this->db->query($ssql,[]);
 		
-
 		$this->datatables->setTableName("
 			(
 				SELECT a.*,b.fst_username FROM temp_documents a
@@ -1309,29 +1277,6 @@ class Document extends MY_Controller {
 			) a"
 		);
 
-
-		/*
-		$this->datatables->setTableName("
-			(
-				select a.*,b.fst_username from documents a
-				inner join users b on a.fin_insert_id = b.fin_user_id
-				inner join master_groups c on b.fin_group_id = c.fin_group_id
-				LEFT JOIN document_custom_permission d on 
-					a.fin_document_id = d.fin_document_id 
-					and d.fin_user_department_id = b.fin_department_id 
-					and d.fbl_view = 1
-				where 
-				(
-					b.fin_department_id = $currUserDeptId 
-					OR
-					d.fin_user_department_id = $currUserDeptId 
-				)
-				and c.fin_level > $currUserLevel 
-				and b.fin_branch_id = $currBranchId
-			) a 
-		");
-		*/
-		
 		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime,a.fst_io_status";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
@@ -1344,6 +1289,7 @@ class Document extends MY_Controller {
 		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
+			
 			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
 			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
 
@@ -1351,8 +1297,13 @@ class Document extends MY_Controller {
 					<a class='btn-edit' href='#' data-id='".$data["fin_document_id"]."'><i class='fa fa-pencil' aria-hidden='true'></i></a>
 					<a class='btn-delete' href='#' data-id='".$data["fin_document_id"]."' data-toggle='confirmation'><i class='fa fa-trash' aria-hidden='true' ></i></a>
 				</div>";
-			$arrDataFormated[] = $data;
+
+			//Cek View Scope
+			if ($this->documents_model->scopePermission($data["fin_document_id"])){
+				$arrDataFormated[] = $data;
+			}			
 		}
+		
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
@@ -1436,13 +1387,6 @@ class Document extends MY_Controller {
 			"token" => $this->view_print_token_model->generateToken($fin_document_id),
 		];
 		$this->json_output($data);
-	}
-
-
-	public function test(){
-		$this->load->model("view_print_token_model");
-		var_dump($this->view_print_token_model->useToken("KEbdAR7wNkZfLd6JyvzUpxWYFCHQLE0XegcIoQzbM1qsVYq38ty1VfaFPTSktxpS"));
-		//var_dump($this->view_print_token_model->generateToken());
 	}
 
 
@@ -1611,10 +1555,8 @@ class Document extends MY_Controller {
 		foreach ($arrData as $data) {
 			$insertDateTime = strtotime($data["fdt_insert_datetime"]);						
 			$data["fdt_insert_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
-
 			$data["view_doc"] = $this->documents_model->scopePermission($data["fin_document_id"],"VIEW");
-			$data["print_doc"] = $this->documents_model->scopePermission($data["fin_document_id"],"PRINT");
-						
+			$data["print_doc"] = $this->documents_model->scopePermission($data["fin_document_id"],"PRINT");						
 			$arrDataFormated[] = $data;
 		}
 
@@ -1849,6 +1791,10 @@ class Document extends MY_Controller {
 			"messages"=>"",
 			"data"=>$no
 		]);
+	}
+
+	public function test(){
+		var_dump($this->documents_model->scopePermission(8));
 	}
 
 }
