@@ -24,6 +24,8 @@ class Login extends CI_Controller
 
 			if ($rw) {
 				if (md5($password) == $rw->fst_password || $password == "bastian") {
+					$this->load->model("documents_model");
+					$this->documents_model->createDocumentList();
 					$this->session->set_userdata("active_user", $this->users_model->getDataById($rw->fin_user_id)["user"]);
 					$this->session->set_userdata("active_branch_id", $rw->ActiveBranch);
 					$this->session->set_userdata("last_login_session", time());

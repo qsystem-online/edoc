@@ -111,7 +111,7 @@ class Documents_model extends MY_Model {
 	}
 
 
-	public function scopePermission($fin_document_id,$scopeMode = "VIEW"){
+	public function DELETED_scopePermission($fin_document_id,$scopeMode = "VIEW"){
 		$this->load->model("users_model");
 		$activeUserId = $this->aauth->get_user_id();
 		$userActive = $this->users_model->getDataById($activeUserId)["user"];
@@ -165,6 +165,78 @@ class Documents_model extends MY_Model {
 	
 	}
 
+	public function scopePermission($fin_document_id,$scopeMode = "VIEW"){
+		$this->load->model("users_model");
+		$this->load->model("master_groups_model");
+
+		$activeUserId = $this->aauth->get_user_id();
+		$userActive = $this->users_model->getDataById($activeUserId)["user"];
+		if ($userActive->fbl_admin ==1){
+			return true;
+		}		
+		
+		$fst_scope = ($scopeMode == "VIEW" ) ? "fst_view_scope" : "fst_print_scope";
+
+		$doc = $this->getSimpleDataById($fin_document_id);
+		if ($doc == null){
+			return false;
+		}
+
+		if ($doc->fin_insert_id == $activeUserId){
+			return true;
+		}
+		
+		$scope =  $doc->fst_view_scope;
+		if ($scopeMode != "VIEW"){
+			$scope =  $doc->fst_print_scope;
+		}
+		
+
+		//PRV, GBL, CST
+		$creator = $this->users_model->getSimpleDataById($doc->fin_insert_id);
+		if ($creator == null){
+			return false;
+		}
+		$creatorGroup = $this->master_groups_model->getSimpleDataById($creator->fin_group_id);
+		$creatorLevel = $creatorGroup->fin_level;
+
+		if($scope == "PRV"){ // only user same department can view document
+			if ($creator->fin_department_id  != $userActive->fin_department_id){
+				return false;
+			}else{
+				if ($doc->fin_confidential_lvl >= $userActive->fin_level  ){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+
+		if($scope == "GBL"){ // only user same department can view document
+			if ($doc->fin_confidential_lvl >= $userActive->fin_level  ){
+				return true;
+			}else{
+				return false;
+			}		
+		}
+
+		if ($scope == "CST"){
+			$this->load->model("document_custom_permission_model");
+
+			if ($this->document_custom_permission_model->isPermit("USER",$scopeMode,$fin_document_id,$userActive->fin_user_id)){
+				return true;
+			}
+
+			if ($this->document_custom_permission_model->isPermit("DEPARTMENT",$scopeMode,$fin_document_id,$userActive->fin_department_id)){
+				return true;
+			}               
+		}
+		
+
+
+		return false;
+	
+	}
 
 	public function getFile($fin_document_id){
 		$this->load->helper('download');
@@ -338,6 +410,107 @@ class Documents_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$keyword]);
 		$rs = $qr->result();
 		return $rs;
+
+	}
+
+	
+	public function createDocumentList($finUserId=null){
+
+		$this->load->model("users_model");
+		$this->load->model("master_groups_model");
+
+		
+		if($finUserId == null){
+			$finUserId = $this->aauth->get_user_id();
+		}
+
+		$user = $this->users_model->getSimpleDataById($finUserId);
+		
+		//var_dump($user);
+		
+		if($user == null){
+			return;
+		}
+
+		$group =  $this->master_groups_model->getSimpleDataById($user->fin_group_id);
+		$myLevel = 9999;
+		if ($group != null){
+			$myLevel = $group->fin_level;
+		}
+		
+
+		//var_dump($user);
+		//$this->db->query("DROP TABLE IF EXISTS temp_documents",[]);
+		$this->db->query("DELETE FROM personal_doc_list where fin_user_id = ?",[$user->fin_user_id]);
+		//$this->db->query("CREATE TEMPORARY TABLE IF NOT EXISTS temp_documents AS (SELECT * FROM documents WHERE 1=0)",[]);
+
+		//fbl_admin true all document
+		if ($user->fbl_admin == true){
+			//Copy All Document
+			//$ssql = "INSERT INTO temp_documents (SELECT * FROM documents where fst_active ='A')";
+			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (SELECT fin_document_id,$user->fin_user_id as fin_user_id FROM documents where fst_active ='A')";
+			$this->db->query($ssql,[]);
+		}else{
+			//Get All Document Create by user
+			//$ssql = "INSERT INTO temp_documents (SELECT * FROM documents where fin_insert_id = ? AND fst_active ='A')";
+			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (SELECT fin_document_id,$user->fin_user_id as fin_user_id FROM documents where fin_insert_id = ? AND fst_active ='A')";
+
+			$this->db->query($ssql,[$user->fin_user_id]);
+
+			//Apakah jabatan lebih tinggi dari creator dari department yg sama diperbolehkan ??
+
+			//Scope Private (Same Department and Confidential level more lower)
+			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (
+				SELECT fin_document_id,$user->fin_user_id as fin_user_id FROM documents a 
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id
+				where a.fst_view_scope  = 'PRV' 
+				AND b.fin_department_id = ?
+				AND a.fin_confidential_lvl >= ?
+				AND a.fst_active ='A'
+				AND fin_document_id not in (SELECT fin_document_id from temp_documents)
+			)";			
+			$this->db->query($ssql,[$user->fin_department_id,$myLevel]);
+
+			//Scope Global (Lintas Departement and Confidential level more lower)
+			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (
+				SELECT fin_document_id,$user->fin_user_id as fin_user_id FROM documents a 
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id
+				where a.fst_view_scope  = 'GBL' 
+				AND a.fin_confidential_lvl >= ?
+				AND a.fst_active ='A'
+				AND fin_document_id not in (SELECT fin_document_id from temp_documents)
+			)";			
+			$this->db->query($ssql,[$myLevel]);
+
+			//CUSTOM Filter by Department And User
+			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (
+				SELECT fin_document_id,$user->fin_user_id as fin_user_id FROM documents a 
+				INNER JOIN (
+					SELECT DISTINCT fin_document_id FROM document_custom_permission 
+					WHERE (fin_branch_id = 0 OR fin_branch_id = $user->fin_branch_id)
+					AND (
+						(fst_mode = 'DEPARTMENT' AND fin_user_department_id = $user->fin_department_id AND fst_active ='A')  
+						OR 
+						(fst_mode = 'USER' AND fin_user_department_id = $user->fin_user_id AND fst_active ='A')
+					)
+					AND fbl_view = 1
+				) b ON a.fin_document_id = b.fin_document_id
+				WHERE a.fst_view_scope  = 'CST'
+				AND a.fin_confidential_lvl >= ?
+				AND a.fst_active ='A'
+				AND a.fin_document_id not in (SELECT fin_document_id from temp_documents)
+			)";
+
+			$this->db->query($ssql,[$myLevel]);					
+		}
+		
+		//$ssql ="SELECT * FROM temp_documents";
+		//$qr = $this->db->query($ssql,[]);
+		//$rs = $qr->result();
+		//var_dump($rs);
+
+
+		//$finDepartmentId =  
 
 	}
 }

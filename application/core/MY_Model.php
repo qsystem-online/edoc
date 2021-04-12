@@ -56,6 +56,11 @@ class MY_Model extends CI_Model
 		$qr = $this->db->query($ssql,[$id]);
 		return $qr->row();
 	}
+	public function getSimpleDataById($id){
+		$ssql = "select * from ". $this->tableName . " where " . $this->pkey . " = ?";
+		$qr = $this->db->query($ssql,[$id]);
+		return $qr->row();
+	}
 
 	public function getTableName()
 	{

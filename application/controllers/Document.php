@@ -33,7 +33,8 @@ class Document extends MY_Controller {
 		];
 		
 		$this->list['columns']=[
-			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id'],
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_document_id','visible'=>"false"],
+			['title' => 'No', 'width'=>'10%', 'data'=>'fst_document_no'],
 			['title' => 'Name', 'width'=>'15%', 'data'=>'fst_name'],
 			['title' => 'memo', 'width'=>'30%', 'data'=>'fst_memo'],
 			['title' => 'Source', 'width'=>'5%', 'data'=>'fst_source',
@@ -1237,8 +1238,8 @@ class Document extends MY_Controller {
 		$currUserLevel = (int) $this->aauth->user()->fin_level;
 		$currUserId = (int) $this->aauth->user()->fin_user_id;
 
+		/*
 		$this->db->query("DROP TABLE IF EXISTS temp_documents",[]);
-
 		$this->db->query("
 			CREATE TEMPORARY TABLE IF NOT EXISTS temp_documents AS (
 				SELECT a.* FROM documents a 
@@ -1248,7 +1249,6 @@ class Document extends MY_Controller {
 			)"
 			,[$currUserDeptId]
 		);
-
 		$this->db->query("
 			INSERT INTO temp_documents 
 				SELECT b.* FROM document_custom_permission a 
@@ -1265,8 +1265,9 @@ class Document extends MY_Controller {
 			"
 			,[$currUserDeptId,$currUserId]
 		);
-
 		
+
+
 		$this->datatables->setTableName("
 			(
 				SELECT a.*,b.fst_username FROM temp_documents a
@@ -1276,8 +1277,18 @@ class Document extends MY_Controller {
 				AND b.fin_branch_id = $currBranchId
 			) a"
 		);
+		*/
 
-		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime,a.fst_io_status";
+		$this->datatables->setTableName("
+			(
+				SELECT a.*,b.fst_username FROM documents a
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id
+				INNER JOIN personal_doc_list c on a.fin_document_id = c.fin_document_id and c.fin_user_id = $currUserId
+			) a"
+		);
+
+
+		$selectFields = "a.fin_document_id,a.fst_document_no,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fst_active,a.fdt_insert_datetime,a.fst_io_status";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fst_fullname"];
@@ -1298,10 +1309,13 @@ class Document extends MY_Controller {
 					<a class='btn-delete' href='#' data-id='".$data["fin_document_id"]."' data-toggle='confirmation'><i class='fa fa-trash' aria-hidden='true' ></i></a>
 				</div>";
 
+			/*				
 			//Cek View Scope
 			if ($this->documents_model->scopePermission($data["fin_document_id"])){
 				$arrDataFormated[] = $data;
-			}			
+			}
+			*/
+			$arrDataFormated[] = $data;
 		}
 		
 		$datasources["data"] = $arrDataFormated;
@@ -1794,7 +1808,7 @@ class Document extends MY_Controller {
 	}
 
 	public function test(){
-		var_dump($this->documents_model->scopePermission(8));
+		$this->documents_model->createDocumentList();
 	}
 
 }
