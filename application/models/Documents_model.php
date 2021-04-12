@@ -28,8 +28,9 @@ class Documents_model extends MY_Model {
 
 
 	public function getDataById($id){
-		$ssql = "select a.*,fst_username from ". $this->tableName . " a 
+		$ssql = "select a.*,fst_username,c.fst_group_name from ". $this->tableName . " a 
 			inner join users b on a.fin_insert_id = b.fin_user_id 
+			left join document_groups c on a.fin_document_group_id = c.fin_id 
 			where " . $this->pkey ." = ?";
 
 		$qr = $this->db->query($ssql,[$id]);

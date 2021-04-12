@@ -47,6 +47,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
+				<div class="btn-group btn-group-sm  pull-right">					
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+				</div>
 			</div>
 			<!-- /.box-header -->
 			<!-- form start -->
@@ -1018,6 +1021,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if ($("#fin_document_id").val() != ""){
 			init_form();
 		}
+
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+			window.open("<?= site_url() ?>document/print/" +$("#fin_document_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0");
+			//alert("PRINT");
+		})
 	});
 
 	function init_form(){

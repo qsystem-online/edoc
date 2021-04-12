@@ -1807,7 +1807,26 @@ class Document extends MY_Controller {
 		]);
 	}
 
+	public function print($finDocId){
+		$document = $this->documents_model->getDataById($finDocId);
+		
+		$data=["document"=>(array) $document];
+
+		$page = $this->parser->parse('pages/document/print',$data,true);
+
+		
+		
+		$dataMain=["PAGE_CONTENT"=>$page];
+
+		
+		$this->parser->parse('template/main_print',$dataMain);
+
+		
+	}
+
+
 	public function test(){
+		
 		$this->documents_model->createDocumentList();
 	}
 
