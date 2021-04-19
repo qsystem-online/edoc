@@ -22,6 +22,14 @@ class Documents_model extends MY_Model {
 				'required' => '%s tidak boleh kosong'
 			)
 		];
+		$rules[] = [
+			'field' => 'fin_group_id',
+			'label' => 'Group Dokumen',
+			'rules' => 'required',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong'
+			)
+		];
 
 		return $rules;
 	}
@@ -423,7 +431,7 @@ class Documents_model extends MY_Model {
 		
 		if($finUserId == null){
 			$finUserId = $this->aauth->get_user_id();
-		}
+		}		
 
 		$user = $this->users_model->getSimpleDataById($finUserId);
 		

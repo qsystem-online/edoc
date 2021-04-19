@@ -956,6 +956,8 @@ class Document extends MY_Controller {
 				$this->document_custom_permission_model->insert($dataTmp);
 			}
 
+			
+
 		}catch(Exception $e){
 			if ($e->getCode() == 1000){
 				$dbError  = $this->db->error();
@@ -970,6 +972,9 @@ class Document extends MY_Controller {
 		}
 		
 		$this->db->trans_complete();
+		
+		$this->documents_model->createDocumentList();
+
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $insertId;
@@ -1210,6 +1215,9 @@ class Document extends MY_Controller {
 			}
 
 			$this->db->trans_complete();
+
+			$this->documents_model->createDocumentList();
+			
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
 			$this->ajxResp["data"]["insert_id"] = $fin_document_id;
@@ -1828,6 +1836,11 @@ class Document extends MY_Controller {
 	public function test(){
 		
 		$this->documents_model->createDocumentList();
+		$ssql = "SELECT * FROM personal_doc_list where fin_user_id = 8";
+		$qr = $this->db->query($ssql,[]);
+		$rs = $qr->result();
+		var_dump($rs);
+		echo "DONE";
 	}
 
 }
