@@ -40,6 +40,12 @@ class Dashboard extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
+    public function refreshListDoc(){
+        $this->load->model("documents_model");
+        $this->documents_model->createDocumentList();
+        redirect(site_url() . 'dashboard', 'refresh');
+    }
+
     public function test_report()
     {
         $this->load->library('pdf');

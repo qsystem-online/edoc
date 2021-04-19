@@ -16,6 +16,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		</div>
 	</div>
 
+  <div class="row" style="margin-bottom:20px">
+    <div class="col-md-12 col-sm-12 col-xs-12 text-right">
+        <a class="btn btn-primary" id="btnRefesh" href="<?=site_url()?>dashboard/refreshListDoc">Refresh Document List</a>
+		</div>
+  </div>
+
 	<div class="row">
 		<div class="col-lg-3 col-xs-6">
           <!-- small box -->
