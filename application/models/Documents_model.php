@@ -23,7 +23,7 @@ class Documents_model extends MY_Model {
 			)
 		];
 		$rules[] = [
-			'field' => 'fin_group_id',
+			'field' => 'fin_document_group_id',
 			'label' => 'Group Dokumen',
 			'rules' => 'required',
 			'errors' => array(
