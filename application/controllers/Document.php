@@ -1217,7 +1217,7 @@ class Document extends MY_Controller {
 			$this->db->trans_complete();
 
 			$this->documents_model->createDocumentList();
-			
+
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
 			$this->ajxResp["data"]["insert_id"] = $fin_document_id;
@@ -1274,8 +1274,6 @@ class Document extends MY_Controller {
 			,[$currUserDeptId,$currUserId]
 		);
 		
-
-
 		$this->datatables->setTableName("
 			(
 				SELECT a.*,b.fst_username FROM temp_documents a
@@ -1556,6 +1554,8 @@ class Document extends MY_Controller {
 		$this->load->model("view_print_token_model");
 		
 		$currBranchId = $this->session->userdata("active_branch_id");
+		$currUserId = (int) $this->aauth->user()->fin_user_id;
+		/*
 		$this->datatables->setTableName("
 			(
 				select a.*,b.fst_username,b.fin_branch_id from documents a 
@@ -1563,6 +1563,16 @@ class Document extends MY_Controller {
 				where a.fdt_published_date <= CURDATE() and a.fbl_flow_completed = 1 and b.fin_branch_id = $currBranchId
 			) as a 
 		");
+		*/
+
+		$this->datatables->setTableName("
+			(
+				SELECT a.*,b.fst_username FROM documents a
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id
+				INNER JOIN personal_doc_list c on a.fin_document_id = c.fin_document_id and c.fin_user_id = $currUserId
+			) a"
+		);
+
 		
 		$selectFields = "a.fin_document_id,a.fst_name,a.fst_source,a.fst_memo,a.fbl_flow_control,a.fin_insert_id,a.fst_username,a.fdt_insert_datetime";
 		$this->datatables->setSelectFields($selectFields);
@@ -1585,6 +1595,11 @@ class Document extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
+
+
+
+
+
 
 	public function pending_document(){
 

@@ -83,6 +83,14 @@ class Documents_model extends MY_Model {
 	public function editPermission($fin_document_id){
 		//return false;
 		$this->load->model("users_model");
+
+		//if admin set permission true
+		$activeUserId = $this->aauth->get_user_id();
+		$userActive = $this->users_model->getDataById($activeUserId)["user"];
+		if ($userActive->fbl_admin ==1){
+			return true;
+		}		
+
 		//only same user or other user with same department and have a higher level group get permit
 		$ssql = "select b.fin_user_id,b.fin_department_id,c.fin_level from " . $this->tableName . " a 
 			inner join users b on a.fin_insert_id = b.fin_user_id
