@@ -1052,6 +1052,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+
+				App.addOptionIfNotExist("<option value='"+ resp.header.fin_document_group_id +"' selected>"+resp.header.fst_group_name +"</option>","fin_document_group_id");
+				$("#fin_document_group_id").prop( "disabled", true );
+				
 				$("#creator_by").text(resp.header.fst_username);
 
 				$("#fst_source").trigger('change');
