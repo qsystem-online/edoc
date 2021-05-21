@@ -1018,12 +1018,15 @@ class Document extends MY_Controller {
 		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
-		$noDoc = "";
+		//$noDoc = "";
+		$noDoc= $existingDoc->fst_document_no;
+		/*
 		if ($existingDoc->fin_document_group_id  == $this->input->post("fin_document_group_id")){
 			$noDoc= $existingDoc->fst_document_no;
 		}else{
 			$noDoc= $this->documents_model->getDocumentNo($this->input->post("fin_document_group_id"));
 		}
+		*/
 		
 		$data = [
 			"fin_document_id"=>$fin_document_id,
