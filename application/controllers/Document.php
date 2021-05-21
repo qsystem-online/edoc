@@ -1004,6 +1004,8 @@ class Document extends MY_Controller {
 			show_404();
 		}
 
+		$_POST["fin_document_group_id"] = $existingDoc->fin_document_group_id;
+
 		$docVersion =  $existingDoc->fin_version;
 		$docVersion++;
 
@@ -1014,6 +1016,7 @@ class Document extends MY_Controller {
 			$realDocumentFileName =  $_FILES['fst_file_name']['name'];			
 		}
 
+		
 		$this->form_validation->reset_validation();
 		$this->form_validation->set_rules($this->documents_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
