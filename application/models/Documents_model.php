@@ -484,9 +484,13 @@ class Documents_model extends MY_Model {
 				AND b.fin_department_id = ?
 				AND a.fin_confidential_lvl >= ?
 				AND a.fst_active ='A'
-				AND fin_document_id not in (SELECT fin_document_id from temp_documents)
+				AND fin_document_id not in (SELECT fin_document_id from personal_doc_list where fin_user_id = $user->fin_user_id)
 			)";			
 			$this->db->query($ssql,[$user->fin_department_id,$myLevel]);
+			
+			//echo $this->db->last_query();
+
+			
 
 			//Scope Global (Lintas Departement and Confidential level more lower)
 			$ssql = "INSERT INTO personal_doc_list (fin_document_id,fin_user_id) (
@@ -495,7 +499,7 @@ class Documents_model extends MY_Model {
 				where a.fst_view_scope  = 'GBL' 
 				AND a.fin_confidential_lvl >= ?
 				AND a.fst_active ='A'
-				AND fin_document_id not in (SELECT fin_document_id from temp_documents)
+				AND fin_document_id not in (SELECT fin_document_id from personal_doc_list where fin_user_id = $user->fin_user_id)
 			)";			
 			$this->db->query($ssql,[$myLevel]);
 
@@ -515,19 +519,13 @@ class Documents_model extends MY_Model {
 				WHERE a.fst_view_scope  = 'CST'
 				AND a.fin_confidential_lvl >= ?
 				AND a.fst_active ='A'
-				AND a.fin_document_id not in (SELECT fin_document_id from temp_documents)
+				AND a.fin_document_id not in (SELECT fin_document_id from personal_doc_list where fin_user_id = $user->fin_user_id)
 			)";
 
 			$this->db->query($ssql,[$myLevel]);					
 		}
 		
-		//$ssql ="SELECT * FROM temp_documents";
-		//$qr = $this->db->query($ssql,[]);
-		//$rs = $qr->result();
-		//var_dump($rs);
-
-
-		//$finDepartmentId =  
-
+	
+		//die();
 	}
 }
